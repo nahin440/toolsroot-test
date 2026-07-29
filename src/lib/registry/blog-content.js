@@ -170,6 +170,93 @@ export const BLOG_POSTS = [
 <p><a href="/archive-tools/create-archive">Create Archive</a> builds ZIP, 7Z, TAR, or GZ archives using a real 7-Zip engine compiled to run in your browser, and <a href="/archive-tools/extract-archive">Extract Archive</a> opens any of those plus RAR files, letting you browse and pull out individual files without extracting everything at once.</p>
 `,
   },
+
+  {
+    slug: "pdf-wont-open-corrupted-fix",
+    title: "Why Won't My PDF Open? Common Causes and How to Fix a Corrupted PDF",
+    description:
+      "The most common reasons a PDF fails to open or shows an error, and the practical steps to try before giving up on the file.",
+    category: "pdf",
+    publishedAt: "2026-02-18",
+    readingTime: "5 min read",
+    relatedTools: ["repair-pdf", "compress-pdf"],
+    content: `
+<p>A PDF that refuses to open — or opens to a blank page, a garbled mess, or a flat error message — is one of the more frustrating file problems there is, mostly because the error messages rarely explain what actually went wrong. Here's what's usually behind it, and what's actually worth trying.</p>
+
+<h2>An incomplete download or transfer</h2>
+<p>The single most common cause isn't damage to the PDF itself — it's that the file never fully arrived. A download that was interrupted, an email attachment that got truncated, or a file transferred over a flaky connection can all leave you with a PDF that's missing data from the end of the file, which is often exactly where the structural information a PDF reader needs to open the file at all is stored. Before assuming the file is corrupted, it's worth re-downloading or re-requesting it — a surprising number of "corrupted" PDFs are just incomplete copies of a perfectly fine original.</p>
+
+<h2>A genuinely damaged internal structure</h2>
+<p>PDFs store more than just visible content — cross-reference tables, object streams, and a file trailer all have to be internally consistent for a reader to make sense of the document. If that structure gets damaged (from a bad conversion, a crashed application mid-save, or corruption introduced during a transfer), the file itself is intact as far as your operating system is concerned, but the PDF reader can't parse it correctly. This tends to produce more specific symptoms: the file opens but shows a blank page, only some pages render, or the reader shows a specific parsing error rather than simply refusing to open the file.</p>
+
+<h2>The wrong reader, or a reader that's out of date</h2>
+<p>Newer PDF features — certain forms of embedded fonts, specific encryption methods, some interactive form elements — aren't always supported by every PDF reader, especially older or lighter-weight ones. A file that fails in one reader will sometimes open just fine in another, so trying a second application (or your browser's built-in PDF viewer) is a quick, low-effort thing to rule out before assuming the file itself is the problem.</p>
+
+<h2>Password protection or restricted permissions</h2>
+<p>A PDF can be genuinely encrypted (requiring a password just to open it) or merely restricted (openable, but with copying, printing, or editing disabled). The two produce different symptoms — an encrypted file will outright refuse to open without the correct password, while a restricted file opens normally but blocks certain actions — so if you're being asked for a password you don't have, that's a different problem than file corruption, and no repair process will get around it without the password itself.</p>
+
+<h2>What's actually worth trying</h2>
+<p>In order: re-download or re-request the file in case it's simply incomplete, try opening it in a different PDF reader or your browser, and if it's genuinely a structural problem, attempt a repair. A repair tool works by reading through what data is still intact and rebuilding the internal structure a reader needs, salvaging as much of the readable content as possible — it can't recover data that's truly gone, but it often succeeds even when a normal reader gives up entirely.</p>
+
+<p><a href="/pdf-tools/repair-pdf">Repair PDF</a> attempts exactly this kind of structural recovery, entirely in your browser, and is worth trying before assuming a damaged PDF is a lost cause. If the file opens but is simply too large to send or upload, <a href="/pdf-tools/compress-pdf">Compress PDF</a> handles that separately.</p>
+`,
+  },
+
+  {
+    slug: "pdf-vs-word-which-to-use",
+    title: "PDF vs Word: Which Format Should You Actually Send?",
+    description:
+      "PDF and Word documents solve different problems — here's how to decide which one to use for a resume, contract, report, or anything in between.",
+    category: "document",
+    publishedAt: "2026-02-23",
+    readingTime: "5 min read",
+    relatedTools: ["word-to-pdf", "pdf-to-word"],
+    content: `
+<p>The choice between sending a document as a PDF or as a Word file feels minor until it isn't — a resume that renders differently on the hiring manager's computer, a contract someone accidentally edits, or a report that looks broken on a phone are all, at root, a format mismatch. Here's the actual distinction.</p>
+
+<h2>Word is a working format</h2>
+<p>A .docx file is meant to be edited. Anyone with Word (or a compatible app) can change the text, restructure sections, add comments, or track revisions — which is exactly right for a document still in progress, like a contract under negotiation, a report someone else needs to build on, or a resume you're actively iterating on with a friend's feedback. The tradeoff is that a Word file's appearance isn't fully locked in: it can shift depending on the fonts installed on the viewer's computer, their version of Word, and their display settings, which is a real risk once a document needs to look identical everywhere.</p>
+
+<h2>PDF is a final format</h2>
+<p>A PDF captures the exact visual layout — fonts, spacing, images, page breaks — and locks it in place, so it looks the same on any device, any operating system, any viewer, regardless of what fonts they have installed. That's exactly what you want for a finished resume, a signed contract, an invoice, or anything where "looks exactly like what I designed" matters more than "can be easily edited by the recipient." The tradeoff runs the other way: making changes to a PDF is meaningfully harder than editing a Word file, by design.</p>
+
+<h2>A practical way to decide</h2>
+<p>If the document is still being worked on and multiple people need to edit it, send Word. If the document is finished and its exact appearance matters — a resume, a signed agreement, an official report, anything being printed — send PDF. Job applications specifically tend to prefer PDF by default (it guarantees the formatting the applicant intended, and can't be accidentally altered), unless the posting explicitly asks for a Word document, which usually means the employer's applicant tracking system needs to parse the text directly.</p>
+
+<h2>Converting between the two isn't lossless in one direction</h2>
+<p>Word to PDF is straightforward — the PDF simply captures whatever the Word file currently looks like, with no ambiguity about the result. PDF to Word is the harder direction: a PDF doesn't store "paragraphs" and "headings" the way Word does, so converting back means reconstructing an editable structure from what's fundamentally a fixed layout, which can occasionally shift spacing or formatting slightly, especially in documents with complex layouts, tables, or unusual fonts. It's usually worth a quick check of the converted file rather than assuming a perfect match.</p>
+
+<p><a href="/document-tools/word-to-pdf">Word to PDF</a> is the safer, more predictable direction for finalizing a document, preserving fonts, images, and layout exactly. <a href="/document-tools/pdf-to-word">PDF to Word</a> handles the reverse when you genuinely need to edit a PDF's content, and is worth a quick review afterward on anything with complex formatting.</p>
+`,
+  },
+
+  {
+    slug: "heic-photos-wont-open-fix",
+    title: "Why Won't My iPhone Photos (HEIC Files) Open on Windows or Other Devices?",
+    description:
+      "Why HEIC is the default photo format on newer iPhones, why it doesn't always open elsewhere, and the fastest way around it.",
+    category: "image",
+    publishedAt: "2026-03-02",
+    readingTime: "4 min read",
+    relatedTools: ["heic-to-jpg"],
+    content: `
+<p>Sending yourself a photo from an iPhone and finding it won't open — or shows as a generic file icon with no preview — is one of the most common cross-device photo headaches, and it isn't a sign anything's actually wrong with the photo. It's a format that iPhones use by default, that a lot of other software simply doesn't recognize yet.</p>
+
+<h2>What HEIC actually is</h2>
+<p>HEIC (High Efficiency Image Container) has been the default photo format on iPhones since iOS 11, chosen because it produces meaningfully smaller files than JPG at a comparable visual quality — genuinely useful given how many photos a phone camera generates. The tradeoff is that HEIC is newer and far less universally supported than JPG, which has been the de facto standard for decades and is recognized by essentially everything.</p>
+
+<h2>Why it fails to open elsewhere</h2>
+<p>Recent versions of Windows, most browsers, and a lot of third-party photo software either don't support HEIC at all, or need an additional codec installed before they will — support has been improving, but it's still noticeably behind JPG's near-universal compatibility. The photo file itself isn't damaged; the application trying to open it simply doesn't know how to decode that particular format, which is why it often shows a blank thumbnail or a generic file icon instead of an actual error.</p>
+
+<h2>The quickest fix without changing anything on your iPhone</h2>
+<p>iPhones can be set to always save photos as JPG instead of HEIC (in Settings → Camera → Formats → "Most Compatible"), which prevents the problem going forward — but that doesn't help with photos you've already taken, and some people prefer keeping HEIC's smaller file sizes for storage on the phone itself while only needing JPG occasionally, for a specific recipient or upload. For existing photos, converting them to JPG on the way out solves the immediate problem without changing how the phone captures new ones.</p>
+
+<h2>What actually happens during conversion</h2>
+<p>Converting HEIC to JPG re-encodes the image data into the older, more compatible format. Because HEIC's compression is generally more efficient than JPG's, the resulting JPG is often somewhat larger in file size than the original HEIC for an equivalent visual quality — the point of converting is compatibility, not smaller files, which trips some people up when they see the file size go up rather than down.</p>
+
+<p><a href="/image-converter/heic-to-jpg">HEIC to JPG</a> converts iPhone photos to universally-compatible JPG files directly in your browser, including batches of multiple photos at once, without needing to change any settings on the phone itself.</p>
+`,
+  },
 ];
 
 export function getBlogPost(slug) {
@@ -184,4 +271,14 @@ export function getRelatedBlogPosts(slug, limit = 3) {
   const post = getBlogPost(slug);
   if (!post) return [];
   return BLOG_POSTS.filter((p) => p.category === post.category && p.slug !== slug).slice(0, limit);
+}
+
+/**
+ * Reverse of the relatedTools relationship: given a tool slug, finds blog
+ * posts that named this tool as related. Powers the "Related Articles"
+ * section on tool pages, so linking flows both directions (blog -> tool
+ * already existed; this adds tool -> blog).
+ */
+export function getBlogPostsForTool(toolSlug, limit = 2) {
+  return BLOG_POSTS.filter((post) => post.relatedTools?.includes(toolSlug)).slice(0, limit);
 }

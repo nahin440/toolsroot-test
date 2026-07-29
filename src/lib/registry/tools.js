@@ -320,6 +320,18 @@ export const TOOLS = [
     targetFormat: "png",
   },
   {
+    slug: "webp-to-jpg",
+    category: "imageConverter",
+    name: "WEBP to JPG",
+    verb: "Convert",
+    description: "Convert WebP images to widely-compatible JPG files.",
+    engine: "image",
+    accepts: [".webp"],
+    multiple: true,
+    status: "full",
+    targetFormat: "jpg",
+  },
+  {
     slug: "heic-to-jpg",
     category: "imageConverter",
     name: "HEIC to JPG",

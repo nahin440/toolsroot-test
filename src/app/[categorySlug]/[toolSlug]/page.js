@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { getTool, getCategoryBySlug, getRelatedTools, TOOLS, CATEGORIES } from "@/lib/registry/tools";
+import { getBlogPostsForTool } from "@/lib/registry/blog-content";
 import { ToolPageLayout } from "@/components/tool-page/tool-page-layout";
 import { ToolPageClient } from "@/components/tool-page/tool-page-client";
 import { getToolContent } from "@/lib/registry/tool-content";
@@ -52,6 +53,7 @@ export default async function ToolPage({ params }) {
 
   const content = getToolContent(toolSlug);
   const relatedTools = getRelatedTools(toolSlug, 4);
+  const relatedArticles = getBlogPostsForTool(toolSlug, 2);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -120,6 +122,7 @@ export default async function ToolPage({ params }) {
         faq={content.faq}
         longDescription={content.longDescription}
         relatedTools={relatedTools}
+        relatedArticles={relatedArticles}
       />
     </>
   );

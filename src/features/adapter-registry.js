@@ -29,6 +29,7 @@ export const ADAPTER_LOADERS = {
   "png-to-jpg": () => import("@/features/image-tools/png-to-jpg/adapter").then((m) => m.pngToJpgAdapter),
   "jpg-to-webp": () => import("@/features/image-tools/jpg-to-webp/adapter").then((m) => m.jpgToWebpAdapter),
   "webp-to-png": () => import("@/features/image-tools/webp-to-png/adapter").then((m) => m.webpToPngAdapter),
+  "webp-to-jpg": () => import("@/features/image-tools/webp-to-jpg/adapter").then((m) => m.webpToJpgAdapter),
   "heic-to-jpg": () => import("@/features/image-tools/heic-to-jpg/adapter").then((m) => m.heicToJpgAdapter),
   "png-to-webp": () => import("@/features/image-tools/png-to-webp/adapter").then((m) => m.pngToWebpAdapter),
   "svg-to-png": () => import("@/features/image-tools/svg-to-png/adapter").then((m) => m.svgToPngAdapter),

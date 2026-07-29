@@ -2473,6 +2473,50 @@ const OVERRIDES = {
     ],
     longDescription: "<h2>Why convert WEBP to PNG with Tools Root</h2><p>Not every piece of software or upload system recognizes WEBP yet, and some design and editing workflows specifically expect PNG. Converting closes that compatibility gap while keeping transparency intact.</p><h2>Transparency preserved, lossless output</h2><p>The conversion correctly carries over any transparency present in the source WEBP, and produces a genuinely lossless PNG rather than a re-compressed approximation.</p><h2>Common use cases</h2><p>Converting a WEBP graphic for use in design software that doesn't accept WEBP input, preparing a transparent WEBP logo for a platform that only accepts PNG uploads, maximizing compatibility before sharing an image with someone using older software, or archiving a WEBP image in a more universally recognized format.</p>",
   },
+  "webp-to-jpg": {
+    howItWorks: {
+      title: "How to convert WEBP to JPG",
+      steps: [
+        "Upload one or more WEBP images.",
+        "The output format is already set to JPG — no picker needed.",
+        "Click convert to render each image as a widely-compatible JPG.",
+        "Download your JPG file, or all of them together as a ZIP.",
+      ],
+    },
+    faq: [
+      {
+        question: "Why would I convert WEBP to JPG instead of PNG?",
+        answer:
+          "JPG is the single most universally recognized image format — supported by every device, browser, printer, and piece of software going back decades. If the destination doesn't need transparency, JPG is usually the safer and smaller choice than PNG for photographic content.",
+      },
+      {
+        question: "What happens to transparency in the WEBP file?",
+        answer:
+          "JPG has no support for transparency at all, so any transparent areas in the source WEBP are filled with a solid background (white) in the converted JPG. If you need to keep transparency, convert to PNG instead.",
+      },
+      {
+        question: "Will converting to JPG make the file smaller than the WEBP?",
+        answer:
+          "Not necessarily — modern WEBP compression is generally more efficient than JPG at an equivalent visual quality, so a WEBP is often smaller than the JPG it converts to. The reason to convert is compatibility, not file size.",
+      },
+      {
+        question: "Does converting WEBP to JPG lose quality?",
+        answer:
+          "JPG uses lossy compression, so there is some quality loss in the conversion, on top of whatever compression the original WEBP already had. At the default quality setting this is generally not noticeable, but it isn't a byte-for-byte lossless copy the way converting to PNG would be.",
+      },
+      {
+        question: "Can I convert multiple WEBP images to JPG at once?",
+        answer:
+          "Yes, batch conversion is supported — upload multiple WEBP files and download the converted JPGs individually or together as a ZIP.",
+      },
+      {
+        question: "Is my image uploaded to a server?",
+        answer:
+          "No. Conversion runs locally in your browser using JavaScript and WebAssembly. Your image is never transmitted anywhere.",
+      },
+    ],
+    longDescription: "<h2>Why convert WEBP to JPG with Tools Root</h2><p>WEBP is efficient, but some older software, certain upload forms, and a handful of platforms still expect the older, more universal JPG format specifically. Converting closes that gap in seconds, without installing anything.</p><h2>Maximum compatibility, at the cost of transparency</h2><p>JPG is read natively by essentially every device and application, but unlike WEBP and PNG, it has no transparency channel — any transparent pixels in the source image become a solid background in the output. For photos and other backgrounds-included images this rarely matters; for logos or graphics that need to stay transparent, PNG is the better target.</p><h2>Common use cases</h2><p>Preparing a WEBP photo for an upload form that only accepts JPG, maximizing compatibility before emailing an image to someone on older software, converting product photography for a marketplace with strict format requirements, or standardizing a mixed batch of images to one universally-supported format.</p>",
+  },
   "heic-to-jpg": {
     howItWorks: {
       title: "How to convert HEIC to JPG",

@@ -201,16 +201,36 @@ function canvasToIcoBytes(canvas) {
   return bytes;
 }
 
-function drawToCanvas(bitmap, targetW, targetH) {
+/**
+ * @param {string|null} [backgroundColor] When set, painted as an opaque fill
+ *   before the bitmap is drawn, so any transparent source pixels flatten
+ *   onto this color instead of an implementation-dependent default. Needed
+ *   specifically when the *target* format has no alpha channel (JPG, BMP):
+ *   per the canvas spec, encoding a transparent canvas to those formats
+ *   should composite onto black, but real browsers have historically
+ *   disagreed (Safari has used white, IE black, older Firefox/Chrome
+ *   unpremultiplied) — pre-filling removes that ambiguity outright.
+ *   Left null (the default) for every format that supports alpha, so
+ *   transparency-preserving conversions are completely unaffected.
+ */
+function drawToCanvas(bitmap, targetW, targetH, backgroundColor = null) {
   const canvas = document.createElement("canvas");
   canvas.width = targetW;
   canvas.height = targetH;
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
+  if (backgroundColor) {
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, targetW, targetH);
+  }
   ctx.drawImage(bitmap, 0, 0, targetW, targetH);
   return canvas;
 }
+
+// Target formats with no alpha channel — transparency must be flattened
+// onto a solid color before encoding, or the result is browser-dependent.
+const OPAQUE_ONLY_FORMATS = new Set(["jpg", "jpeg", "bmp"]);
 
 /**
  * Encodes a canvas to the given format, used by every operation that
@@ -303,7 +323,8 @@ function canvasToBmpBytes(canvas) {
  */
 export async function convertImage(file, targetFormat, opts = {}) {
   const bitmap = await loadImageBitmapFromFile(file);
-  const canvas = drawToCanvas(bitmap, bitmap.width, bitmap.height);
+  const backgroundColor = OPAQUE_ONLY_FORMATS.has(targetFormat) ? "#ffffff" : null;
+  const canvas = drawToCanvas(bitmap, bitmap.width, bitmap.height, backgroundColor);
 
   if (targetFormat === "ico") {
     const icoBytes = canvasToIcoBytes(canvas);
@@ -358,8 +379,6 @@ export async function compressImage(file, opts = {}) {
   const normalizedExt = ext === "jpeg" ? "jpg" : ext;
   const preservableFormats = ["png", "jpg", "webp", "bmp", "avif"];
   const format = preservableFormats.includes(normalizedExt) ? normalizedExt : "jpg";
-  const bitmap = await loadImageBitmapFromFile(file);
-  const canvas = drawToCanvas(bitmap, bitmap.width, bitmap.height);
 
   // BMP has no lossy quality axis of its own — it's always uncompressed
   // 32bpp — so "compressing" it means re-encoding as JPG instead, the same
@@ -368,6 +387,10 @@ export async function compressImage(file, opts = {}) {
   // separate early return, so a future maxSizeBytes ceiling still applies.
   const encodeFormat = format === "bmp" ? "jpg" : format;
   const mime = CANVAS_MIME[encodeFormat];
+
+  const bitmap = await loadImageBitmapFromFile(file);
+  const backgroundColor = OPAQUE_ONLY_FORMATS.has(encodeFormat) ? "#ffffff" : null;
+  const canvas = drawToCanvas(bitmap, bitmap.width, bitmap.height, backgroundColor);
 
   if (encodeFormat === "png") {
     return new Promise((resolve, reject) => {

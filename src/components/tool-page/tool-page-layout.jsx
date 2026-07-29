@@ -3,6 +3,7 @@ import { HiChevronRight } from "react-icons/hi2";
 
 import { ToolCard } from "@/components/home/tool-card";
 import { ToolHero } from "@/components/tool-page/tool-hero";
+import { BlogPostCard } from "@/components/shared/blog-post-card";
 import {
   Accordion,
   AccordionContent,
@@ -18,6 +19,7 @@ import {
  * @param {{title: string, steps: string[]}} [props.howItWorks]
  * @param {{question: string, answer: string}[]} [props.faq]
  * @param {object[]} [props.relatedTools]
+ * @param {object[]} [props.relatedArticles] - blog posts that named this tool in their relatedTools
  * @param {string} [props.longDescription]
  */
 export function ToolPageLayout({
@@ -27,6 +29,7 @@ export function ToolPageLayout({
   howItWorks,
   faq,
   relatedTools = [],
+  relatedArticles = [],
   longDescription,
 }) {
   return (
@@ -84,6 +87,17 @@ export function ToolPageLayout({
               </AccordionItem>
             ))}
           </Accordion>
+        </section>
+      )}
+
+      {relatedArticles.length > 0 && (
+        <section className="mt-16">
+          <h2 className="text-xl font-semibold text-foreground">Related articles</h2>
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {relatedArticles.map((post) => (
+              <BlogPostCard key={post.slug} post={post} />
+            ))}
+          </div>
         </section>
       )}
 

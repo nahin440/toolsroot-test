@@ -8,6 +8,8 @@ import { FloatingPaths } from "@/components/ui/background-paths";
 import { SectionFlowLines } from "@/components/ui/section-flow-lines";
 import { FileConversionPattern } from "@/components/illustrations/file-conversion-pattern";
 import { CATEGORIES, getToolsByCategory, TOOLS } from "@/lib/registry/tools";
+import { BLOG_POSTS } from "@/lib/registry/blog-content";
+import { BlogPostCard } from "@/components/shared/blog-post-card";
 import { getToolIcon } from "@/lib/registry/tool-icons";
 import { Button } from "@/components/ui/button";
 
@@ -51,6 +53,7 @@ export const metadata = {
 
 export default function HomePage() {
   const popularTools = POPULAR_SLUGS.map((slug) => TOOLS.find((t) => t.slug === slug)).filter(Boolean);
+  const latestGuides = [...BLOG_POSTS].sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)).slice(0, 3);
 
   return (
     <div>
@@ -179,6 +182,29 @@ export default function HomePage() {
               <h3 className="font-semibold text-foreground">{point.title}</h3>
               <p className="text-sm text-muted-foreground">{point.description}</p>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Latest guides — same header/grid pattern as "Most popular tools"
+          above, surfacing blog content from the homepage so it isn't only
+          reachable via the footer link or direct search. Closes the
+          homepage-doesn't-link-to-blog gap. */}
+      <section className="relative isolate overflow-hidden border-y border-border bg-secondary/30 mx-auto max-w-none px-4 py-16 sm:px-6">
+        <SectionFlowLines tone="on-light" />
+        <div className="relative mx-auto flex max-w-[1280px] items-center justify-between">
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground">Latest guides</h2>
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline"
+          >
+            View all
+            <HiArrowRight className="size-3.5" />
+          </Link>
+        </div>
+        <div className="relative mx-auto mt-6 grid max-w-[1280px] grid-cols-1 gap-4 sm:grid-cols-3">
+          {latestGuides.map((post) => (
+            <BlogPostCard key={post.slug} post={post} />
           ))}
         </div>
       </section>
