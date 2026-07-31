@@ -3,7 +3,7 @@ import Image from "next/image";
 export function Logo({ className = "size-7" }) {
   return (
     <Image
-      src="/logo.png"
+      src="/logo.webp"
       alt="Tools Root Logo"
       width={48}
       height={48}
