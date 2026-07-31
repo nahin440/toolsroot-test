@@ -1,10 +1,11 @@
-import { FaXTwitter, FaFacebookF } from "react-icons/fa6";
+import { FaXTwitter, FaFacebookF, FaLinkedin } from "react-icons/fa6";
 
 // Central place for the site's social profile URLs so the footer and
 // contact page (and anywhere else that links out) can't drift out of sync.
 export const SOCIAL_LINKS = [
-  { name: "X (Twitter)", href: "https://x.com/nahinzbrr", Icon: FaXTwitter },
+  { name: "X (Twitter)", href: "https://x.com/toolsrootweb", Icon: FaXTwitter },
   { name: "Facebook", href: "https://www.facebook.com/toolsroot", Icon: FaFacebookF },
+  { name: "Linkedin", href: "https://www.linkedin.com/company/toolsroot", Icon: FaLinkedin },
 ];
 
 /**
