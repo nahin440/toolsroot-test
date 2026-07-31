@@ -51,14 +51,19 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+        <div className="mt-8 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <HiShieldCheck className="size-4 text-accent" />
+            <HiShieldCheck className="size-4 shrink-0 text-accent" />
             All processing happens locally in your browser
           </p>
-          <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Tools Root. All rights reserved. Developed by Zero Degree Corp.
-          </p>
+
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted-foreground">
+            <p>© {new Date().getFullYear()} Tools Root. All rights reserved. Developed by Zero Degree Corp.</p>
+            <span className="hidden text-border sm:inline" aria-hidden="true">•</span>
+            <span className="rounded-full bg-secondary px-2 py-0.5 font-mono text-[11px] font-medium text-muted-foreground">
+              v2.0.1
+            </span>
+          </div>
         </div>
       </div>
     </footer>
