@@ -2,6 +2,7 @@ import { createElement } from "react";
 import { HiOutlineEnvelope } from "react-icons/hi2";
 
 import { HeroIconFloat } from "@/components/shared/hero-icon-float";
+import { SocialLinks } from "@/components/shared/social-links";
 
 export const metadata = {
   title: "Contact",
@@ -35,6 +36,14 @@ export default function ContactPage() {
             hello@toolsroot.com
           </a>
         </div>
+      </div>
+
+      <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-5">
+        <div>
+          <p className="text-sm font-medium text-foreground">Follow us</p>
+          <p className="text-sm text-muted-foreground">Updates and new tools, as they ship.</p>
+        </div>
+        <SocialLinks />
       </div>
 
       <p className="mt-8 text-sm text-muted-foreground">

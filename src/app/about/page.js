@@ -1,4 +1,5 @@
 import { createElement } from "react";
+import Link from "next/link";
 import { HiOutlineLockClosed, HiOutlineBolt, HiOutlineGlobeAlt } from "react-icons/hi2";
 
 import { HeroIconFloat } from "@/components/shared/hero-icon-float";
@@ -65,11 +66,20 @@ export default function AboutPage() {
           <h2 className="text-xl font-semibold text-foreground">How the tools actually work</h2>
           <p>
             Every conversion on this site runs using JavaScript and WebAssembly directly in your
-            browser tab. PDF operations use a real PDF engine; audio and video tools use a real
-            ffmpeg build compiled to WebAssembly — the same underlying engine used by professional
-            video tools, just running on your device instead of a server; scanned-document text
-            recognition uses Tesseract, a genuine open-source OCR engine, also running locally;
-            archive creation and extraction run on the actual 7-Zip binary compiled to WebAssembly.
+            browser tab. <Link href="/pdf-tools" className="font-medium text-accent hover:underline">PDF operations</Link>{" "}
+            use a real PDF engine;{" "}
+            <Link href="/audio-tools" className="font-medium text-accent hover:underline">audio</Link> and{" "}
+            <Link href="/video-tools" className="font-medium text-accent hover:underline">video tools</Link>{" "}
+            use a real ffmpeg build compiled to WebAssembly — the same underlying engine used by
+            professional video tools, just running on your device instead of a server;{" "}
+            <Link href="/pdf-tools/ocr-pdf" className="font-medium text-accent hover:underline">
+              scanned-document text recognition
+            </Link>{" "}
+            uses Tesseract, a genuine open-source OCR engine, also running locally;{" "}
+            <Link href="/archive-tools" className="font-medium text-accent hover:underline">
+              archive creation and extraction
+            </Link>{" "}
+            run on the actual 7-Zip binary compiled to WebAssembly.
           </p>
           <p>
             This means the quality of the underlying engines is the same as you&apos;d get from
@@ -84,15 +94,22 @@ export default function AboutPage() {
         <p>
           The privacy claim on this page isn&apos;t something you have to take on faith. Open your
           browser&apos;s developer tools to the Network tab before running any tool, then process a
-          file — for every tool except Remove Background, you&apos;ll see no outgoing request
-          carrying your file&apos;s data. Remove Background is the one exception: it fetches a
-          machine learning model&apos;s weights from a CDN the first time you use it, since the
-          model is too large to bundle with the page. That request carries only the model, never
-          your photo.
+          file — for every tool except{" "}
+          <Link href="/image-tools/remove-background" className="font-medium text-accent hover:underline">
+            Remove Background
+          </Link>
+          , you&apos;ll see no outgoing request carrying your file&apos;s data. Remove Background is
+          the one exception: it fetches a machine learning model&apos;s weights from a CDN the
+          first time you use it, since the model is too large to bundle with the page. That
+          request carries only the model, never your photo.
         </p>
         <p>
-          The same applies to OCR PDF, which downloads language-specific recognition data (not your
-          document) the first time you use a given language, caching it afterward.
+          The same applies to{" "}
+          <Link href="/pdf-tools/ocr-pdf" className="font-medium text-accent hover:underline">
+            OCR PDF
+          </Link>
+          , which downloads language-specific recognition data (not your document) the first time
+          you use a given language, caching it afterward.
         </p>
       </div>
 
@@ -103,10 +120,36 @@ export default function AboutPage() {
           worth being upfront about where that tradeoff shows up. Processing speed depends on your
           own device, so a large video compressed on an older laptop will take longer than the same
           file on a fast desktop — there&apos;s no shared server doing the heavy lifting behind the
-          scenes. And RAR archive creation isn&apos;t offered, because RAR is a proprietary format
-          that only WinRAR&apos;s own software is licensed to write; extracting RAR files you
-          already have is fully supported.
+          scenes. And{" "}
+          <Link href="/archive-tools/create-archive" className="font-medium text-accent hover:underline">
+            RAR archive creation
+          </Link>{" "}
+          isn&apos;t offered, because RAR is a proprietary format that only WinRAR&apos;s own
+          software is licensed to write;{" "}
+          <Link href="/archive-tools/extract-archive" className="font-medium text-accent hover:underline">
+            extracting RAR files
+          </Link>{" "}
+          you already have is fully supported.
         </p>
+      </div>
+
+      <div className="mt-16 flex flex-col items-start gap-4 rounded-3xl border border-border bg-card p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">See it for yourself</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Browse all 70 tools, or read practical guides on formats and compression in the{" "}
+            <Link href="/blog" className="font-medium text-accent hover:underline">
+              blog
+            </Link>
+            .
+          </p>
+        </div>
+        <Link
+          href="/"
+          className="inline-flex shrink-0 items-center rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent-active"
+        >
+          Browse all tools
+        </Link>
       </div>
     </div>
   );

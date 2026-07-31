@@ -5,13 +5,14 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { Toaster } from "@/components/ui/sonner";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import { SOCIAL_LINKS } from "@/components/shared/social-links";
 
 const SITE_URL = "https://toolsroot.com";
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
 
-   icons: {
+  icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
     apple: "/favicon.ico",
@@ -59,7 +60,7 @@ export default function RootLayout({ children }) {
     logo: `${SITE_URL}/favicon.ico`,
     description:
       "A free, privacy-first file conversion and editing platform. Every tool runs entirely in the browser via JavaScript and WebAssembly — no file is ever uploaded to a server.",
-    sameAs: [],
+    sameAs: SOCIAL_LINKS.map((link) => link.href),
   };
 
   const websiteJsonLd = {

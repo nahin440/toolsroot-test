@@ -27,7 +27,7 @@ export const BLOG_POSTS = [
 <h2>A simple way to decide</h2>
 <p>Photos with no transparency need: JPG for maximum compatibility, or WEBP if the destination supports it and file size matters (like a website's load time). Logos, icons, and anything needing a transparent background: PNG for maximum compatibility, or WEBP again if supported. Screenshots and graphics with sharp text or lines: PNG, since JPG's compression tends to blur fine detail the most in exactly this kind of image.</p>
 
-<p>If you're not sure which will actually end up smaller for a specific image, the fastest way to find out is to try both — <a href="/image-tools/convert-image">Convert Image</a> handles conversion between all three formats (plus several others) in seconds, and <a href="/image-tools/compress-image">Compress Image</a> lets you compare file sizes directly at different quality levels before you commit to one.</p>
+<p>If you're not sure which will actually end up smaller for a specific image, the fastest way to find out is to try both — <a href="/image-converter/convert-image">Convert Image</a> handles conversion between all three formats (plus several others) in seconds, and <a href="/image-tools/compress-image">Compress Image</a> lets you compare file sizes directly at different quality levels before you commit to one.</p>
 `,
   },
 
@@ -257,7 +257,167 @@ export const BLOG_POSTS = [
 <p><a href="/image-converter/heic-to-jpg">HEIC to JPG</a> converts iPhone photos to universally-compatible JPG files directly in your browser, including batches of multiple photos at once, without needing to change any settings on the phone itself.</p>
 `,
   },
+  {
+    slug: "heic-webp-avif-modern-image-formats-guide",
+    title: "HEIC, WEBP, and AVIF Explained: A Guide to Modern Image Formats",
+    description:
+      "What HEIC, WEBP, and AVIF actually are, why they exist alongside JPG and PNG, and when converting between them actually matters.",
+    category: "imageConverter",
+    publishedAt: "2026-03-18",
+    readingTime: "7 min read",
+    relatedTools: ["convert-image", "heic-to-jpg", "jpg-to-webp"],
+    content: `
+<p>JPG and PNG dominated image formats for decades because there was little competition, not because they were the best possible solution to every problem. HEIC, WEBP, and AVIF are newer answers to the same core question — how do you store an image with the smallest possible file size for a given level of quality — and each one has quietly become the default somewhere you probably already use. Here's what's actually different about them, and when converting between formats is worth doing.</p>
+
+<h2>HEIC: Apple's answer to smaller photo files</h2>
+<p>HEIC (High Efficiency Image Container) became the default photo format on iPhones starting with iOS 11, and it earns that "high efficiency" name honestly — it produces meaningfully smaller files than JPG at a comparable visual quality, which matters enormously given how many photos a phone camera generates in a single day. The catch is that HEIC support outside Apple's own ecosystem has been slower to arrive. Recent versions of Windows, many browsers, and a lot of everyday software either don't recognize it at all or need an extra codec installed first, which is why an emailed iPhone photo sometimes shows up as an unreadable file on someone else's computer. <a href="/image-converter/heic-to-jpg">HEIC to JPG</a> solves that instantly by converting to the format virtually everything can open.</p>
+
+<h2>WEBP: Google's format built specifically for the web</h2>
+<p>WEBP was designed from the ground up to solve a website's specific image problem: pages load faster when images are smaller, and WEBP typically beats JPG and PNG at that job while still supporting both lossy compression (like JPG) and lossless compression with transparency (like PNG) in one format. That flexibility is why WEBP has become the go-to recommendation for web performance audits. Browser support is now very broad across all major browsers, which is a big part of why converting existing image libraries to WEBP is one of the more effective single changes for a slow-loading website. <a href="/image-converter/jpg-to-webp">JPG to WEBP</a> and the broader <a href="/image-converter">image converter</a> handle that conversion directly, including batches of many images at once.</p>
+
+<h2>AVIF: the newest, and often the smallest</h2>
+<p>AVIF is the newest of the three, built on the AV1 video codec's compression technology, and it frequently produces even smaller files than WEBP at an equivalent visual quality. Its main limitation is simply age — AVIF hasn't been around as long, so support across older software, some content platforms, and various upload systems still lags behind the more established formats. That's usually a temporary gap that closes as adoption grows, but for now, converting an AVIF file to a more universally recognized format is sometimes the pragmatic choice for compatibility with a specific destination.</p>
+
+<h2>So which format should you actually use?</h2>
+<p>For photos you're taking and keeping on your own device, whatever your device defaults to (often HEIC on an iPhone) is fine, since the efficiency gains are real. For sharing a photo broadly, or uploading somewhere you're not sure will support a newer format, converting to JPG remains the safest universal choice. For images on a website you control, WEBP is the well-supported sweet spot between file size and compatibility today, with AVIF as an option worth testing if your specific platform and audience support it. The deciding factor is almost always the destination, not the source — which is why having a fast way to convert between all of them matters more than picking one format to use everywhere.</p>
+
+<p>The <a href="/image-converter">image converter</a> handles every combination of PNG, JPG, WEBP, AVIF, HEIC, GIF, BMP, TIFF, SVG, and ICO in one place, entirely in your browser. If you're specifically dealing with iPhone photos, <a href="/image-converter/heic-to-jpg">HEIC to JPG</a> is the fastest path to compatibility — see our <a href="/blog/heic-photos-wont-open-fix">guide to why HEIC photos won't open</a> for more on that specific problem. And if you're deciding between JPG, PNG, and WEBP specifically for a photo you already have, the <a href="/blog/jpg-vs-png-vs-webp">JPG vs PNG vs WEBP breakdown</a> covers that comparison in more depth.</p>
+`,
+  },
+  {
+    slug: "mov-vs-mp4-vs-mkv-vs-avi-video-formats",
+    title: "MOV vs MP4 vs MKV vs AVI: Which Video Format Should You Use?",
+    description:
+      "What actually separates MOV, MP4, MKV, and AVI, why your device or software defaults to one of them, and when it's worth converting.",
+    category: "videoConverter",
+    publishedAt: "2026-03-25",
+    readingTime: "6 min read",
+    relatedTools: ["convert-video", "mov-to-mp4", "avi-to-mp4", "mkv-to-mp4"],
+    content: `
+<p>Video format confusion usually shows up at the worst possible moment — a file that won't upload, a clip that plays with no sound on one device but fine on another, an old recording that a current editor refuses to open. Most of that comes down to a handful of container formats that each made a different tradeoff, and knowing which one you're dealing with makes the fix obvious.</p>
+
+<h2>MP4: the safe, universal default</h2>
+<p>MP4 is the closest thing video has to a universal standard — recognized by essentially every device, browser, platform, and piece of editing software in common use. If you're not sure what format something needs, MP4 is almost always the right guess. It's also the most common target when converting from something less compatible, which is why <a href="/video-converter">the video converter</a> defaults so often to MP4 as the destination format.</p>
+
+<h2>MOV: Apple's native format</h2>
+<p>MOV is what an iPhone or Mac saves video as by default, and within Apple's own ecosystem it works flawlessly. Step outside that ecosystem — a Windows PC with older software, certain upload forms, some non-Apple editing tools — and MOV support gets noticeably less consistent than MP4's. That's the entire reason <a href="/video-converter/mov-to-mp4">MOV to MP4</a> exists as a dedicated conversion: it's specifically the fix for "this iPhone video won't open on my computer at work."</p>
+
+<h2>MKV: built for extras, at the cost of universal support</h2>
+<p>MKV is a flexible container designed to hold high-bitrate video alongside multiple audio tracks (useful for multiple languages) and multiple subtitle tracks, all in one file — which is exactly why it's a common choice for downloaded high-quality video releases. The tradeoff is that support across mobile devices, smart TVs, and various streaming boxes is less consistent than MP4's, so an MKV file that plays perfectly on a desktop media player might simply refuse to open on a phone or a smart TV. <a href="/video-converter/mkv-to-mp4">MKV to MP4</a> trades away MKV's embedded extras for that broader compatibility.</p>
+
+<h2>AVI: the format that time mostly passed by</h2>
+<p>AVI was a dominant format years ago, and it still turns up from older camcorders, legacy screen-recording software, and archived video collections. Modern devices and current software have largely moved on, so an old AVI file can be surprisingly difficult to open, edit, or share today compared to when it was created. <a href="/video-converter/avi-to-mp4">AVI to MP4</a> is specifically built for exactly this: making decades-old footage usable on current hardware again.</p>
+
+<h2>When conversion is actually worth doing</h2>
+<p>If a video plays fine everywhere you need it to, there's no benefit to converting it — format alone doesn't affect quality one way or the other. Conversion earns its place when a specific destination rejects the current format outright, when you're combining clips from different sources that need to share one format before editing, or when you're trying to modernize an old archive so it stays usable on current devices. In all three cases, MP4 is almost always the destination worth converting to.</p>
+
+<p>The <a href="/video-converter">video converter</a> covers all of these conversions and more — MOV, AVI, MKV, WEBM, and GIF — in one tool, run entirely in your browser with no upload required. Once your video is in a compatible format, <a href="/video-tools/compress-video">Compress Video</a> is often the next useful step if file size still needs to come down; our <a href="/blog/compress-video-without-losing-quality">guide to compressing video without ruining quality</a> covers that in detail.</p>
+`,
+  },
+  {
+    slug: "digitize-paper-documents-photo-to-searchable-pdf",
+    title: "From Paper to Searchable PDF: A Complete Guide to Digitizing Documents with Your Phone",
+    description:
+      "How to turn photographed paper documents into a clean, searchable, properly-sized PDF using nothing but a phone camera and a browser.",
+    category: "pdf",
+    publishedAt: "2026-04-02",
+    readingTime: "8 min read",
+    relatedTools: ["convert-image-to-pdf", "ocr-pdf", "compress-pdf", "merge-pdf", "rotate-pdf", "crop-image"],
+    content: `
+<p>Digitizing a stack of paper — old contracts, tax documents, a folder of receipts, a handwritten notebook — doesn't require a dedicated scanner anymore. A phone camera and a few browser-based tools get you the same result: a clean, properly-ordered, searchable PDF. Here's the complete process, start to finish.</p>
+
+<h2>Step 1: Photograph each page properly</h2>
+<p>Good lighting and a flat, non-glossy surface behind the document matter more than camera quality. Shoot each page straight-on rather than at an angle, since an angled shot creates keystone distortion that's harder to fix afterward than it is to avoid in the first place. If a page came out crooked or you photographed the whole desk instead of just the page, <a href="/image-tools/crop-image">Crop Image</a> tightens the frame to just the document, and <a href="/image-tools/rotate-flip-image">Rotate &amp; Flip Image</a> fixes any sideways shots before you go further.</p>
+
+<h2>Step 2: Combine every page into one PDF, in the right order</h2>
+<p>Once you have a clean photo of every page, <a href="/image-tools/convert-image-to-pdf">Convert Image to PDF</a> combines them into a single multi-page document. The key feature here is reordering — drag your photographed pages into the correct reading sequence before generating the PDF, so the result reads exactly like the original physical document, not in whatever order you happened to snap the photos.</p>
+
+<h2>Step 3: Make it actually searchable</h2>
+<p>At this point, you have a PDF, but it's really just a series of embedded pictures — there's no selectable or searchable text yet, the same way any scanned document works until OCR is applied. <a href="/pdf-tools/ocr-pdf">OCR PDF</a> runs optical character recognition across every page, adding an invisible text layer on top of the existing images. The page still looks identical, but now you can Ctrl+F search for a specific word, select and copy text, and the document becomes accessible to screen readers. This is the single biggest quality-of-life improvement in the whole process — the difference between an archive you can only look at and one you can actually search.</p>
+
+<h2>Step 4: Get the file size under control</h2>
+<p>Photos from a modern phone camera are large, and a multi-page PDF built from several of them can balloon well beyond what's practical for emailing or uploading. <a href="/pdf-tools/compress-pdf">Compress PDF</a> shrinks the file with an adjustable quality setting, and a live before/after size comparison so you can find the smallest file that's still comfortably readable. For more on picking the right compression level, see our <a href="/blog/how-to-reduce-pdf-file-size">guide to reducing PDF file size without losing quality</a>.</p>
+
+<h2>Step 5: Combine multiple documents into one archive, if needed</h2>
+<p>If you're digitizing several separate documents — say, a year's worth of monthly statements, or several related contracts — <a href="/pdf-tools/merge-pdf">Merge PDF</a> combines them into one file once each has gone through the steps above, which is often more useful for long-term storage and searching than keeping dozens of separate single-document PDFs.</p>
+
+<h2>Putting it all together</h2>
+<p>The full pipeline — photograph, crop and rotate as needed, combine into a PDF, run OCR, compress, and optionally merge with other documents — takes a few minutes per document once you know the order, and produces an archive that's genuinely searchable rather than just a pile of scanned pictures. Every step in this process runs entirely in your browser, so none of the actual document content (contracts, financial records, personal notes) ever leaves your device at any point.</p>
+`,
+  },
+  {
+    slug: "mp3-vs-wav-vs-flac-audio-formats-guide",
+    title: "MP3 vs WAV vs FLAC: Which Audio Format Should You Actually Use?",
+    description:
+      "The real difference between MP3, WAV, and FLAC — lossy versus lossless compression, file size, and which one fits your actual use case.",
+    category: "audioConverter",
+    publishedAt: "2026-04-09",
+    readingTime: "6 min read",
+    relatedTools: ["convert-audio", "wav-to-mp3", "mp3-to-wav"],
+    content: `
+<p>Audio formats split into two fundamentally different camps — lossy, which discards some data to shrink file size, and lossless, which keeps everything. MP3, WAV, and FLAC are the three you'll run into constantly, and each one answers a slightly different question about what actually matters for a given recording.</p>
+
+<h2>MP3: small, universal, and good enough for almost everything</h2>
+<p>MP3 uses lossy compression — it deliberately discards audio detail that's harder for the human ear to notice, in exchange for a dramatically smaller file than an uncompressed original. For music you're listening to casually, podcasts, voice memos, and pretty much any everyday listening situation, a reasonably high MP3 bitrate is genuinely indistinguishable from lossless audio for most listeners, most of the time. It's also the most universally compatible audio format that exists, playing on literally everything. <a href="/audio-converter">The audio converter</a> and dedicated pages like <a href="/audio-converter/wav-to-mp3">WAV to MP3</a> handle this conversion directly.</p>
+
+<h2>WAV: uncompressed, and built for editing</h2>
+<p>WAV stores audio with no compression at all — every sample exists exactly as recorded, which is why WAV files are dramatically larger than their MP3 or FLAC equivalents. That size is the whole point for certain use cases: audio editing software, sound design, and detailed waveform analysis all benefit from working with uncompressed source data, since compression (even lossless compression) can complicate repeated editing passes. Once editing is finished, converting the final result to a smaller format for distribution is the normal next step. <a href="/audio-converter/mp3-to-wav">MP3 to WAV</a> covers getting into this format when a specific tool requires it.</p>
+
+<h2>FLAC: the middle ground — lossless, but actually compressed</h2>
+<p>FLAC is lossless, meaning it preserves every bit of the original audio exactly like WAV does, but it applies genuine compression to shrink the file compared to raw WAV — typically to somewhere around half the size, with zero quality tradeoff. That combination makes FLAC the standard choice for anyone archiving music at the highest possible quality without wanting WAV's enormous file sizes. The tradeoff compared to MP3 is that FLAC files are still meaningfully larger than an equivalent MP3, and while support has grown substantially, it isn't quite as universal as MP3's near-total compatibility.</p>
+
+<h2>Picking the right one for what you're actually doing</h2>
+<p>Casual listening, sharing, and podcasts: MP3, since the compatibility and small file size outweigh a quality difference that's hard to hear in typical listening conditions anyway. Editing, mixing, or detailed audio work: WAV, so nothing is lost or complicated by compression during the editing process. Long-term archiving of music or recordings you care about at maximum quality: FLAC, for lossless storage at a more practical file size than WAV. There's no single correct format — the right one depends entirely on what happens to the file next.</p>
+
+<p>The <a href="/audio-converter">audio converter</a> handles all of these formats and more — MP3, WAV, FLAC, AAC, OGG, and M4A — directly in your browser, with adjustable bitrate control for every lossy format. If you're specifically preparing a podcast episode after converting formats, our <a href="/blog/podcast-audio-loudness-normalization">guide to podcast loudness normalization</a> covers the next step for getting consistent volume across episodes.</p>
+`,
+  },
+  {
+    slug: "password-protect-share-sensitive-documents-safely",
+    title: "How to Password Protect and Share Sensitive Documents Safely",
+    description:
+      "A practical guide to protecting PDFs and archives with a password, adding signatures, and sharing sensitive files without unnecessary exposure.",
+    category: "pdf",
+    publishedAt: "2026-04-16",
+    readingTime: "7 min read",
+    relatedTools: ["password-protect-pdf", "sign-pdf", "watermark-pdf", "create-archive", "unlock-pdf"],
+    content: `
+<p>Contracts, financial statements, medical records, signed agreements — a lot of what gets emailed around every day is exactly the kind of document you'd rather not have sitting unprotected if it ends up somewhere it shouldn't. None of the fixes here require special software, just a few extra steps before you hit send.</p>
+
+<h2>Start with a password on the file itself</h2>
+<p><a href="/pdf-tools/password-protect-pdf">Password Protect PDF</a> encrypts a PDF so it can't be opened without the password you set, which is the single most effective step for a document that shouldn't be readable if it's forwarded to the wrong person or left in an inbox someone else has access to. The password is set entirely in your browser and never transmitted anywhere, so even the process of protecting the file doesn't introduce new exposure. Share the password itself through a different channel than the document — a text message rather than the same email — so intercepting one doesn't hand over both.</p>
+
+<h2>Watermark anything that's a draft or a preview</h2>
+<p>If you're sharing a document before it's finalized — a contract draft, a proposal awaiting approval, financial projections that shouldn't be treated as final numbers — <a href="/pdf-tools/watermark-pdf">Watermark PDF</a> stamps a visible "Draft," "Confidential," or "Do Not Distribute" mark across every page. This doesn't prevent someone from screenshotting or forwarding the file, but it does make clear at a glance that what they're looking at isn't the final version, which matters if it later ends up somewhere you didn't intend.</p>
+
+<h2>Sign without printing, but keep control of the signature</h2>
+<p>For documents that need an actual signature, <a href="/pdf-tools/sign-pdf">Sign PDF</a> lets you draw, type, or upload a signature and place it directly on the document without printing and rescanning. Since nothing about the signature is stored between sessions, it's worth being deliberate about which documents you're applying a real signature image to versus a typed one, particularly for anything that will circulate beyond the immediate recipient.</p>
+
+<h2>Bundling multiple sensitive files together</h2>
+<p>When you need to send several related documents at once — supporting files for a loan application, multiple signed agreements, a set of records for a professional request — <a href="/archive-tools/create-archive">Create Archive</a> bundles them into a single ZIP or 7Z file. This keeps everything together as one attachment rather than several separate files that are easier to lose track of, and it's a natural point to also individually password-protect the most sensitive PDFs inside the archive before bundling them.</p>
+
+<h2>If you receive a protected file yourself</h2>
+<p>On the receiving end, <a href="/pdf-tools/unlock-pdf">Unlock PDF</a> removes a password from a PDF you already have legitimate access to and the correct password for — useful once a document has served its protective purpose (say, after it's been securely received) and you want to store or reference it without re-entering a password every time.</p>
+
+<h2>The bigger picture</h2>
+<p>None of these steps make a document literally unbreakable, but together they meaningfully reduce the chance of a sensitive file being read, altered, or mistaken for final when it shouldn't be, particularly against the most common ways documents actually leak — a wrong recipient, a lingering inbox, an unintentional forward. For related reading, our guide on <a href="/blog/pdf-vs-word-which-to-use">PDF vs Word for sending documents</a> covers why PDF is generally the safer default for anything meant to stay unmodified, and our guide on <a href="/blog/pdf-wont-open-corrupted-fix">fixing a PDF that won't open</a> is useful if a password-protected file gives you trouble after the fact.</p>
+`,
+  },
 ];
+
+
+
+
+
+
+/**
+ * Powers the "Related articles" section on category pages, so a category
+ * page links out to every guide written about that category rather than
+ * leaving that connection to chance navigation through the blog index.
+ */
+export function getBlogPostsByCategory(categoryKey, limit = 3) {
+  return BLOG_POSTS.filter((post) => post.category === categoryKey).slice(0, limit);
+}
 
 export function getBlogPost(slug) {
   return BLOG_POSTS.find((post) => post.slug === slug) || null;

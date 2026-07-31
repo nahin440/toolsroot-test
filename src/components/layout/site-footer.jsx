@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HiShieldCheck } from "react-icons/hi2";
 
 import { LogoMark } from "./logo";
+import { SocialLinks } from "@/components/shared/social-links";
 import { CATEGORIES, getToolsByCategory } from "@/lib/registry/tools";
 
 export function SiteFooter() {
@@ -37,6 +38,7 @@ export function SiteFooter() {
             <p className="mt-2 max-w-sm text-sm text-muted-foreground">
               Every conversion runs in your browser. Your files are never uploaded to a server.
             </p>
+            <SocialLinks className="mt-4" />
           </div>
 
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">

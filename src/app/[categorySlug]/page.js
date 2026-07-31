@@ -3,8 +3,10 @@ import { HiOutlineCheckCircle } from "react-icons/hi2";
 
 import { getCategoryBySlug, getToolsByCategory, CATEGORIES } from "@/lib/registry/tools";
 import { getCategoryContent } from "@/lib/registry/category-content";
+import { getBlogPostsByCategory } from "@/lib/registry/blog-content";
 import { ToolCard } from "@/components/home/tool-card";
 import { CategoryHero } from "@/components/category-page/category-hero";
+import { BlogPostCard } from "@/components/shared/blog-post-card";
 
 const SITE_URL = "https://toolsroot.com";
 
@@ -38,6 +40,7 @@ export default async function CategoryPage({ params }) {
 
   const tools = getToolsByCategory(category.key);
   const content = getCategoryContent(category.key);
+  const relatedPosts = getBlogPostsByCategory(category.key, 3);
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -104,6 +107,19 @@ export default async function CategoryPage({ params }) {
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {relatedPosts.length > 0 && (
+        <div className="mt-12">
+          <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground">
+            Related articles
+          </h2>
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedPosts.map((post) => (
+              <BlogPostCard key={post.slug} post={post} headingLevel="h3" />
+            ))}
+          </div>
         </div>
       )}
 
