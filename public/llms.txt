@@ -1,0 +1,48 @@
+# Tools Root
+
+> Tools Root is a free, browser-based file conversion and editing site: merge, split, compress, and convert PDFs, images, documents, audio, and video. Every one of the 70 tools processes files entirely client-side (JavaScript and WebAssembly running in the visitor's own browser tab) — there is no upload step, no server-side file processing, and no account requirement. The site is organized into 9 tool categories and a blog of practical guides on file formats and compression.
+
+Tools Root has no separate documentation site — the category and tool pages linked below are the regular, human-readable HTML pages of the site itself (there are no `.md` twin versions of these URLs). Each tool page includes the tool itself, a short explanation of what it does, and often a small FAQ.
+
+Architecture, in brief: PDF operations run on a real PDF engine; audio and video tools use an actual ffmpeg build compiled to WebAssembly; scanned-document text recognition (OCR) uses Tesseract, a genuine open-source OCR engine; archive creation and extraction run on the real 7-Zip binary compiled to WebAssembly. All of this runs locally on the visitor's device. Two narrow, disclosed exceptions to "nothing leaves the device": Remove Background fetches a machine-learning model's weights from a CDN on first use (never the user's photo), and OCR PDF fetches language-specific recognition data on first use of a given language (never the user's document), caching both afterward. One real capability gap: RAR archive *creation* is not offered, because RAR is a proprietary format only WinRAR's own software is licensed to write; RAR *extraction* is fully supported.
+
+Pricing: free, no tiers, no file size caps beyond the visitor's own device memory, no watermarks, no signup required.
+
+## Categories
+
+- [PDF Tools](https://toolsroot.com/pdf-tools): Merge, split, compress, and edit PDF files entirely in your browser — no files ever leave your device.
+- [Image Tools](https://toolsroot.com/image-tools): Compress, resize, crop, and edit images in any format, processed locally for full privacy.
+- [Image Converter](https://toolsroot.com/image-converter): Convert between JPG, PNG, WEBP, HEIC, AVIF, GIF, BMP, TIFF, and SVG — pick an exact format pair or use the all-in-one converter.
+- [Document Tools](https://toolsroot.com/document-tools): Convert between Word, Excel, PowerPoint, and PDF while preserving layout, fonts, and images.
+- [Audio Tools](https://toolsroot.com/audio-tools): Trim, merge, split, and normalize audio files using a real FFmpeg engine in your browser.
+- [Audio Converter](https://toolsroot.com/audio-converter): Convert MP3, WAV, AAC, FLAC, OGG, and M4A, or pull the audio track out of a video file — pick an exact conversion or use the all-in-one converter.
+- [Video Tools](https://toolsroot.com/video-tools): Compress, trim, resize, and edit video without uploading it anywhere.
+- [Video Converter](https://toolsroot.com/video-converter): Convert between MP4, AVI, MOV, MKV, WEBM, and animated GIF — pick an exact format pair or use the all-in-one converter.
+- [Archive Tools](https://toolsroot.com/archive-tools): Create and extract ZIP, 7Z, TAR, GZ, and RAR archives, fully client-side.
+
+## Most popular tools
+
+- [Merge PDF](https://toolsroot.com/pdf-tools/merge-pdf): Combine multiple PDF files into a single document, in any order you choose.
+- [Compress PDF](https://toolsroot.com/pdf-tools/compress-pdf): Shrink PDF file size by compressing embedded images and optimizing fonts.
+- [Split PDF](https://toolsroot.com/pdf-tools/split-pdf): Extract pages from a PDF into separate files, by range, by count, or by bookmark.
+- [PDF to Word](https://toolsroot.com/document-tools/pdf-to-word): Convert PDF into an editable Word document, reconstructing text, images, and tables in place.
+- [Word to PDF](https://toolsroot.com/document-tools/word-to-pdf): Convert DOCX to PDF while preserving fonts, images, tables, and layout exactly.
+- [All-in-One Image Converter](https://toolsroot.com/image-converter/convert-image): Convert between PNG, JPG, WEBP, AVIF, BMP, TIFF, GIF, SVG, ICO, and HEIC — choose any target format.
+- [Compress Image](https://toolsroot.com/image-tools/compress-image): Reduce image file size with adjustable quality, from lossless to maximum compression.
+- [All-in-One Video Converter](https://toolsroot.com/video-converter/convert-video): Convert between MP4, AVI, MOV, MKV, WEBM, and animated GIF — choose any target format.
+
+## Blog
+
+- [Blog index](https://toolsroot.com/blog): Practical guides on file formats, compression, and conversion — from choosing between JPG and WEBP to why your PDF looks different after converting. Individual guide URLs follow the pattern `https://toolsroot.com/blog/{slug}`; the index above always lists the current, complete set rather than a fixed snapshot here.
+
+## Company
+
+- [About](https://toolsroot.com/about): Why Tools Root exists, how the client-side architecture actually works, and how to verify the privacy claim yourself using your browser's Network tab.
+- [Pricing](https://toolsroot.com/pricing): Confirms the site is free with no hidden limits.
+- [Contact](https://toolsroot.com/contact): Get in touch with the Tools Root team.
+
+## Optional
+
+- [Privacy Policy](https://toolsroot.com/privacy): How Tools Root handles your files and data.
+- [Terms of Service](https://toolsroot.com/terms): The terms governing your use of Tools Root.
+- [Full sitemap](https://toolsroot.com/sitemap.xml): Complete, machine-generated list of every category, tool, and blog page for exhaustive crawling — use this rather than this file if enumerating every URL on the site.

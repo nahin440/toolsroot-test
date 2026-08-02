@@ -18,27 +18,40 @@ export function BlogPostCard({ post, headingLevel = "h3" }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col rounded-2xl border border-border bg-card p-5 shadow-subtle transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-card"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-subtle transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-card"
     >
-      <span className="inline-flex w-fit items-center rounded-full bg-accent-tint px-2.5 py-1 text-xs font-medium text-accent">
-        {category.shortLabel}
-      </span>
-      <Heading className="mt-3 font-semibold text-foreground">{post.title}</Heading>
-      <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{post.description}</p>
-      <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1">
-          <HiOutlineCalendar className="size-3.5" />
-          {formatDate(post.publishedAt)}
+      {post.image?.thumb && (
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-secondary">
+          <img
+            src={post.image.thumb}
+            alt={post.image.alt || post.title}
+            loading="lazy"
+            decoding="async"
+            className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+      )}
+      <div className="flex flex-1 flex-col p-5">
+        <span className="inline-flex w-fit items-center rounded-full bg-accent-tint px-2.5 py-1 text-xs font-medium text-accent">
+          {category.shortLabel}
         </span>
-        <span className="inline-flex items-center gap-1">
-          <HiOutlineClock className="size-3.5" />
-          {post.readingTime}
+        <Heading className="mt-3 font-semibold text-foreground">{post.title}</Heading>
+        <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{post.description}</p>
+        <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
+          <span className="inline-flex items-center gap-1">
+            <HiOutlineCalendar className="size-3.5" />
+            {formatDate(post.publishedAt)}
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <HiOutlineClock className="size-3.5" />
+            {post.readingTime}
+          </span>
+        </div>
+        <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-accent">
+          Read article
+          <HiArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
         </span>
       </div>
-      <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-accent">
-        Read article
-        <HiArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-      </span>
     </Link>
   );
 }

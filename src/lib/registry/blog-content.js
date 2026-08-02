@@ -12,6 +12,11 @@ export const BLOG_POSTS = [
     publishedAt: "2026-01-12",
     readingTime: "6 min read",
     relatedTools: ["convert-image", "compress-image"],
+    image: {
+      hero: "https://images.unsplash.com/photo-1753164597338-9fe623b2d21c?w=1600&q=80&auto=format&fit=crop",
+      thumb: "https://images.unsplash.com/photo-1753164597338-9fe623b2d21c?w=800&q=75&auto=format&fit=crop",
+      alt: "Designer comparing image formats at a work station",
+    },
     content: `
 <p>Every image format makes a different tradeoff between file size, quality, and features, and picking the wrong one is one of the more common (and easily fixed) sources of a slow website or a bloated email attachment. Here's what actually separates the three formats you'll run into most often.</p>
 
@@ -40,6 +45,11 @@ export const BLOG_POSTS = [
     publishedAt: "2026-01-19",
     readingTime: "5 min read",
     relatedTools: ["compress-pdf", "merge-pdf"],
+    image: {
+      hero: "https://images.unsplash.com/photo-1763729805496-b5dbf7f00c79?w=1600&q=80&auto=format&fit=crop",
+      thumb: "https://images.unsplash.com/photo-1763729805496-b5dbf7f00c79?w=800&q=75&auto=format&fit=crop",
+      alt: "Document being reviewed and signed on paper",
+    },
     content: `
 <p>A PDF that's too large to email, too slow to upload, or eating unnecessary storage space is one of the most common document annoyances there is — and it's almost always fixable, once you understand why the file got that big in the first place.</p>
 
@@ -68,6 +78,11 @@ export const BLOG_POSTS = [
     publishedAt: "2026-01-26",
     readingTime: "5 min read",
     relatedTools: ["word-to-pdf", "pdf-to-word"],
+    image: {
+      hero: "https://images.unsplash.com/photo-1562240020-ce31ccb0fa7d?w=1600&q=80&auto=format&fit=crop",
+      thumb: "https://images.unsplash.com/photo-1562240020-ce31ccb0fa7d?w=800&q=75&auto=format&fit=crop",
+      alt: "Stack of printed documents representing formatting differences",
+    },
     content: `
 <p>Converting a Word document to PDF is meant to lock in exactly how it looks — that's the whole point of PDF as a format. So it's a genuinely frustrating surprise when fonts shift, spacing changes, or a table's borders disappear in the conversion. Here's what's actually going on, and what a conversion tool needs to do to avoid it.</p>
 
@@ -93,6 +108,11 @@ export const BLOG_POSTS = [
     publishedAt: "2026-02-02",
     readingTime: "4 min read",
     relatedTools: ["normalize-audio", "trim-audio"],
+    image: {
+      hero: "https://images.unsplash.com/photo-1620322068252-e6f8ee316ecb?w=1600&q=80&auto=format&fit=crop",
+      thumb: "https://images.unsplash.com/photo-1620322068252-e6f8ee316ecb?w=800&q=75&auto=format&fit=crop",
+      alt: "Headphones and microphone for podcast recording",
+    },
     content: `
 <p>If listeners keep reaching for the volume knob between episodes, or one segment sounds noticeably quieter than the intro, the underlying issue is almost always inconsistent loudness — and it's one of the more fixable problems in audio production, once you understand what's actually happening.</p>
 
@@ -121,6 +141,11 @@ export const BLOG_POSTS = [
     publishedAt: "2026-02-09",
     readingTime: "5 min read",
     relatedTools: ["compress-video", "resize-video"],
+    image: {
+      hero: "https://images.unsplash.com/photo-1625690303837-654c9666d2d0?w=1600&q=80&auto=format&fit=crop",
+      thumb: "https://images.unsplash.com/photo-1625690303837-654c9666d2d0?w=800&q=75&auto=format&fit=crop",
+      alt: "Camera gear used for recording video before compression",
+    },
     content: `
 <p>Every video compression tool asks you to trade file size against quality, but "how much" isn't obvious until you understand what's actually happening when a video gets smaller — and why some compressed videos look fine while others look like a blurry mess.</p>
 
@@ -149,6 +174,11 @@ export const BLOG_POSTS = [
     publishedAt: "2026-02-16",
     readingTime: "4 min read",
     relatedTools: ["create-archive", "extract-archive"],
+    image: {
+      hero: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1600&q=80&auto=format&fit=crop",
+      thumb: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=75&auto=format&fit=crop",
+      alt: "Network cables representing file archive and compression formats",
+    },
     content: `
 <p>ZIP, 7Z, and RAR all do fundamentally the same job — bundling and compressing files — but they differ in compression efficiency, compatibility, and, in RAR's case, who's actually allowed to create one.</p>
 
@@ -180,6 +210,11 @@ export const BLOG_POSTS = [
     publishedAt: "2026-02-18",
     readingTime: "5 min read",
     relatedTools: ["repair-pdf", "compress-pdf"],
+    image: {
+      hero: "https://images.unsplash.com/photo-1763729805496-b5dbf7f00c79?w=1600&q=80&auto=format&fit=crop",
+      thumb: "https://images.unsplash.com/photo-1763729805496-b5dbf7f00c79?w=800&q=75&auto=format&fit=crop",
+      alt: "Paper document representing a file that needs repair",
+    },
     content: `
 <p>A PDF that refuses to open — or opens to a blank page, a garbled mess, or a flat error message — is one of the more frustrating file problems there is, mostly because the error messages rarely explain what actually went wrong. Here's what's usually behind it, and what's actually worth trying.</p>
 
@@ -211,6 +246,11 @@ export const BLOG_POSTS = [
     publishedAt: "2026-02-23",
     readingTime: "5 min read",
     relatedTools: ["word-to-pdf", "pdf-to-word"],
+    image: {
+      hero: "https://images.unsplash.com/photo-1562240020-ce31ccb0fa7d?w=1600&q=80&auto=format&fit=crop",
+      thumb: "https://images.unsplash.com/photo-1562240020-ce31ccb0fa7d?w=800&q=75&auto=format&fit=crop",
+      alt: "Stack of documents representing PDF and Word format choices",
+    },
     content: `
 <p>The choice between sending a document as a PDF or as a Word file feels minor until it isn't — a resume that renders differently on the hiring manager's computer, a contract someone accidentally edits, or a report that looks broken on a phone are all, at root, a format mismatch. Here's the actual distinction.</p>
 
@@ -239,6 +279,11 @@ export const BLOG_POSTS = [
     publishedAt: "2026-03-02",
     readingTime: "4 min read",
     relatedTools: ["heic-to-jpg"],
+    image: {
+      hero: "https://images.unsplash.com/photo-1753164597338-9fe623b2d21c?w=1600&q=80&auto=format&fit=crop",
+      thumb: "https://images.unsplash.com/photo-1753164597338-9fe623b2d21c?w=800&q=75&auto=format&fit=crop",
+      alt: "Designer reviewing photo files at a work station",
+    },
     content: `
 <p>Sending yourself a photo from an iPhone and finding it won't open — or shows as a generic file icon with no preview — is one of the most common cross-device photo headaches, and it isn't a sign anything's actually wrong with the photo. It's a format that iPhones use by default, that a lot of other software simply doesn't recognize yet.</p>
 
@@ -266,6 +311,11 @@ export const BLOG_POSTS = [
     publishedAt: "2026-03-18",
     readingTime: "7 min read",
     relatedTools: ["convert-image", "heic-to-jpg", "jpg-to-webp"],
+    image: {
+      hero: "https://images.unsplash.com/photo-1753715613434-9c7cb58876b9?w=1600&q=80&auto=format&fit=crop",
+      thumb: "https://images.unsplash.com/photo-1753715613434-9c7cb58876b9?w=800&q=75&auto=format&fit=crop",
+      alt: "Developer comparing modern image formats on screen",
+    },
     content: `
 <p>JPG and PNG dominated image formats for decades because there was little competition, not because they were the best possible solution to every problem. HEIC, WEBP, and AVIF are newer answers to the same core question — how do you store an image with the smallest possible file size for a given level of quality — and each one has quietly become the default somewhere you probably already use. Here's what's actually different about them, and when converting between formats is worth doing.</p>
 
@@ -293,6 +343,11 @@ export const BLOG_POSTS = [
     publishedAt: "2026-03-25",
     readingTime: "6 min read",
     relatedTools: ["convert-video", "mov-to-mp4", "avi-to-mp4", "mkv-to-mp4"],
+    image: {
+      hero: "https://images.unsplash.com/photo-1625690303837-654c9666d2d0?w=1600&q=80&auto=format&fit=crop",
+      thumb: "https://images.unsplash.com/photo-1625690303837-654c9666d2d0?w=800&q=75&auto=format&fit=crop",
+      alt: "Camera equipment representing video container formats",
+    },
     content: `
 <p>Video format confusion usually shows up at the worst possible moment — a file that won't upload, a clip that plays with no sound on one device but fine on another, an old recording that a current editor refuses to open. Most of that comes down to a handful of container formats that each made a different tradeoff, and knowing which one you're dealing with makes the fix obvious.</p>
 
@@ -323,6 +378,11 @@ export const BLOG_POSTS = [
     publishedAt: "2026-04-02",
     readingTime: "8 min read",
     relatedTools: ["convert-image-to-pdf", "ocr-pdf", "compress-pdf", "merge-pdf", "rotate-pdf", "crop-image"],
+    image: {
+      hero: "https://images.unsplash.com/photo-1763729805496-b5dbf7f00c79?w=1600&q=80&auto=format&fit=crop",
+      thumb: "https://images.unsplash.com/photo-1763729805496-b5dbf7f00c79?w=800&q=75&auto=format&fit=crop",
+      alt: "Paper document being prepared for digitization",
+    },
     content: `
 <p>Digitizing a stack of paper — old contracts, tax documents, a folder of receipts, a handwritten notebook — doesn't require a dedicated scanner anymore. A phone camera and a few browser-based tools get you the same result: a clean, properly-ordered, searchable PDF. Here's the complete process, start to finish.</p>
 
@@ -354,6 +414,11 @@ export const BLOG_POSTS = [
     publishedAt: "2026-04-09",
     readingTime: "6 min read",
     relatedTools: ["convert-audio", "wav-to-mp3", "mp3-to-wav"],
+    image: {
+      hero: "https://images.unsplash.com/photo-1620322068252-e6f8ee316ecb?w=1600&q=80&auto=format&fit=crop",
+      thumb: "https://images.unsplash.com/photo-1620322068252-e6f8ee316ecb?w=800&q=75&auto=format&fit=crop",
+      alt: "Headphones for comparing audio format quality",
+    },
     content: `
 <p>Audio formats split into two fundamentally different camps — lossy, which discards some data to shrink file size, and lossless, which keeps everything. MP3, WAV, and FLAC are the three you'll run into constantly, and each one answers a slightly different question about what actually matters for a given recording.</p>
 
@@ -381,6 +446,11 @@ export const BLOG_POSTS = [
     publishedAt: "2026-04-16",
     readingTime: "7 min read",
     relatedTools: ["password-protect-pdf", "sign-pdf", "watermark-pdf", "create-archive", "unlock-pdf"],
+    image: {
+      hero: "https://images.unsplash.com/photo-1763729805496-b5dbf7f00c79?w=1600&q=80&auto=format&fit=crop",
+      thumb: "https://images.unsplash.com/photo-1763729805496-b5dbf7f00c79?w=800&q=75&auto=format&fit=crop",
+      alt: "Signing a sensitive document that needs protection",
+    },
     content: `
 <p>Contracts, financial statements, medical records, signed agreements — a lot of what gets emailed around every day is exactly the kind of document you'd rather not have sitting unprotected if it ends up somewhere it shouldn't. None of the fixes here require special software, just a few extra steps before you hit send.</p>
 

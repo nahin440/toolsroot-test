@@ -95,6 +95,16 @@ export default async function BlogPostPage({ params }) {
 
       <article className="mt-6 max-w-3xl">
         <section className="relative isolate mb-6 -mx-4 overflow-hidden rounded-3xl bg-accent sm:-mx-6">
+          {post.image?.hero && (
+            <img
+              src={post.image.hero}
+              alt=""
+              aria-hidden="true"
+              loading="eager"
+              decoding="async"
+              className="absolute inset-0 size-full object-cover opacity-30 mix-blend-overlay"
+            />
+          )}
           <HeroIconFloat className="absolute top-1/2 right-[8%] flex size-24 -translate-y-1/2 items-center justify-center rounded-2xl bg-white/10 text-white ring-1 ring-white/20 backdrop-blur-sm sm:size-28">
             {createElement(getToolIcon(getToolsByCategory(post.category)[0]?.slug), { className: "size-1/2" })}
           </HeroIconFloat>
@@ -119,7 +129,7 @@ export default async function BlogPostPage({ params }) {
         </section>
 
         <div
-          className="mt-8 max-w-none space-y-4 text-base leading-relaxed text-foreground [&_a]:font-medium [&_a]:text-accent-ink [&_a]:hover:underline [&_h2]:font-display [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-foreground [&_h2]:first:mt-0 [&_p]:text-muted-foreground"
+          className="mt-8 max-w-none space-y-4 text-base leading-relaxed text-foreground [&_a]:font-medium [&_a]:text-accent-ink [&_a]:hover:underline [&_h2]:font-display [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-foreground [&_h2]:first:mt-0 [&_p]:text-muted-foreground [&_figure]:my-8 [&_figure]:space-y-2 [&_img]:w-full [&_img]:rounded-2xl [&_img]:border [&_img]:border-border [&_img]:object-cover [&_img]:aspect-[16/9] [&_figcaption]:text-center [&_figcaption]:text-xs [&_figcaption]:text-muted-foreground"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
       </article>
