@@ -2,7 +2,9 @@
 // naturally links to specific tools in the registry — the Priority 5 structural gap
 // (a /blog section with real content that funnels into tool pages) from the SEO plan.
 
-export const BLOG_POSTS = [
+import { NEW_BLOG_POSTS } from "./new-blog-content";
+
+const EXISTING_POSTS = [
   {
     slug: "jpg-vs-png-vs-webp",
     title: "JPG vs PNG vs WEBP: Which Image Format Should You Actually Use?",
@@ -474,6 +476,9 @@ export const BLOG_POSTS = [
 `,
   },
 ];
+
+export const BLOG_POSTS = [...EXISTING_POSTS, ...NEW_BLOG_POSTS];
+
 
 
 
