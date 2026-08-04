@@ -67,7 +67,7 @@ export function PdfPageThumbnailGrid({ file, selected, onToggle, selectionStyle 
               type="button"
               onClick={() => onToggle(pageNum)}
               className={cn(
-                "group relative overflow-hidden rounded-lg border-2 transition-all",
+                "group relative overflow-hidden rounded-lg border-2 transition-colors duration-150 ease-[var(--ease-standard)]",
                 isSelected
                   ? selectionStyle === "remove"
                     ? "border-primary"

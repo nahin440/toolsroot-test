@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { HiArrowRight, HiOutlineCalendar, HiOutlineClock } from "react-icons/hi2";
 
 import { CATEGORIES } from "@/lib/registry/tools";
@@ -18,16 +19,31 @@ export function BlogPostCard({ post, headingLevel = "h3" }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-subtle transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-card"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-subtle transition-[transform,border-color,box-shadow] duration-150 ease-[var(--ease-standard)] hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-card"
     >
       {post.image?.thumb && (
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-secondary">
-          <img
+          {/* fill requires a positioned (relative/absolute) ancestor
+              with real dimensions, which the aspect-[16/10] container
+              above already provides — this keeps the exact same
+              crop/display behavior as the previous plain <img
+              className="object-cover">, just through next/image so the
+              browser gets responsive srcset + automatic AVIF/WebP
+              negotiation instead of always downloading the raw 800px
+              JPEG. `sizes` accounts for all four real call sites of
+              this card (homepage, blog index, category page, tool-page
+              "Related articles"): every site is 1-col below 640px,
+              2-col at the sm breakpoint (the homepage alone jumps
+              straight to 3-col at sm, so 50vw is still the safe/wider
+              estimate there), and every site is 3-col by the lg
+              breakpoint. */}
+          <Image
             src={post.image.thumb}
             alt={post.image.alt || post.title}
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             loading="lazy"
-            decoding="async"
-            className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </div>
       )}

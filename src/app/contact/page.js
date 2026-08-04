@@ -13,8 +13,8 @@ export const metadata = {
 export default function ContactPage() {
   return (
     <div className="mx-auto max-w-[600px] px-4 py-16 sm:px-6">
-      <section className="relative isolate mb-8 -mx-4 overflow-hidden rounded-3xl bg-accent sm:-mx-6">
-        <HeroIconFloat className="absolute top-1/2 right-[10%] flex size-20 -translate-y-1/2 items-center justify-center rounded-2xl bg-white/10 text-white ring-1 ring-white/20 backdrop-blur-sm sm:size-24">
+      <section className="relative isolate mb-8 -mx-4 overflow-hidden rounded-3xl metallic-emerald-soft metallic-breathe sm:-mx-6">
+        <HeroIconFloat className="glass-panel absolute top-1/2 right-[10%] flex size-20 -translate-y-1/2 items-center justify-center rounded-2xl text-white sm:size-24">
           {createElement(HiOutlineEnvelope, { className: "size-1/2" })}
         </HeroIconFloat>
         <div className="relative px-6 py-8 sm:px-10 lg:max-w-[70%]">
@@ -27,7 +27,7 @@ export default function ContactPage() {
       </section>
 
       <div className="mt-8 flex items-center gap-3 rounded-2xl border border-border bg-card p-5">
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-accent-tint text-accent">
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl metallic-emerald text-white shadow-accent-glow">
           <HiOutlineEnvelope className="size-5" />
         </div>
         <div>
@@ -48,7 +48,7 @@ export default function ContactPage() {
 
       <p className="mt-8 text-sm text-muted-foreground">
         Since every file you process stays on your own device, we won&apos;t be able to see the
-        contents of any file you had trouble with — if you run into an issue with a specific tool,
+        contents of any file you had trouble with. If you run into an issue with a specific tool,
         it helps to describe what the input file looked like (format, roughly how large, any
         unusual formatting) rather than attaching it.
       </p>

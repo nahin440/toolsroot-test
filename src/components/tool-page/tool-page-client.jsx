@@ -43,5 +43,5 @@ export function ToolPageClient({ toolSlug, toolName }) {
     );
   }
 
-  return <ToolPageShell adapter={adapter} toolName={toolName} />;
+  return <ToolPageShell adapter={adapter} toolName={toolName} toolSlug={toolSlug} />;
 }

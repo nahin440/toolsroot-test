@@ -9,6 +9,27 @@
 import { fetchFile } from "@ffmpeg/util";
 import { getFFmpeg } from "./ffmpeg-loader";
 
+/**
+ * Triggers (and lets a caller observe) the one-time ffmpeg engine
+ * download/init, independent of any specific conversion. Exists so the
+ * shared ToolPageShell (src/components/tool-page/tool-page-shell.jsx)
+ * can show an accurate "Loading video engine…" message for the small,
+ * fixed set of ffmpeg-based tools (see MEDIA_ENGINE_TOOL_SLUGS in that
+ * file) BEFORE calling into whichever adapter.run the person actually
+ * invoked — every one of those 22 adapters' own onProgress callbacks
+ * still work completely unchanged; this preload step happens first and
+ * separately, so no adapter file needed to change for this fix.
+ *
+ * Resolves immediately, calling onLoadProgress zero times, if the engine
+ * is already loaded from a prior tool run this session — getFFmpeg's own
+ * module-level ffmpegPromise singleton (see ffmpeg-loader.js) already
+ * handles not re-downloading, this just means the loading message
+ * correctly never appears on a warm engine either.
+ */
+export async function preloadFFmpegEngine(onLoadProgress) {
+  await getFFmpeg(undefined, onLoadProgress);
+}
+
 const AUDIO_CODEC_FOR_EXT = {
   mp3: ["-c:a", "libmp3lame", "-b:a", "192k"],
   wav: ["-c:a", "pcm_s16le"],

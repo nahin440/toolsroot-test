@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { HiLockClosed, HiBolt, HiGlobeAlt, HiOutlineCheckCircle, HiArrowRight } from "react-icons/hi2";
+import { HiLockClosed, HiBolt, HiGlobeAlt, HiArrowRight } from "react-icons/hi2";
 
-import { ToolSearchBar } from "@/components/home/tool-search-bar";
 import { ToolCard } from "@/components/home/tool-card";
-import { HeroFloatingIcons } from "@/components/home/hero-floating-icons";
-import { FloatingPaths } from "@/components/ui/background-paths";
+import { HeroSection } from "@/components/home/hero-section";
+import { TrustPoints } from "@/components/home/trust-points";
 import { SectionFlowLines } from "@/components/ui/section-flow-lines";
 import { FileConversionPattern } from "@/components/illustrations/file-conversion-pattern";
 import { CATEGORIES, getToolsByCategory, TOOLS } from "@/lib/registry/tools";
@@ -26,26 +25,26 @@ const POPULAR_SLUGS = [
 
 const TRUST_POINTS = [
   {
-    icon: HiLockClosed,
+    icon: <HiLockClosed className="size-5" />,
     title: "Private by design",
     description: "Files are processed locally in your browser. Nothing is uploaded to a server.",
   },
   {
-    icon: HiBolt,
+    icon: <HiBolt className="size-5" />,
     title: "Genuinely fast",
     description: "No upload wait, no queue. Processing starts the instant you drop a file.",
   },
   {
-    icon: HiGlobeAlt,
+    icon: <HiGlobeAlt className="size-5" />,
     title: "Works everywhere",
     description: "No install, no account required. Runs in any modern browser, on any device.",
   },
 ];
 
 export const metadata = {
-  title: "Tools Root — Free Online File Converter, PDF Editor & Image Compressor",
+  title: "Tools Root: Free Online File Converter, PDF Editor & Image Compressor",
   description:
-    "Free online file converter and PDF editor with 70 tools: merge PDF, compress PDF, convert PDF to Word, convert JPG to PNG or WEBP, compress images, convert MP4 and MP3, and more — private, no signup, no install, no watermark.",
+    "Free online file converter and PDF editor with 70 tools: merge PDF, compress PDF, convert PDF to Word, convert JPG to PNG or WEBP, compress images, convert MP4 and MP3, and more. Private, no signup, no install, no watermark.",
   keywords: [
     "free online file converter",
     "pdf converter online free",
@@ -67,9 +66,9 @@ export const metadata = {
     canonical: "https://toolsroot.com/",
   },
   openGraph: {
-    title: "Tools Root — Free Online File Converter, PDF Editor & Image Compressor",
+    title: "Tools Root: Free Online File Converter, PDF Editor & Image Compressor",
     description:
-      "70 free tools to merge, split, compress, and convert PDFs, images, documents, audio, and video — private, fast, and processed entirely in your browser.",
+      "70 free tools to merge, split, compress, and convert PDFs, images, documents, audio, and video. Private, fast, and processed entirely in your browser.",
     url: "https://toolsroot.com/",
   },
 };
@@ -80,43 +79,22 @@ export default function HomePage() {
 
   return (
     <div>
-      {/* Hero — solid emerald-600, white text, animated white flow-lines
-          behind everything (FloatingPaths ×2, recolored to white — same
-          component/math as the light-background BackgroundPaths variant,
-          see src/components/ui/background-paths.jsx), floating tool icons
-          on top of that (desktop only; hidden on mobile so the animated
-          layers never compete with the text for space). */}
-      <section className="relative isolate overflow-hidden bg-accent">
-        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-          <FloatingPaths position={1} colorRgb="255, 255, 255" />
-          <FloatingPaths position={-1} colorRgb="255, 255, 255" />
-        </div>
-        <HeroFloatingIcons />
-        <div className="relative mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-16 lg:py-28">
-          <div className="text-center lg:text-left">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
-              <HiOutlineCheckCircle className="size-3.5" />
-              70 tools, entirely free
-            </span>
-            <h1 className="font-display mx-auto mt-6 max-w-2xl text-4xl font-semibold tracking-tight text-balance text-white sm:text-6xl lg:mx-0">
-              Every file tool you need, in one place
-            </h1>
-            <p className="mx-auto mt-5 max-w-xl text-lg text-balance text-white/85 lg:mx-0">
-              Merge, convert, compress, and edit PDFs, images, documents, audio, and video — free,
-              private, and processed entirely in your browser.
-            </p>
-            <div className="mt-8 flex justify-center lg:justify-start">
-              <ToolSearchBar />
-            </div>
-          </div>
-
-          {/* Spacer column on large screens — the floating icons render as
-              an absolutely-positioned overlay across the whole section, so
-              this reserves the visual right-hand space for them without
-              needing its own content. */}
-          <div className="hidden lg:block" aria-hidden="true" />
-        </div>
-      </section>
+      {/* Hero — metallic-emerald-soft gradient mesh (v3 design system,
+          see globals.css) instead of the old flat bg-accent, with a slow
+          10s ambient "breathe" drift (metallic-breathe) so the surface
+          reads as catching light rather than a static fill. White text,
+          animated white flow-lines behind everything (FloatingPaths ×2,
+          recolored to white, reduced-motion-safe via useReducedMotion —
+          see src/components/ui/background-paths.jsx), floating tool
+          icons on top of that (desktop only; hidden on mobile so the
+          animated layers never compete with the text for space). The
+          eyebrow badge gets the glass-panel treatment (frosted, layered
+          border, inner highlight) since it's small chrome sitting on
+          the metal, not the metal
+          itself. Entrance is one orchestrated stagger (badge → heading →
+          subtext → search), motivated by hierarchy: it tells the eye
+          where to look first on load, once, not on every scroll. */}
+      <HeroSection />
 
       {/* Popular tools. SectionFlowLines emerald tone (this section has no
           bg-accent, so it needs the light-background variant, opposite of
@@ -149,10 +127,10 @@ export default function HomePage() {
                 <Link
                   key={key}
                   href={`/${cat.slug}`}
-                  className="group flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 shadow-subtle transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-card"
+                  className="group flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 shadow-subtle transition-[transform,border-color,box-shadow] duration-150 ease-[var(--ease-standard)] hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-card"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex size-12 items-center justify-center rounded-xl bg-accent-tint text-accent transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
+                    <div className="flex size-12 items-center justify-center rounded-xl bg-accent-tint text-accent transition-[background-color,color,box-shadow] duration-150 ease-[var(--ease-standard)] group-hover:bg-accent group-hover:text-accent-foreground group-hover:shadow-accent-glow">
                       <FirstIcon className="size-6" />
                     </div>
                     <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-muted-foreground">
@@ -170,43 +148,39 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* "How it works" banner — solid emerald-600 with a sparse abstract
-          background illustration behind centered white text. This is the
-          "background image, less content in it, text over it" section:
-          the illustration is deliberately faint (4-14% opacity shapes) so
-          it never competes with the copy on top of it. */}
-      <section className="relative isolate overflow-hidden bg-accent">
+      {/* "How it works" banner — metallic-emerald-soft with ambient breathe
+          (v3 design system) instead of the old flat bg-accent, with the
+          same sparse abstract FileConversionPattern illustration on top.
+          The illustration's shapes stay flat-fill at 4-14% opacity per its
+          own documented design constraint (see file-conversion-pattern.jsx)
+          — only the section's own background changed here, so the
+          illustration still reads as fine linework texture over the metal
+          rather than competing with it. */}
+      <section className="relative isolate overflow-hidden metallic-emerald-soft metallic-breathe">
         <FileConversionPattern className="pointer-events-none absolute inset-0 size-full" tone="on-accent" />
         <div className="relative mx-auto max-w-[720px] px-4 py-20 text-center sm:px-6">
           <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-4xl">
             One tab, every format
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-lg text-white/85">
-            No matter what you&apos;re converting from or to, it happens right here — no separate
+            No matter what you&apos;re converting from or to, it happens right here. No separate
             app for PDFs, another for images, and a third for video.
           </p>
         </div>
       </section>
 
-      {/* Trust messaging — white background, bold emerald icon treatment.
-          Full-bleed solid emerald is reserved for the hero, the banner
+      {/* Trust messaging — white background, bold emerald icon treatment
+          (now metallic-emerald, matching the v3 system). Full-bleed
+          solid/metallic emerald is reserved for the hero, the banner
           above, and the closing CTA below; putting it here too would
           stack three green bands with nothing breaking them up.
           SectionFlowLines emerald tone, matching the other plain-bg
-          sections. */}
+          sections. TrustPoints (client leaf) adds a once-only
+          scroll-triggered stagger reveal without making this whole
+          Server Component page a client component. */}
       <section className="relative isolate overflow-hidden mx-auto max-w-[1280px] px-4 py-16 sm:px-6">
         <SectionFlowLines tone="on-light" />
-        <div className="relative grid grid-cols-1 gap-8 sm:grid-cols-3">
-          {TRUST_POINTS.map((point) => (
-            <div key={point.title} className="flex flex-col items-start gap-3">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-accent text-accent-foreground shadow-accent-glow">
-                <point.icon className="size-5" />
-              </div>
-              <h3 className="font-semibold text-foreground">{point.title}</h3>
-              <p className="text-sm text-muted-foreground">{point.description}</p>
-            </div>
-          ))}
-        </div>
+        <TrustPoints points={TRUST_POINTS} />
       </section>
 
       {/* Latest guides — same header/grid pattern as "Most popular tools"
@@ -249,8 +223,8 @@ export default function HomePage() {
           <div className="mt-6 space-y-4 text-sm leading-relaxed text-muted-foreground">
             <p>
               Tools Root is a free online file converter, PDF editor, image compressor, and
-              document conversion platform built around one idea: every everyday file task —
-              converting, compressing, merging, or editing — should be fast, free, and private,
+              document conversion platform built around one idea: every everyday file task,
+              converting, compressing, merging, or editing, should be fast, free, and private,
               without installing desktop software or creating an account. Whether you need a{" "}
               <Link href="/pdf-tools/merge-pdf" className="font-medium text-accent hover:underline">
                 PDF merger
@@ -268,14 +242,14 @@ export default function HomePage() {
                 MP4 video compressor
               </Link>
               , this free online tool works the same way in every browser, on Windows, Mac,
-              Linux, Android, or iPhone — no install, no signup, no watermark, and no per-file
+              Linux, Android, or iPhone. No install, no signup, no watermark, and no per-file
               paywall.
             </p>
             <p>
               What sets this file converter apart from most free online conversion websites is
-              where the actual conversion happens. Every one of the 70 tools listed on this site —
+              where the actual conversion happens. Every one of the 70 tools listed on this site,
               PDF tools, image tools, an image format converter, document converters, audio tools,
-              an audio format converter, video tools, a video format converter, and archive tools —
+              an audio format converter, video tools, a video format converter, and archive tools,
               runs entirely inside your own browser tab using JavaScript and WebAssembly. Your PDF,
               photo, Word document, MP3, or video file is read, processed, and written back out
               locally on your own device. It is never uploaded to a remote server, which is exactly
@@ -338,7 +312,7 @@ export default function HomePage() {
               <Link href="/image-converter" className="font-medium text-accent hover:underline">
                 image converter
               </Link>{" "}
-              handles every common image format pair — a{" "}
+              handles every common image format pair: a{" "}
               <Link href="/image-converter/jpg-to-png" className="font-medium text-accent hover:underline">
                 JPG to PNG converter
               </Link>
@@ -434,7 +408,7 @@ export default function HomePage() {
               Traditional file conversion means picking one of two flawed options: install a
               separate desktop app for every format you work with, or upload your file to an
               unfamiliar website and hope it&apos;s deleted afterward. A browser-based converter
-              that genuinely processes files on-device solves both problems at once — there&apos;s
+              that genuinely processes files on-device solves both problems at once: there&apos;s
               nothing to install, nothing to update, and no file ever leaves your computer to be
               converted somewhere else. That also means these tools keep working offline once a
               page has loaded, and scale to as many files or as large a batch as your own
@@ -458,13 +432,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA — full-bleed emerald-600 close, mirrors the hero treatment.
-          SectionFlowLines white tone matches the hero's white-on-emerald
-          choice; same "family" of animation, lighter density than the
-          hero (see section-flow-lines.jsx for why: giving every section
-          the hero's full density would be ~432 animated paths across the
-          page, verified excessive). */}
-      <section className="relative isolate overflow-hidden bg-accent">
+      {/* CTA — full-bleed metallic-emerald close (v3 design system),
+          mirrors the hero treatment. SectionFlowLines white tone matches
+          the hero's white-on-emerald choice; same "family" of animation,
+          lighter density than the hero (see section-flow-lines.jsx for
+          why: giving every section the hero's full density would be ~432
+          animated paths across the page, verified excessive). */}
+      <section className="relative isolate overflow-hidden metallic-emerald-soft metallic-breathe">
         <SectionFlowLines tone="on-accent" />
         <div className="relative mx-auto max-w-[1280px] px-4 py-16 text-center sm:px-6">
           <h2 className="text-3xl font-semibold tracking-tight text-white">Ready to get started?</h2>

@@ -86,6 +86,83 @@
   --duration-micro: 150ms;
   --duration-standard: 250ms;
   --duration-page: 400ms;
+  /* Spring-flavored ease for hover/press physics (Motion components use
+     real spring configs; this is the CSS-transition equivalent for plain
+     Tailwind hover states that don't go through Motion). */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ---- Metallic-glass emerald layer (v3 — additive, does not replace
+     any token above). Brand color is still exactly --accent (#059669);
+     this is a second layer of tokens for surfaces that want depth
+     (specular highlight + gradient mesh + glass) rather than a flat
+     fill, used on hero bands, primary CTAs, and tool-page chrome. Every
+     value here is derived from --accent so a future rebrand only means
+     changing --accent above, not hunting through gradient stops. ---- */
+  --accent-rgb: 5, 150, 105;
+  --accent-hover-rgb: 4, 120, 87;
+  --accent-active-rgb: 6, 95, 70;
+
+  /* Brushed-metal gradient mesh: two radial highlights (top-left "light
+     source" + a cooler fill light from the opposite corner) over a
+     linear base ramp between the brand's own hover/active shades — so
+     the metal reads as emerald catching light, not a generic sheen
+     color pasted on top. */
+  --metallic-emerald: radial-gradient(
+      120% 140% at 15% -10%,
+      rgba(110, 231, 183, 0.55) 0%,
+      rgba(52, 211, 153, 0.18) 26%,
+      transparent 55%
+    ),
+    radial-gradient(
+      140% 160% at 110% 120%,
+      rgba(4, 120, 87, 0.5) 0%,
+      transparent 50%
+    ),
+    linear-gradient(155deg, var(--accent-hover) 0%, var(--accent) 45%, var(--accent-active) 100%);
+
+  /* Same recipe, calmer — for large static surfaces (hero backgrounds)
+     where the full-strength highlight above would fight with foreground
+     text; used as the section background, with --metallic-emerald
+     reserved for buttons/chips/small chrome where the shine reads as
+     tactile rather than glare. */
+  --metallic-emerald-soft: radial-gradient(
+      130% 160% at 10% -20%,
+      rgba(110, 231, 183, 0.32) 0%,
+      transparent 50%
+    ),
+    radial-gradient(140% 160% at 100% 110%, rgba(4, 120, 87, 0.35) 0%, transparent 55%),
+    linear-gradient(160deg, var(--accent-hover) 0%, var(--accent) 50%, var(--accent-active) 100%);
+
+  /* Frosted-glass panel over the metallic surfaces above (approximation
+     of "glassy" per web glassmorphism conventions — backdrop-filter +
+     layered borders + inner highlight; not an OS-native effect). Used
+     for badges/chips/cards sitting on top of a --metallic-emerald or
+     --metallic-emerald-soft background. */
+  --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06));
+  --glass-border: rgba(255, 255, 255, 0.32);
+  --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    0 12px 40px rgba(4, 60, 43, 0.22);
+
+  /* Glass panel for LIGHT surfaces (white/near-white sections) — same
+     inner-highlight technique, tinted with ink instead of white since a
+     white-tinted glass panel on an already-white page has nothing to
+     refract against. */
+  --glass-bg-on-light: linear-gradient(135deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.35));
+  --glass-border-on-light: rgba(5, 150, 105, 0.18);
+  --glass-shadow-on-light: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 8px 30px rgba(5, 150, 105, 0.1);
+
+  /* Specular sweep: a diagonal highlight band that travels across a
+     metallic surface once on hover (see .shine-sweep utility below) —
+     the "catching the light" motion cue, motivated by feedback on
+     hover/focus, not a perpetual loop. */
+  --shine-gradient: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.45) 47%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(255, 255, 255, 0.45) 53%,
+    transparent 70%
+  );
 }
 
 .dark {
@@ -130,6 +207,50 @@
   --shadow-dropdown: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
   --shadow-toast: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
   --shadow-accent-glow: 0 4px 20px -2px rgba(52, 211, 153, 0.4);
+
+  /* Dark-mode metallic-glass: dark mode's --accent is the lighter
+     emerald-400 (#34d399, for contrast against near-black), so the
+     metal ramp uses that as its highlight instead of white/mint —
+     otherwise the "brushed metal" highlight would wash out against an
+     already-light accent color. */
+  --accent-rgb: 52, 211, 153;
+  --accent-hover-rgb: 16, 185, 129;
+  --accent-active-rgb: 5, 150, 105;
+
+  --metallic-emerald: radial-gradient(
+      120% 140% at 15% -10%,
+      rgba(167, 243, 208, 0.45) 0%,
+      rgba(110, 231, 183, 0.16) 26%,
+      transparent 55%
+    ),
+    radial-gradient(140% 160% at 110% 120%, rgba(5, 150, 105, 0.55) 0%, transparent 50%),
+    linear-gradient(155deg, var(--accent-hover) 0%, var(--accent) 45%, var(--accent-active) 100%);
+
+  --metallic-emerald-soft: radial-gradient(
+      130% 160% at 10% -20%,
+      rgba(167, 243, 208, 0.28) 0%,
+      transparent 50%
+    ),
+    radial-gradient(140% 160% at 100% 110%, rgba(5, 150, 105, 0.4) 0%, transparent 55%),
+    linear-gradient(160deg, var(--accent-hover) 0%, var(--accent) 50%, var(--accent-active) 100%);
+
+  --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+  --glass-border: rgba(255, 255, 255, 0.16);
+  --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 12px 40px rgba(0, 0, 0, 0.5);
+
+  --glass-bg-on-light: linear-gradient(135deg, rgba(19, 19, 19, 0.65), rgba(19, 19, 19, 0.3));
+  --glass-border-on-light: rgba(52, 211, 153, 0.22);
+  --glass-shadow-on-light: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 30px rgba(0, 0, 0, 0.4);
+
+  --shine-gradient: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.22) 47%,
+    rgba(255, 255, 255, 0.32) 50%,
+    rgba(255, 255, 255, 0.22) 53%,
+    transparent 70%
+  );
 }
 
 @theme inline {
@@ -183,6 +304,15 @@
   --animate-progress-indeterminate: progress-indeterminate 1.4s var(--ease-standard) infinite;
   --animate-accordion-down: accordion-down 0.2s var(--ease-standard);
   --animate-accordion-up: accordion-up 0.2s var(--ease-standard);
+  /* Ambient "breathing" glow for the metallic hero/CTA surfaces — a very
+     slow (10s), very subtle (opacity 0.85–1, not a pulse you consciously
+     notice) drift, the "living, breathing" ambient cue. Kept off the
+     Golden Rule's radar deliberately: duration is long and delta is
+     small enough that it reads as "this surface feels alive" rather
+     than "look, an animation." Reduced-motion turns this off entirely
+     (see the prefers-reduced-motion block below). */
+  --animate-metal-breathe: metal-breathe 10s ease-in-out infinite;
+  --animate-shine-sweep: shine-sweep 1.1s var(--ease-standard);
 
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
@@ -212,6 +342,14 @@
   @keyframes accordion-up {
     from { height: var(--radix-accordion-content-height); }
     to { height: 0; }
+  }
+  @keyframes metal-breathe {
+    0%, 100% { background-position: 0% 50%; filter: brightness(0.985) saturate(0.96); }
+    50% { background-position: 100% 50%; filter: brightness(1.045) saturate(1.08); }
+  }
+  @keyframes shine-sweep {
+    from { background-position: 160% 0; }
+    to { background-position: -60% 0; }
   }
 }
 
@@ -247,6 +385,19 @@
       scroll-behavior: auto !important;
     }
   }
+
+  /* prefers-reduced-transparency has thinner browser support than
+     prefers-reduced-motion, but where it IS supported, drop the glass
+     blur to a solid fill rather than silently leaving a
+     lower-than-expected-contrast blur in place (per the glassmorphism
+     approximation's documented fallback requirement). */
+  @media (prefers-reduced-transparency: reduce) {
+    .glass-panel, .glass-panel-on-light {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      background: var(--card) !important;
+    }
+  }
 }
 
 @layer utilities {
@@ -263,5 +414,77 @@
 
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* ---- Metallic-glass emerald utilities ----
+     Layer order for a "shiny metal + glass" surface:
+       1. .metallic-emerald / .metallic-emerald-soft — the base metal
+       2. .glass-panel — a frosted chip/card FLOATING ON TOP of #1
+       3. .shine-sweep — one-shot specular highlight, on hover/focus
+     Never stack #1 on itself (a metallic button inside a metallic
+     hero reads as visual noise) — reserve #1 for the outermost surface
+     of a given region and use .glass-panel for anything sitting on it. */
+
+  .metallic-emerald {
+    background-image: var(--metallic-emerald);
+    background-size: 200% 200%;
+  }
+  .metallic-emerald-soft {
+    background-image: var(--metallic-emerald-soft);
+    background-size: 200% 200%;
+  }
+  /* The slow ambient drift — split from the color classes above so a
+     component can opt into the metal color without the animation (e.g.
+     inside a printed/exported context) and so reduced-motion can turn
+     off only the animation half, not the color. */
+  .metallic-breathe {
+    animation: var(--animate-metal-breathe);
+  }
+
+  .glass-panel {
+    background-image: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
+  .glass-panel-on-light {
+    background-image: var(--glass-bg-on-light);
+    border: 1px solid var(--glass-border-on-light);
+    box-shadow: var(--glass-shadow-on-light);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+  }
+
+  /* One-shot specular sweep. Applied via a data attribute the component
+     toggles briefly on hover/focus/press (see useShineOnHover in
+     src/hooks/use-shine.js) rather than an infinite loop — the
+     "catching the light when you interact with it" cue, motivated by
+     feedback on a real user action, not ambient decoration. */
+  .shine-sweep {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .shine-sweep::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--shine-gradient);
+    background-size: 250% 100%;
+    background-position: 160% 0;
+    pointer-events: none;
+  }
+  .shine-sweep[data-shine="active"]::after {
+    animation: var(--animate-shine-sweep);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .metallic-breathe {
+      animation: none !important;
+    }
+    .shine-sweep[data-shine="active"]::after {
+      animation: none !important;
+    }
   }
 }

@@ -19,7 +19,7 @@ export async function generateMetadata({ params }) {
   const category = getCategoryBySlug(categorySlug);
   if (!category) return {};
 
-  const richTitle = `${category.label} — Free, No Sign-Up`;
+  const richTitle = `${category.label}: Free, No Sign-Up`;
 
   return {
     title: richTitle,

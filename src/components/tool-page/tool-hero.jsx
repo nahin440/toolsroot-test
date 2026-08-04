@@ -6,11 +6,13 @@ import { HeroIconFloat } from "@/components/shared/hero-icon-float";
 import { FloatingPaths } from "@/components/ui/background-paths";
 
 /**
- * Full-bleed emerald-600 hero for a tool page. Same visual language as the
- * homepage hero (solid --accent background, white text, animated white
- * flow-lines behind everything, floating icon on the right, hidden on
- * mobile) but with a single icon specific to this tool instead of five
- * category icons — this is the "dynamic logo per tool" piece.
+ * Full-bleed metallic-emerald hero for a tool page — the same v3 design
+ * system as the homepage hero (metallic-emerald-soft gradient mesh + slow
+ * ambient breathe instead of the old flat --accent fill, white text,
+ * animated white flow-lines behind everything, floating icon on the
+ * right, hidden on mobile) but with a single icon specific to this tool
+ * instead of five category icons — this is the "dynamic logo per tool"
+ * piece, and now the surface every one of the 70 tool pages shares.
  *
  * FloatingPaths is the same component/density (2 instances, white, 36
  * paths each) the homepage hero uses — deliberately the heavier "hero
@@ -29,7 +31,10 @@ import { FloatingPaths } from "@/components/ui/background-paths";
  * uses ends up server-rendered into the HTML. FloatingPaths is also a
  * client component ("use client"), but a Server Component can render a
  * Client Component as a child without itself becoming one — same pattern
- * already used here for HeroIconFloat, so this doesn't change that.
+ * already used here for HeroIconFloat, so this doesn't change that. This
+ * redesign pass only swapped the background utility classes (bg-accent →
+ * metallic-emerald-soft + metallic-breathe); no logic moved, so the
+ * Server/Client boundary is exactly what it was before.
  *
  * The H1 and description text are unchanged from the original plain
  * layout — same tag, same copy, same DOM order relative to the rest of
@@ -40,7 +45,7 @@ export function ToolHero({ tool }) {
   const ToolIcon = getToolIcon(tool.slug);
 
   return (
-    <section className="relative isolate overflow-hidden rounded-3xl bg-accent">
+    <section className="relative isolate overflow-hidden rounded-3xl metallic-emerald-soft metallic-breathe">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <FloatingPaths position={1} colorRgb="255, 255, 255" />
         <FloatingPaths position={-1} colorRgb="255, 255, 255" />
@@ -54,7 +59,7 @@ export function ToolHero({ tool }) {
         <p className="mt-2 max-w-2xl text-lg text-white/85">{tool.description}</p>
         <p className="mt-3 flex items-center gap-1.5 text-xs text-white/75">
           <HiOutlineLockClosed className="size-3.5" />
-          Processed entirely in your browser — your file is never uploaded anywhere.
+          Processed entirely in your browser. Your file is never uploaded anywhere.
         </p>
       </div>
     </section>

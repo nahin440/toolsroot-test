@@ -27,6 +27,76 @@ function getStableFileId(file) {
   return fileIdMap.get(file);
 }
 
+// Tool slugs whose adapter.run ultimately downloads a large (~31MB
+// ffmpeg, or per-language tesseract) WASM engine on first use this
+// session — see the grep-verified list in the comment on
+// preloadEngineIfNeeded below. Used only to decide whether to show a
+// "Loading engine…" message before the adapter's own onProgress callback
+// starts firing; every other tool's flow is completely unaffected.
+const MEDIA_ENGINE_TOOL_SLUGS = new Set([
+  // ffmpeg-based (src/features/video-tools/*, some of src/features/audio-tools/*)
+  "mov-to-mp4",
+  "rotate-video",
+  "change-video-fps",
+  "avi-to-mp4",
+  "compress-video",
+  "convert-video",
+  "crop-video",
+  "mkv-to-mp4",
+  "resize-video",
+  "watermark-video",
+  "trim-video",
+  "mp4-to-gif",
+  "extract-audio-from-video",
+  "wav-to-mp3",
+  "normalize-audio",
+  "mp4-to-mp3",
+  "mp3-to-wav",
+  "convert-audio",
+  "trim-audio",
+  "merge-audio",
+  "split-audio",
+  "mov-to-mp3",
+  // tesseract-based (src/features/pdf-tools/ocr-pdf)
+  "ocr-pdf",
+]);
+
+/**
+ * If toolSlug is one of the tools above, kicks off that tool's WASM
+ * engine download and reports progress through onLoadProgress — called
+ * right before adapter.run, so the person sees an accurate, specific
+ * loading message with real download percentage (returned as
+ * `engineLabel`) instead of the adapter's own fixed stage label
+ * ("Compressing video", etc.) claiming real work is happening during
+ * what is actually still a one-time download. Resolves
+ * `{ engineLabel: null }` immediately for every other tool, and
+ * immediately with no progress callbacks fired for a media-engine tool
+ * on the 2nd+ tool run of a session (the underlying engine's own
+ * singleton is already warm — see getFFmpeg in ffmpeg-loader.js).
+ *
+ * Uses a dynamic import specifically so this stays true for every OTHER
+ * tool's bundle too: media-core.js pulls in @ffmpeg/util, and
+ * ffmpeg-loader.js pulls in the real @ffmpeg/ffmpeg package, so a static
+ * top-level import here would add both to this shared shell's bundle —
+ * meaning every one of the 70 tool pages, not just the 22 ffmpeg-based
+ * ones, would pay for ffmpeg's loader code. The adapter-registry.js
+ * comment this codebase already has documents exactly this same
+ * "dynamic import to preserve per-tool code-splitting" rationale for the
+ * adapters themselves; this follows the same rule for the engine layer.
+ */
+async function preloadEngineIfNeeded(toolSlug, onLoadProgress) {
+  if (!MEDIA_ENGINE_TOOL_SLUGS.has(toolSlug)) return { engineLabel: null };
+
+  if (toolSlug === "ocr-pdf") {
+    const { preloadOcrEngine } = await import("@/lib/engines/ocr/ocr-engine");
+    await preloadOcrEngine(onLoadProgress);
+    return { engineLabel: "Loading OCR engine…" };
+  }
+  const { preloadFFmpegEngine } = await import("@/lib/engines/media/media-core");
+  await preloadFFmpegEngine(onLoadProgress);
+  return { engineLabel: "Loading video engine…" };
+}
+
 /**
  * @typedef ToolAdapter
  * @property {string[]} accepts
@@ -39,13 +109,16 @@ function getStableFileId(file) {
  * @property {boolean} [autoRunOnUpload] - skip the options panel and process immediately
  */
 
-/** @param {{adapter: ToolAdapter, toolName: string}} props */
-export function ToolPageShell({ adapter, toolName }) {
+/** @param {{adapter: ToolAdapter, toolName: string, toolSlug: string}} props */
+export function ToolPageShell({ adapter, toolName, toolSlug }) {
   const [files, setFiles] = useState([]);
   const [phase, setPhase] = useState("upload"); // upload | options | processing | completed | error
   const [options, setOptions] = useState(adapter.defaultOptions || {});
   const [stage, setStage] = useState(null);
   const [overallProgress, setOverallProgress] = useState(0);
+  const [isLoadingEngine, setIsLoadingEngine] = useState(false);
+  const [engineLoadProgress, setEngineLoadProgress] = useState(null);
+  const [engineLabel, setEngineLabel] = useState(null);
   const [results, setResults] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
 
@@ -76,6 +149,9 @@ export function ToolPageShell({ adapter, toolName }) {
     setErrorMessage(null);
     setOverallProgress(0);
     setStage(null);
+    setIsLoadingEngine(false);
+    setEngineLoadProgress(null);
+    setEngineLabel(null);
     setOptions(adapter.defaultOptions || {});
   }, [adapter.defaultOptions]);
 
@@ -87,6 +163,12 @@ export function ToolPageShell({ adapter, toolName }) {
     setPhase("processing");
     setErrorMessage(null);
     try {
+      setIsLoadingEngine(true);
+      setEngineLoadProgress(null);
+      const { engineLabel: label } = await preloadEngineIfNeeded(toolSlug, (p) => setEngineLoadProgress(p));
+      setEngineLabel(label);
+      setIsLoadingEngine(false);
+
       const outputs = await adapter.run(files, options, ({ stage: s, value }) => {
         setStage(s);
         setOverallProgress(value ?? 0);
@@ -98,7 +180,7 @@ export function ToolPageShell({ adapter, toolName }) {
       setErrorMessage(err?.message || "Something unexpected went wrong while processing your file.");
       setPhase("error");
     }
-  }, [adapter, files, options]);
+  }, [adapter, files, options, toolSlug]);
 
   const handleDownloadAllZip = useCallback(async () => {
     const zip = new JSZip();
@@ -166,7 +248,15 @@ export function ToolPageShell({ adapter, toolName }) {
             <adapter.OptionsPanel files={files} options={options} setOptions={setOptions} />
           )}
 
-          {phase === "processing" && <ProcessingPanel stage={stage} overallProgress={overallProgress} />}
+          {phase === "processing" && (
+            <ProcessingPanel
+              stage={stage}
+              overallProgress={overallProgress}
+              isLoadingEngine={isLoadingEngine}
+              engineLoadProgress={engineLoadProgress}
+              engineLabel={engineLabel}
+            />
+          )}
 
           {phase === "options" && (
             <Button variant="accent" size="lg" onClick={handleRun} className="w-full">

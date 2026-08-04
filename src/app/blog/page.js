@@ -10,10 +10,10 @@ const SITE_URL = "https://toolsroot.com";
 export const metadata = {
   title: "Blog",
   description:
-    "Practical guides on file formats, compression, and conversion — from choosing between JPG and WEBP to why your PDF looks different after converting.",
+    "Practical guides on file formats, compression, and conversion. From choosing between JPG and WEBP to why your PDF looks different after converting.",
   alternates: { canonical: "/blog" },
   openGraph: {
-    title: "Blog — Tools Root",
+    title: "Blog: Tools Root",
     description:
       "Practical guides on file formats, compression, and conversion, written to help you get better results out of everyday file tasks.",
     url: `${SITE_URL}/blog`,
@@ -39,14 +39,14 @@ export default function BlogIndexPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      <section className="relative isolate mb-6 overflow-hidden rounded-3xl bg-accent">
+      <section className="relative isolate mb-6 overflow-hidden rounded-3xl metallic-emerald-soft metallic-breathe">
         <HeroIconFloat>{createElement(HiOutlineDocumentText, { className: "size-1/2" })}</HeroIconFloat>
         <div className="relative px-6 py-10 sm:px-10 sm:py-14 lg:max-w-[65%]">
           <h1 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-4xl">
             Blog
           </h1>
           <p className="mt-3 text-lg text-white/85">
-            Practical guides on file formats, compression, and conversion — written to help you
+            Practical guides on file formats, compression, and conversion. Written to help you
             get better results, not just to explain what a button does.
           </p>
         </div>

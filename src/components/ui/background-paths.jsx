@@ -1,7 +1,8 @@
 "use client";
 
+import { useMemo } from "react";
 import { motion } from "motion/react";
-import { Button } from "@/components/ui/button";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 /**
  * Ported from a shadcn-style community snippet (originally .tsx, using
@@ -54,19 +55,28 @@ const ACCENT_RGB = "5, 150, 105";
 const PSEUDO_RANDOM_STEP = 0.6180339887498949;
 
 export function FloatingPaths({ position, colorRgb = ACCENT_RGB }) {
-  const paths = Array.from({ length: 36 }, (_, i) => ({
-    id: i,
-    d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
-      380 - i * 5 * position
-    } -${189 + i * 6} -${312 - i * 5 * position} ${216 - i * 6} ${
-      152 - i * 5 * position
-    } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
-      684 - i * 5 * position
-    } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
-    color: `rgba(${colorRgb}, ${0.1 + i * 0.03})`,
-    width: 0.5 + i * 0.03,
-    duration: 20 + ((i * PSEUDO_RANDOM_STEP) % 1) * 10,
-  }));
+  const shouldReduceMotion = useReducedMotion();
+
+  // Path generation is pure (no Math.random — see PSEUDO_RANDOM_STEP
+  // above) but there's no reason to recompute 36 path strings on every
+  // parent re-render; position/colorRgb are the only real inputs.
+  const paths = useMemo(
+    () =>
+      Array.from({ length: 36 }, (_, i) => ({
+        id: i,
+        d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
+          380 - i * 5 * position
+        } -${189 + i * 6} -${312 - i * 5 * position} ${216 - i * 6} ${
+          152 - i * 5 * position
+        } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
+          684 - i * 5 * position
+        } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
+        color: `rgba(${colorRgb}, ${0.1 + i * 0.03})`,
+        width: 0.5 + i * 0.03,
+        duration: 20 + ((i * PSEUDO_RANDOM_STEP) % 1) * 10,
+      })),
+    [position, colorRgb]
+  );
 
   return (
     <div className="absolute inset-0 pointer-events-none">
@@ -79,106 +89,24 @@ export function FloatingPaths({ position, colorRgb = ACCENT_RGB }) {
             stroke={path.color}
             strokeWidth={path.width}
             initial={{ pathLength: 0.3, opacity: 0.6 }}
-            animate={{
-              pathLength: 1,
-              opacity: [0.3, 0.6, 0.3],
-              pathOffset: [0, 1, 0],
-            }}
-            transition={{
-              duration: path.duration,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
+            // Reduced motion: settle on one static, fully-drawn frame
+            // instead of looping pathLength/opacity/pathOffset forever.
+            // The lines still render (they're real content, not pure
+            // decoration — they establish the brand's animated-line
+            // motif even at rest), they just stop moving.
+            animate={
+              shouldReduceMotion
+                ? { pathLength: 1, opacity: 0.45, pathOffset: 0 }
+                : { pathLength: 1, opacity: [0.3, 0.6, 0.3], pathOffset: [0, 1, 0] }
+            }
+            transition={
+              shouldReduceMotion
+                ? { duration: 0 }
+                : { duration: path.duration, repeat: Number.POSITIVE_INFINITY, ease: "linear" }
+            }
           />
         ))}
       </svg>
-    </div>
-  );
-}
-
-/**
- * Animated flowing-paths backdrop, tinted to this site's emerald accent.
- * Two ways to use it:
- *
- *  1. Pass `children` — renders your own content on top of the paths
- *     (this is how ToolsRoot's actual hero uses it, since the hero has a
- *     badge + heading + paragraph + search bar, not just a title+button).
- *
- *  2. Pass `title` (and no children) — falls back to the original
- *     demo layout (animated per-letter heading + a single CTA button),
- *     matching the standalone demo.tsx this was ported from.
- */
-export function BackgroundPaths({ title, children }) {
-  const words = title ? title.split(" ") : [];
-
-  return (
-    <div className="relative w-full flex items-center justify-center overflow-hidden bg-background">
-      <div className="absolute inset-0">
-        <FloatingPaths position={1} />
-        <FloatingPaths position={-1} />
-      </div>
-
-      <div className="relative z-10 w-full">
-        {children ? (
-          children
-        ) : (
-          <div className="container mx-auto px-4 md:px-6 text-center">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 2 }}
-              className="max-w-4xl mx-auto"
-            >
-              <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold mb-8 tracking-tighter">
-                {words.map((word, wordIndex) => (
-                  <span key={wordIndex} className="inline-block mr-4 last:mr-0">
-                    {word.split("").map((letter, letterIndex) => (
-                      <motion.span
-                        key={`${wordIndex}-${letterIndex}`}
-                        initial={{ y: 100, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{
-                          delay: wordIndex * 0.1 + letterIndex * 0.03,
-                          type: "spring",
-                          stiffness: 150,
-                          damping: 25,
-                        }}
-                        className="inline-block text-transparent bg-clip-text
-                                        bg-gradient-to-r from-foreground to-foreground/80"
-                      >
-                        {letter}
-                      </motion.span>
-                    ))}
-                  </span>
-                ))}
-              </h1>
-
-              <div
-                className="inline-block group relative bg-gradient-to-b from-accent/10 to-transparent
-                            p-px rounded-2xl backdrop-blur-lg
-                            overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
-              >
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="rounded-[1.15rem] px-8 py-6 text-lg backdrop-blur-md
-                            group-hover:-translate-y-0.5"
-                >
-                  <span className="opacity-90 group-hover:opacity-100 transition-opacity">
-                    Discover Excellence
-                  </span>
-                  <span
-                    className="ml-3 opacity-70 group-hover:opacity-100 group-hover:translate-x-1.5
-                                transition-all duration-300"
-                  >
-                    →
-                  </span>
-                </Button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

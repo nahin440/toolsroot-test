@@ -2,6 +2,7 @@
 
 import { createElement } from "react";
 import { motion } from "motion/react";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import {
   HiOutlineDocumentText,
   HiOutlineArrowsRightLeft,
@@ -45,6 +46,8 @@ const FLOATING_ICONS = [
 ];
 
 export function HeroFloatingIcons() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <div
       aria-hidden="true"
@@ -53,18 +56,26 @@ export function HeroFloatingIcons() {
       {FLOATING_ICONS.map((item, i) => (
         <motion.div
           key={i}
-          className={`absolute flex ${item.size} items-center justify-center rounded-3xl bg-white/10 text-white ring-1 ring-white/20 backdrop-blur-sm`}
+          // glass-panel (globals.css) replaces the old flat bg-white/10 +
+          // backdrop-blur-sm with the full frosted-glass recipe: layered
+          // gradient fill, 1px inner-highlight border, inset shadow — the
+          // "glassy" surface the redesign asked for, reused everywhere a
+          // small chip floats over the metallic hero.
+          className={`glass-panel absolute flex ${item.size} items-center justify-center rounded-3xl text-white`}
           style={{ top: item.top, left: item.left }}
-          animate={{
-            y: [0, -item.distance, 0],
-            rotate: [0, item.rotate, 0],
-          }}
-          transition={{
-            duration: item.duration,
-            delay: item.delay,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          // Reduced motion: hold each icon at a static resting pose
+          // (still visible, still part of the composition) instead of
+          // looping the float/rotate cycle forever.
+          animate={
+            shouldReduceMotion
+              ? { y: 0, rotate: 0 }
+              : { y: [0, -item.distance, 0], rotate: [0, item.rotate, 0] }
+          }
+          transition={
+            shouldReduceMotion
+              ? { duration: 0 }
+              : { duration: item.duration, delay: item.delay, repeat: Infinity, ease: "easeInOut" }
+          }
         >
           {createElement(item.icon, { className: "size-1/2" })}
         </motion.div>

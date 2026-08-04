@@ -1,6 +1,8 @@
 "use client";
 
+import { useMemo } from "react";
 import { motion } from "motion/react";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 /**
  * Lighter-weight ambient line animation for ordinary sections (not hero
@@ -131,7 +133,7 @@ function verticalPaths(count, position, colorRgb) {
   });
 }
 
-function AnimatedPathGroup({ paths }) {
+function AnimatedPathGroup({ paths, shouldReduceMotion }) {
   return paths.map((path) => (
     <motion.path
       key={path.id}
@@ -139,16 +141,20 @@ function AnimatedPathGroup({ paths }) {
       stroke={path.color}
       strokeWidth={path.width}
       initial={{ pathLength: 0.3, opacity: 0.6 }}
-      animate={{
-        pathLength: 1,
-        opacity: [0.3, 0.6, 0.3],
-        pathOffset: [0, 1, 0],
-      }}
-      transition={{
-        duration: path.duration,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: "linear",
-      }}
+      // See FloatingPaths in background-paths.jsx for why this branches:
+      // Motion's animate prop isn't touched by the CSS
+      // prefers-reduced-motion rule in globals.css, so infinite-repeat
+      // animate calls need to check the JS-level flag themselves.
+      animate={
+        shouldReduceMotion
+          ? { pathLength: 1, opacity: 0.4, pathOffset: 0 }
+          : { pathLength: 1, opacity: [0.3, 0.6, 0.3], pathOffset: [0, 1, 0] }
+      }
+      transition={
+        shouldReduceMotion
+          ? { duration: 0 }
+          : { duration: path.duration, repeat: Number.POSITIVE_INFINITY, ease: "linear" }
+      }
     />
   ));
 }
@@ -172,11 +178,15 @@ export function SectionFlowLines({
   horizontalCount = 8,
   verticalCount = 6,
 }) {
+  const shouldReduceMotion = useReducedMotion();
   const colorRgb = tone === "on-accent" ? WHITE_RGB : ACCENT_RGB;
 
-  const diagonal = diagonalPaths(diagonalCount, 1, colorRgb);
-  const horizontal = horizontalPaths(horizontalCount, 1, colorRgb);
-  const vertical = verticalPaths(verticalCount, -1, colorRgb);
+  // Same rationale as FloatingPaths' useMemo: generation is pure, so
+  // only recompute when an actual input (counts, tone, direction)
+  // changes rather than on every parent re-render.
+  const diagonal = useMemo(() => diagonalPaths(diagonalCount, 1, colorRgb), [diagonalCount, colorRgb]);
+  const horizontal = useMemo(() => horizontalPaths(horizontalCount, 1, colorRgb), [horizontalCount, colorRgb]);
+  const vertical = useMemo(() => verticalPaths(verticalCount, -1, colorRgb), [verticalCount, colorRgb]);
 
   return (
     <div
@@ -185,9 +195,9 @@ export function SectionFlowLines({
     >
       <svg className="w-full h-full" viewBox="0 0 696 316" fill="none" preserveAspectRatio="none">
         <title>Section flow lines</title>
-        <AnimatedPathGroup paths={diagonal} />
-        <AnimatedPathGroup paths={horizontal} />
-        <AnimatedPathGroup paths={vertical} />
+        <AnimatedPathGroup paths={diagonal} shouldReduceMotion={shouldReduceMotion} />
+        <AnimatedPathGroup paths={horizontal} shouldReduceMotion={shouldReduceMotion} />
+        <AnimatedPathGroup paths={vertical} shouldReduceMotion={shouldReduceMotion} />
       </svg>
     </div>
   );

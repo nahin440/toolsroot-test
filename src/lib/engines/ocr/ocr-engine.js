@@ -31,17 +31,47 @@ function workerPathsFor(lang) {
 let workerPromise = null;
 
 /** Shared, lazily-created Tesseract worker (recreated if the language changes). */
-async function getWorker(lang = "eng") {
+async function getWorker(lang = "eng", onLoadProgress) {
   if (!workerPromise || workerPromise.lang !== lang) {
     if (workerPromise) {
       const prev = await workerPromise;
       await prev.terminate();
     }
-    const p = createWorker(lang, 1, workerPathsFor(lang));
+    const options = { ...workerPathsFor(lang) };
+    if (onLoadProgress) {
+      options.logger = ({ status, progress }) => {
+        // 'recognizing text' is the one status tesseract.js emits during
+        // actual OCR work (verified in
+        // node_modules/tesseract.js/src/worker-script/index.js); every
+        // other status this callback could ever see is a pre-recognition
+        // loading phase (core download, tesseract init, language data
+        // download), so this only needs to check for the one "real work"
+        // status rather than enumerate every possible loading substatus.
+        if (status !== "recognizing text") onLoadProgress(progress);
+      };
+    }
+    const p = createWorker(lang, 1, options);
     p.lang = lang;
     workerPromise = p;
   }
   return workerPromise;
+}
+
+/**
+ * Triggers (and lets a caller observe) the one-time Tesseract worker
+ * creation/init for a given language, independent of any specific OCR
+ * call — same role as preloadFFmpegEngine in media-core.js, for the same
+ * reason (see the doc comment on preloadEngineIfNeeded in
+ * tool-page-shell.jsx for why this exists as a standalone function
+ * rather than threading a load-progress callback through
+ * ocrPdfToContentModel/ocrImage's existing onProgress parameters, which
+ * already mean "recognition progress" to their one real caller).
+ *
+ * Resolves immediately, calling onLoadProgress zero times, if a worker
+ * for this language is already warm from a prior tool run this session.
+ */
+export async function preloadOcrEngine(onLoadProgress, lang = "eng") {
+  await getWorker(lang, onLoadProgress);
 }
 
 export async function terminateOcrWorker() {

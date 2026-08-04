@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useId, useRef, useState } from "react";
+import { useCallback, useId, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { HiCloudArrowUp, HiDocumentArrowUp } from "react-icons/hi2";
 
@@ -104,11 +104,15 @@ export function Dropzone({
     [disabled]
   );
 
-  const acceptLabel = accepts.includes("*")
-    ? "any file type"
-    : accepts
-        .map((a) => a.replace("application/", "").replace("image/*", "images").replace(".", "").toUpperCase())
-        .join(", ");
+  const acceptLabel = useMemo(
+    () =>
+      accepts.includes("*")
+        ? "any file type"
+        : accepts
+            .map((a) => a.replace("application/", "").replace("image/*", "images").replace(".", "").toUpperCase())
+            .join(", "),
+    [accepts]
+  );
 
   return (
     <div className={cn("w-full", className)}>

@@ -26,8 +26,8 @@ export async function generateMetadata({ params }) {
   // longer ones (the All-in-One converters, Extract Audio from Video), so
   // those fall back to the shorter suffix instead of risking "No Sign-Up"
   // or similar getting cut off mid-word in search results.
-  const fullSuffix = " Online Free — No Upload, No Sign-Up";
-  const shortSuffix = " — Free, No Upload";
+  const fullSuffix = " Online Free: No Upload, No Sign-Up";
+  const shortSuffix = ": Free, No Upload";
   const suffix = tool.name.length + fullSuffix.length <= 60 ? fullSuffix : shortSuffix;
   const richTitle = `${tool.name}${suffix}`;
 

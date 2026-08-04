@@ -19,11 +19,11 @@ export const metadata = {
   },
 
   title: {
-    default: "Tools Root — Free Online File Converter & PDF Tools",
+    default: "Tools Root: Free Online File Converter & PDF Tools",
     template: "%s | Tools Root",
   },
   description:
-    "Merge, split, compress, and convert PDFs, images, documents, audio, and video — free, private, and no install required. Every file is processed in your browser.",
+    "Merge, split, compress, and convert PDFs, images, documents, audio, and video. Free, private, and no install required. Every file is processed in your browser.",
   keywords: [
     "pdf converter",
     "merge pdf",
@@ -35,14 +35,14 @@ export const metadata = {
   openGraph: {
     type: "website",
     siteName: "Tools Root",
-    title: "Tools Root — Free Online File Converter & PDF Tools",
+    title: "Tools Root: Free Online File Converter & PDF Tools",
     description:
-      "Merge, split, compress, and convert PDFs, images, documents, audio, and video — free, private, and no install required.",
+      "Merge, split, compress, and convert PDFs, images, documents, audio, and video. Free, private, and no install required.",
     url: SITE_URL,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tools Root — Free Online File Converter & PDF Tools",
+    title: "Tools Root: Free Online File Converter & PDF Tools",
     description: "Free, private file conversion that runs entirely in your browser.",
   },
   robots: {
@@ -59,7 +59,7 @@ export default function RootLayout({ children }) {
     url: SITE_URL,
     logo: `${SITE_URL}/favicon.ico`,
     description:
-      "A free, privacy-first file conversion and editing platform. Every tool runs entirely in the browser via JavaScript and WebAssembly — no file is ever uploaded to a server.",
+      "A free, privacy-first file conversion and editing platform. Every tool runs entirely in the browser via JavaScript and WebAssembly. No file is ever uploaded to a server.",
     sameAs: SOCIAL_LINKS.map((link) => link.href),
   };
 
@@ -69,7 +69,7 @@ export default function RootLayout({ children }) {
     name: "Tools Root",
     url: SITE_URL,
     description:
-      "Merge, split, compress, and convert PDFs, images, documents, audio, and video — free, private, and no install required.",
+      "Merge, split, compress, and convert PDFs, images, documents, audio, and video. Free, private, and no install required.",
   };
 
   return (

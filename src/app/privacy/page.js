@@ -1,6 +1,6 @@
 export const metadata = {
   title: "Privacy Policy",
-  description: "How Tools Root handles your files and data.",
+  description: "How Tools Root handles your files and data. Free to use, with no account or signup required.",
   alternates: { canonical: "/privacy" },
 };
 
@@ -8,7 +8,7 @@ export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-[760px] px-4 py-16 sm:px-6">
       <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">Privacy Policy</h1>
-      <p className="mt-2 text-sm text-muted-foreground">Last updated July 2026</p>
+      <p className="mt-2 text-sm text-muted-foreground">Last updated August 2026</p>
 
       <div className="mt-10 max-w-none space-y-6 text-sm leading-relaxed text-muted-foreground [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-foreground [&_h3]:mt-6 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-foreground">
         <section>
@@ -31,32 +31,34 @@ export default function PrivacyPage() {
         </section>
 
         <section>
+          <h2>No account, ever</h2>
+          <p>
+            Tools Root does not have user accounts, sign-up, or a login of any kind. Every one of
+            the 70 tools on this site is free and available to use without providing an email
+            address, a password, or any other personal identifier. There is no paid plan, no
+            billing, and no payment information collected anywhere on the site.
+          </p>
+        </section>
+
+        <section>
           <h2>What we do collect</h2>
           <p>
-            We use standard, privacy-respecting web analytics to understand which tools are used
-            and to diagnose errors — this covers things like page views, browser type, and
-            approximate location (city/country level, derived from IP address, which is not
-            stored alongside the rest of the analytics event). We do not have access to the
-            content of files you process, since that content never reaches our servers.
+            We use Google Analytics to understand which tools are used and to diagnose errors.
+            This covers things like page views, browser type, and approximate location (city or
+            country level, derived from IP address). We do not have access to the content of files
+            you process, since that content never reaches our servers. Google&apos;s own privacy
+            policy governs how it handles the data its analytics script collects on our behalf.
           </p>
         </section>
 
         <section>
           <h2>Cookies</h2>
           <p>
-            We use essential cookies required for the site to function (such as remembering your
-            preferences) and, if you&apos;re on a paid plan, an authentication cookie to keep you
-            signed in. We do not use third-party advertising or tracking cookies.
-          </p>
-        </section>
-
-        <section>
-          <h2>Third-party services</h2>
-          <p>
-            If you create an account or subscribe to a paid plan, we use a payment processor to
-            handle billing; we never see or store your full payment card details ourselves. Any
-            such processor is bound by its own privacy and security obligations for the payment
-            data it handles.
+            We use essential cookies required for the site to function, such as remembering your
+            preferences. Google Analytics also sets its own cookies to distinguish unique visitors
+            across sessions, as described above. Since there is no account system, we have no
+            authentication cookies, and we do not use third-party advertising or tracking cookies
+            beyond Google Analytics.
           </p>
         </section>
 
@@ -64,10 +66,12 @@ export default function PrivacyPage() {
           <h2>Your rights</h2>
           <p>
             Since file content never reaches our servers, there is nothing for us to delete on
-            your behalf for that data — it exists only in your browser&apos;s memory during the
-            session and is cleared when you close the tab or navigate away. For any account or
-            billing data we do hold, you can request access, correction, or deletion at any time
-            by contacting us.
+            your behalf for that data. It exists only in your browser&apos;s memory during the
+            session and is cleared when you close the tab or navigate away. Since there is no
+            account system, we hold no personal profile tied to you beyond the analytics data
+            described above. If you&apos;d like that analytics data associated with your visits
+            addressed, you can contact us or use your browser&apos;s or Google&apos;s own
+            opt-out tools for Google Analytics.
           </p>
         </section>
 

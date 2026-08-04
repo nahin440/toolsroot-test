@@ -8,7 +8,7 @@ export default function TermsPage() {
   return (
     <div className="mx-auto max-w-[760px] px-4 py-16 sm:px-6">
       <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">Terms of Service</h1>
-      <p className="mt-2 text-sm text-muted-foreground">Last updated July 2026</p>
+      <p className="mt-2 text-sm text-muted-foreground">Last updated August 2026</p>
 
       <div className="mt-10 max-w-none space-y-6 text-sm leading-relaxed text-muted-foreground [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-foreground">
         <section>
@@ -57,11 +57,10 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2>Paid plans</h2>
+          <h2>No cost, no account</h2>
           <p>
-            Some features may be offered as part of a paid subscription. Pricing and included
-            features are described on our pricing page. Subscriptions renew automatically unless
-            cancelled, and are billed in advance.
+            Tools Root is free to use. There is no paid plan, no subscription, and no account or
+            sign-up required for any of the 70 tools on this site.
           </p>
         </section>
 
