@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { HiLockClosed, HiBolt, HiGlobeAlt, HiArrowRight } from "react-icons/hi2";
 
 import { ToolCard } from "@/components/home/tool-card";
@@ -98,11 +99,20 @@ export default function HomePage() {
 
       {/* Popular tools. SectionFlowLines emerald tone (this section has no
           bg-accent, so it needs the light-background variant, opposite of
-          the hero/CTA's white lines). */}
+          the hero/CTA's white lines). Heading now Cormorant (font-display,
+          picks up the sitewide serif automatically) for the same
+          editorial-serif treatment as every other section heading. */}
       <section className="relative isolate z-10 overflow-hidden mx-auto max-w-[1280px] px-4 py-16 sm:px-6">
         <SectionFlowLines tone="on-light" />
-        <div className="relative flex items-center justify-between">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">Most popular tools</h2>
+        <div className="relative flex items-end justify-between">
+          <div>
+            <span className="text-xs font-semibold tracking-[0.14em] text-accent uppercase">
+              Start here
+            </span>
+            <h2 className="font-display mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+              Most popular tools
+            </h2>
+          </div>
         </div>
         <div className="relative mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {popularTools.map((tool) => (
@@ -111,14 +121,70 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Photography band — breaks the grid/grid/grid rhythm (Popular
+          Tools above, Browse by Category below are both card grids;
+          repeating that shape a third time in a row is the exact
+          "every section looks the same" pattern the redesign brief
+          calls out). Two real photographs (Unsplash, verified via the
+          same allow-listed CDN path already used for blog images, see
+          next.config.mjs) presented as offset floating-artifact cards
+          — the Steep reference's "white card + soft wide shadow"
+          language (--shadow-float, globals.css) rather than a full-
+          bleed hero image, so it reads as a considered composition
+          fragment, not a stock-photo banner. Purely atmospheric: no
+          tool, category, or copy lives in this section, so nothing
+          here is content that needs preserving/updating. */}
+      <section className="relative isolate overflow-hidden mx-auto max-w-[1280px] px-4 py-4 sm:px-6">
+        <div className="relative grid grid-cols-1 items-center gap-10 sm:grid-cols-2 sm:gap-14">
+          <div className="relative h-[280px] sm:h-[340px]">
+            <div className="absolute top-0 left-0 h-[220px] w-[78%] overflow-hidden rounded-2xl bg-secondary shadow-float sm:h-[260px]">
+              <Image
+                src="https://images.unsplash.com/photo-1752223638233-4c9545333f89?w=900&q=80&auto=format&fit=crop"
+                alt="A tidy desk with a laptop, set up for focused work"
+                fill
+                sizes="(max-width: 640px) 78vw, 380px"
+                className="object-cover"
+              />
+            </div>
+            <div className="absolute right-0 bottom-0 h-[160px] w-[62%] overflow-hidden rounded-2xl bg-secondary shadow-float ring-4 ring-background sm:h-[190px]">
+              <Image
+                src="https://images.unsplash.com/photo-1679153369902-50687ca31379?w=700&q=80&auto=format&fit=crop"
+                alt="Warm afternoon light over a plant beside a workspace window"
+                fill
+                sizes="(max-width: 640px) 62vw, 300px"
+                className="object-cover"
+              />
+            </div>
+          </div>
+          <div>
+            <span className="text-xs font-semibold tracking-[0.14em] text-accent uppercase">
+              Built for real work
+            </span>
+            <h2 className="font-display mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+              Wherever the work happens, the tools are already there
+            </h2>
+            <p className="mt-3 max-w-md text-muted-foreground">
+              No install, no upload wait, no account. Open a tool, drop a file, and it&apos;s done
+              before you&apos;d have finished signing up somewhere else.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Category navigation. SectionFlowLines emerald tone — this
           section's bg-secondary/30 tint is much closer to white than to
           the accent color, so it gets the same "on-light" emerald lines
-          as the other plain-background sections. */}
+          as the other plain-background sections. Cards now glossy-card
+          (v4) with metallic icon chips, matching ToolCard's upgrade
+          above — the whole site's "clickable tool/category tile" now
+          reads as one consistent coated material. */}
       <section id="categories" className="relative isolate overflow-hidden border-y border-border bg-secondary/30">
         <SectionFlowLines tone="on-light" />
         <div className="relative mx-auto max-w-[1280px] px-4 py-16 sm:px-6">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">Browse by category</h2>
+          <span className="text-xs font-semibold tracking-[0.14em] text-accent uppercase">Browse</span>
+          <h2 className="font-display mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            Browse by category
+          </h2>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Object.entries(CATEGORIES).map(([key, cat]) => {
               const tools = getToolsByCategory(key);
@@ -127,10 +193,10 @@ export default function HomePage() {
                 <Link
                   key={key}
                   href={`/${cat.slug}`}
-                  className="group flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 shadow-subtle transition-[transform,border-color,box-shadow] duration-150 ease-[var(--ease-standard)] hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-card"
+                  className="glossy-card glossy-card-hover group flex flex-col gap-4 rounded-2xl border border-border/70 bg-card p-6 transition-[transform,border-color] duration-150 ease-[var(--ease-standard)] hover:-translate-y-1 hover:border-accent/30"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex size-12 items-center justify-center rounded-xl bg-accent-tint text-accent transition-[background-color,color,box-shadow] duration-150 ease-[var(--ease-standard)] group-hover:bg-accent group-hover:text-accent-foreground group-hover:shadow-accent-glow">
+                    <div className="metallic-emerald flex size-12 items-center justify-center rounded-xl text-white shadow-[0_2px_8px_-2px_rgba(5,150,105,0.4)] transition-[transform,box-shadow] duration-150 ease-[var(--ease-standard)] group-hover:scale-105 group-hover:shadow-accent-glow">
                       <FirstIcon className="size-6" />
                     </div>
                     <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-muted-foreground">

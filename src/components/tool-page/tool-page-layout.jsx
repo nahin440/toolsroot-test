@@ -53,18 +53,18 @@ export function ToolPageLayout({
       <div className="mt-8">{shell}</div>
 
       {longDescription && (
-        <div className="mt-16 max-w-none text-sm leading-relaxed text-muted-foreground [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-foreground [&_p]:mb-3">
+        <div className="mt-16 max-w-none text-sm leading-relaxed text-muted-foreground [&_h2]:font-display [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-foreground [&_p]:mb-3">
           <div dangerouslySetInnerHTML={{ __html: longDescription }} />
         </div>
       )}
 
       {howItWorks && (
         <section className="mt-16">
-          <h2 className="text-xl font-semibold text-foreground">{howItWorks.title}</h2>
+          <h2 className="font-display text-xl font-semibold tracking-tight text-foreground">{howItWorks.title}</h2>
           <ol className="mt-4 space-y-3">
             {howItWorks.steps.map((step, i) => (
               <li key={i} className="flex gap-3">
-                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent-tint text-xs font-semibold text-accent">
+                <span className="metallic-emerald flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white">
                   {i + 1}
                 </span>
                 <span className="text-sm text-muted-foreground">{step}</span>
@@ -76,7 +76,7 @@ export function ToolPageLayout({
 
       {faq && faq.length > 0 && (
         <section className="mt-16">
-          <h2 className="text-xl font-semibold text-foreground">Frequently asked questions</h2>
+          <h2 className="font-display text-xl font-semibold tracking-tight text-foreground">Frequently asked questions</h2>
           <Accordion type="single" collapsible className="mt-2">
             {faq.map((item, i) => (
               <AccordionItem key={i} value={`item-${i}`}>
@@ -92,7 +92,7 @@ export function ToolPageLayout({
 
       {relatedArticles.length > 0 && (
         <section className="mt-16">
-          <h2 className="text-xl font-semibold text-foreground">Related articles</h2>
+          <h2 className="font-display text-xl font-semibold tracking-tight text-foreground">Related articles</h2>
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {relatedArticles.map((post) => (
               <BlogPostCard key={post.slug} post={post} />
@@ -103,7 +103,7 @@ export function ToolPageLayout({
 
       {relatedTools.length > 0 && (
         <section className="mt-16">
-          <h2 className="text-xl font-semibold text-foreground">Related tools</h2>
+          <h2 className="font-display text-xl font-semibold tracking-tight text-foreground">Related tools</h2>
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {relatedTools.map((t) => (
               <ToolCard key={t.slug} tool={t} />

@@ -6,6 +6,7 @@ import { HiOutlineCheckCircle } from "react-icons/hi2";
 import { ToolSearchBar } from "@/components/home/tool-search-bar";
 import { HeroFloatingIcons } from "@/components/home/hero-floating-icons";
 import { FloatingPaths } from "@/components/ui/background-paths";
+import { OrganicBlobs } from "@/components/illustrations/organic-blobs";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 // One shared stagger container + child variant set, reused for badge →
@@ -43,7 +44,17 @@ export function HeroSection() {
   const item = shouldReduceMotion ? staticVariants : itemVariants;
 
   return (
-    <section className="relative isolate overflow-hidden metallic-emerald-soft metallic-breathe">
+    <section className="relative isolate overflow-hidden metallic-emerald-loud metallic-breathe">
+      {/* Ditto-referenced organic blobs — a second decorative layer,
+          sitting ABOVE the metal gradient (this section's own
+          background-image) and BELOW the path animation + content.
+          on-accent tone: soft white silhouettes rather than the actual
+          --blob-* emerald tints, since emerald-on-emerald would vanish
+          against this surface (the same reasoning FloatingPaths already
+          applies by recoloring its own strokes to white via colorRgb
+          below). Purely atmospheric — nothing here changes layout,
+          copy, or the preserved path animation itself. */}
+      <OrganicBlobs tone="on-accent" />
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <FloatingPaths position={1} colorRgb="255, 255, 255" />
         <FloatingPaths position={-1} colorRgb="255, 255, 255" />

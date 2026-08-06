@@ -44,14 +44,19 @@ export function FileQueueItem({ entry, index = 0, isProcessing, onRemove, onDown
       exit={{ opacity: 0, height: 0, marginBottom: 0 }}
       transition={{ duration: 0.2, delay: Math.min(index * 0.04, 0.24), ease: [0.32, 0.72, 0, 1] }}
       className={cn(
-        "flex items-center gap-3 rounded-xl border border-border bg-card p-3",
+        "flex items-center gap-3 rounded-xl border border-border/70 bg-card p-3 transition-shadow",
+        !hasError && "shadow-[0_1px_0_0_rgba(255,255,255,0.6)_inset]",
         hasError && "border-foreground/20 bg-secondary/60"
       )}
     >
       <div
         className={cn(
           "flex size-10 shrink-0 items-center justify-center rounded-lg",
-          hasError ? "bg-secondary text-muted-foreground" : isDone ? "bg-accent-tint text-accent" : "bg-secondary text-muted-foreground"
+          hasError
+            ? "bg-secondary text-muted-foreground"
+            : isDone
+              ? "metallic-emerald text-white shadow-[0_2px_8px_-2px_rgba(5,150,105,0.4)]"
+              : "bg-secondary text-muted-foreground"
         )}
       >
         {hasError ? (

@@ -36,7 +36,7 @@ export function ResultPanel({ completedFiles, onReset, onDownloadAllZip, title =
           initial={{ scale: 0.4, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.05 }}
-          className="flex size-12 shrink-0 items-center justify-center rounded-full bg-accent-tint text-accent"
+          className="metallic-emerald flex size-12 shrink-0 items-center justify-center rounded-full text-white shadow-accent-glow"
         >
           <HiCheckCircle className="size-6" />
         </motion.div>
@@ -69,7 +69,7 @@ export function ResultPanel({ completedFiles, onReset, onDownloadAllZip, title =
           {completedFiles.map((f) => (
             <div
               key={f.id}
-              className="flex items-center justify-between rounded-xl border border-border bg-card p-3"
+              className="flex items-center justify-between rounded-xl border border-border/70 bg-card p-3"
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-foreground">{f.resultName}</p>

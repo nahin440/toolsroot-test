@@ -5,7 +5,13 @@ function Card({ className, ...props }) {
     <div
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground rounded-2xl border border-border shadow-card",
+        // glossy-card (globals.css, v4) replaces the old flat shadow-card
+        // with a tinted, layered shadow + near-invisible sheen overlay —
+        // every card built on this primitive (processing/result/error
+        // panels, pricing card, contact/about info cards) now reads as a
+        // coated surface instead of a plain bordered box, with no
+        // changes needed at any of those call sites.
+        "glossy-card bg-card text-card-foreground rounded-2xl border border-border/70",
         className
       )}
       {...props}

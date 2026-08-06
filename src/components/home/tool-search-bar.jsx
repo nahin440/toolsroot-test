@@ -47,7 +47,7 @@ export function ToolSearchBar({ className }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 z-30 mt-2 w-full rounded-2xl border border-border bg-popover shadow-dropdown"
+            className="glossy-card absolute top-full left-0 z-30 mt-2 w-full rounded-2xl border border-border/70 bg-popover"
           >
             {results.length ? (
               <ul className="max-h-80 overflow-y-auto p-2">

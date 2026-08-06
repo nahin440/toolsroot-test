@@ -8,6 +8,8 @@ import { BLOG_POSTS, getBlogPost, getAllBlogSlugs, getRelatedBlogPosts } from "@
 import { CATEGORIES, getTool, getToolsByCategory } from "@/lib/registry/tools";
 import { getToolIcon } from "@/lib/registry/tool-icons";
 import { HeroIconFloat } from "@/components/shared/hero-icon-float";
+import { FloatingPaths } from "@/components/ui/background-paths";
+import { OrganicBlobs } from "@/components/illustrations/organic-blobs";
 
 const SITE_URL = "https://toolsroot.com";
 
@@ -95,7 +97,7 @@ export default async function BlogPostPage({ params }) {
       </nav>
 
       <article className="mt-6 max-w-3xl">
-        <section className="relative isolate mb-6 -mx-4 overflow-hidden rounded-3xl metallic-emerald-soft metallic-breathe sm:-mx-6">
+        <section className="relative isolate mb-6 -mx-4 overflow-hidden rounded-3xl metallic-emerald-loud metallic-breathe sm:-mx-6">
           {post.image?.hero && (
             <Image
               src={post.image.hero}
@@ -107,6 +109,11 @@ export default async function BlogPostPage({ params }) {
               className="object-cover opacity-30 mix-blend-overlay"
             />
           )}
+          <OrganicBlobs tone="on-accent" />
+          <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+            <FloatingPaths position={1} colorRgb="255, 255, 255" />
+            <FloatingPaths position={-1} colorRgb="255, 255, 255" />
+          </div>
           <HeroIconFloat className="glass-panel absolute top-1/2 right-[8%] flex size-24 -translate-y-1/2 items-center justify-center rounded-2xl text-white sm:size-28">
             {createElement(getToolIcon(getToolsByCategory(post.category)[0]?.slug), { className: "size-1/2" })}
           </HeroIconFloat>
@@ -137,7 +144,7 @@ export default async function BlogPostPage({ params }) {
       </article>
 
       {relatedTools.length > 0 && (
-        <div className="mt-12 max-w-3xl rounded-2xl border border-border bg-card p-6">
+        <div className="glossy-card mt-12 max-w-3xl rounded-2xl border border-border/70 bg-card p-6">
           <h2 className="font-display text-lg font-semibold text-foreground">Tools mentioned in this article</h2>
           <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {relatedTools.map((tool) => {
@@ -146,7 +153,7 @@ export default async function BlogPostPage({ params }) {
                 <Link
                   key={tool.slug}
                   href={`/${toolCategory.slug}/${tool.slug}`}
-                  className="group flex items-center justify-between rounded-xl border border-border px-4 py-3 text-sm font-medium text-foreground transition-colors hover:border-accent/30 hover:bg-accent-tint hover:text-accent-active"
+                  className="group flex items-center justify-between rounded-xl border border-border/70 bg-background px-4 py-3 text-sm font-medium text-foreground transition-[border-color,background-color] duration-150 ease-[var(--ease-standard)] hover:border-accent/30 hover:bg-accent-tint hover:text-accent-active"
                 >
                   {tool.name}
                   <HiArrowRight className="size-4 opacity-0 transition-[transform,opacity] duration-150 ease-[var(--ease-standard)] group-hover:translate-x-0.5 group-hover:opacity-100" />
@@ -165,7 +172,7 @@ export default async function BlogPostPage({ params }) {
               <Link
                 key={related.slug}
                 href={`/blog/${related.slug}`}
-                className="group rounded-xl border border-border p-4 text-sm transition-colors hover:border-accent/30 hover:bg-accent-tint"
+                className="glossy-card glossy-card-hover group rounded-xl border border-border/70 bg-card p-4 text-sm transition-[transform,border-color] duration-150 ease-[var(--ease-standard)] hover:-translate-y-0.5 hover:border-accent/30"
               >
                 <span className="font-medium text-foreground">{related.title}</span>
               </Link>

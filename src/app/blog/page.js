@@ -4,6 +4,8 @@ import { HiOutlineDocumentText } from "react-icons/hi2";
 import { BLOG_POSTS } from "@/lib/registry/blog-content";
 import { HeroIconFloat } from "@/components/shared/hero-icon-float";
 import { BlogPostCard } from "@/components/shared/blog-post-card";
+import { FloatingPaths } from "@/components/ui/background-paths";
+import { OrganicBlobs } from "@/components/illustrations/organic-blobs";
 
 const SITE_URL = "https://toolsroot.com";
 
@@ -39,7 +41,12 @@ export default function BlogIndexPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      <section className="relative isolate mb-6 overflow-hidden rounded-3xl metallic-emerald-soft metallic-breathe">
+      <section className="relative isolate mb-6 overflow-hidden rounded-3xl metallic-emerald-loud metallic-breathe">
+        <OrganicBlobs tone="on-accent" />
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <FloatingPaths position={1} colorRgb="255, 255, 255" />
+          <FloatingPaths position={-1} colorRgb="255, 255, 255" />
+        </div>
         <HeroIconFloat>{createElement(HiOutlineDocumentText, { className: "size-1/2" })}</HeroIconFloat>
         <div className="relative px-6 py-10 sm:px-10 sm:py-14 lg:max-w-[65%]">
           <h1 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-4xl">

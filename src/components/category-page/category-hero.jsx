@@ -3,13 +3,18 @@ import { HiOutlineCheckCircle } from "react-icons/hi2";
 
 import { getToolIcon } from "@/lib/registry/tool-icons";
 import { HeroIconFloat } from "@/components/shared/hero-icon-float";
+import { FloatingPaths } from "@/components/ui/background-paths";
+import { OrganicBlobs } from "@/components/illustrations/organic-blobs";
 
 /**
- * Full-bleed metallic-emerald hero for a category listing page — same v3
+ * Full-bleed metallic-emerald hero for a category listing page — same v4
  * design system as ToolHero (see tool-page/tool-hero.jsx): the
- * metallic-emerald-soft gradient mesh with a slow ambient breathe instead
- * of the old flat --accent fill, a single floating icon on the right,
- * white text on the left, hidden on mobile.
+ * metallic-emerald-loud gradient mesh with a slow ambient breathe, the
+ * organic blob backdrop, the animated white path lines behind everything
+ * (previously missing on this specific hero — added here so every hero
+ * sitewide shares the same background-animation layer, per the redesign
+ * brief), a single floating icon on the right, white text on the left,
+ * hidden on mobile.
  *
  * Server Component: resolves the representative tool's icon here (via
  * getToolIcon) and passes only the rendered element to the client-only
@@ -17,6 +22,9 @@ import { HeroIconFloat } from "@/components/shared/hero-icon-float";
  * on the homepage's "Browse by category" grid (getToolIcon(tools[0]?.slug))
  * rather than introducing a new way to choose a category icon, and avoids
  * pulling the full tool-icons registry into this route's client bundle.
+ * FloatingPaths/OrganicBlobs are Client Components rendered as children,
+ * same pattern as HeroIconFloat — this file itself stays a Server
+ * Component.
  *
  * The H1/description/tool-count badge text is unchanged from the previous
  * plain layout — only the container styling changed, so the BreadcrumbList
@@ -26,7 +34,12 @@ export function CategoryHero({ category, toolCount, representativeSlug }) {
   const CategoryIcon = getToolIcon(representativeSlug);
 
   return (
-    <section className="relative isolate overflow-hidden rounded-3xl metallic-emerald-soft metallic-breathe">
+    <section className="relative isolate overflow-hidden rounded-3xl metallic-emerald-loud metallic-breathe">
+      <OrganicBlobs tone="on-accent" />
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <FloatingPaths position={1} colorRgb="255, 255, 255" />
+        <FloatingPaths position={-1} colorRgb="255, 255, 255" />
+      </div>
       <HeroIconFloat>{createElement(CategoryIcon, { className: "size-1/2" })}</HeroIconFloat>
 
       <div className="relative px-6 py-10 sm:px-10 sm:py-14 lg:max-w-[65%] lg:py-16">

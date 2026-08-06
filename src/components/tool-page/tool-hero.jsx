@@ -4,6 +4,7 @@ import { HiOutlineLockClosed } from "react-icons/hi2";
 import { getToolIcon } from "@/lib/registry/tool-icons";
 import { HeroIconFloat } from "@/components/shared/hero-icon-float";
 import { FloatingPaths } from "@/components/ui/background-paths";
+import { OrganicBlobs } from "@/components/illustrations/organic-blobs";
 
 /**
  * Full-bleed metallic-emerald hero for a tool page — the same v3 design
@@ -23,6 +24,12 @@ import { FloatingPaths } from "@/components/ui/background-paths";
  * only renders its own hero, so reusing the homepage hero's density here
  * doesn't compound the way it would if every homepage section used it.
  *
+ * OrganicBlobs (Ditto-referenced soft drifting shapes) sits between the
+ * metal gradient and FloatingPaths, same layering as the homepage hero —
+ * another Client Component rendered as a child, same pattern already
+ * established by FloatingPaths/HeroIconFloat below, so the Server/Client
+ * boundary this file documents doesn't change.
+ *
  * This is a Server Component: getToolIcon is resolved here, and only the
  * resulting <Icon /> element is handed to the client-only HeroIconFloat
  * wrapper for animation. Resolving here (rather than inside a client
@@ -32,9 +39,11 @@ import { FloatingPaths } from "@/components/ui/background-paths";
  * client component ("use client"), but a Server Component can render a
  * Client Component as a child without itself becoming one — same pattern
  * already used here for HeroIconFloat, so this doesn't change that. This
- * redesign pass only swapped the background utility classes (bg-accent →
- * metallic-emerald-soft + metallic-breathe); no logic moved, so the
- * Server/Client boundary is exactly what it was before.
+ * redesign pass swapped the background utility to the louder
+ * metallic-emerald-loud variant (more visual presence than the original
+ * metallic-emerald-soft, per the redesign brief) and added the organic
+ * blob layer; no logic moved, so the Server/Client boundary is exactly
+ * what it was before.
  *
  * The H1 and description text are unchanged from the original plain
  * layout — same tag, same copy, same DOM order relative to the rest of
@@ -45,7 +54,8 @@ export function ToolHero({ tool }) {
   const ToolIcon = getToolIcon(tool.slug);
 
   return (
-    <section className="relative isolate overflow-hidden rounded-3xl metallic-emerald-soft metallic-breathe">
+    <section className="relative isolate overflow-hidden rounded-3xl metallic-emerald-loud metallic-breathe">
+      <OrganicBlobs tone="on-accent" />
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <FloatingPaths position={1} colorRgb="255, 255, 255" />
         <FloatingPaths position={-1} colorRgb="255, 255, 255" />

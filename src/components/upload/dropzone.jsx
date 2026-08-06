@@ -129,14 +129,24 @@ export function Dropzone({
         animate={{ scale: isDragOver ? 1.015 : 1 }}
         transition={{ duration: 0.15, ease: [0.32, 0.72, 0, 1] }}
         className={cn(
-          "group relative flex w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border bg-secondary/40 text-center transition-colors outline-none",
+          "group relative flex w-full cursor-pointer flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl border-2 border-dashed border-border bg-secondary/40 text-center transition-colors outline-none",
           "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
           !disabled && "hover:border-accent/50 hover:bg-accent-tint/40",
-          isDragOver && "border-accent bg-accent-tint",
+          isDragOver && "border-accent bg-accent-tint shadow-[0_0_0_4px_rgba(5,150,105,0.08)]",
           disabled && "cursor-not-allowed opacity-50",
           compact ? "min-h-[140px] p-6" : "min-h-[280px] p-10"
         )}
       >
+        {/* Faint sheen so the zone itself reads as a coated surface
+            rather than a plain dashed box — same --glossy-card-sheen
+            gradient used on cards, at rest opacity; the dashed border
+            and secondary background (both functional affordances
+            signaling "drop target") are unchanged. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-60"
+          style={{ backgroundImage: "var(--glossy-card-sheen)" }}
+        />
         <input
           ref={inputRef}
           type="file"
@@ -170,7 +180,7 @@ export function Dropzone({
             >
               <div
                 className={cn(
-                  "flex items-center justify-center rounded-full bg-accent-tint text-accent transition-transform",
+                  "metallic-emerald relative flex items-center justify-center rounded-full text-white shadow-[0_2px_10px_-2px_rgba(5,150,105,0.5)] transition-transform",
                   compact ? "size-11" : "size-16",
                   isDragOver && "scale-110"
                 )}

@@ -86,7 +86,7 @@ export default async function CategoryPage({ params }) {
       </div>
 
       {content.intro && (
-        <div className="mt-16 max-w-3xl border-t border-border pt-12">
+        <div className="glossy-card mt-16 max-w-3xl rounded-2xl border border-border/70 bg-card p-6 sm:p-8">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground">
             About {category.label}
           </h2>
@@ -101,8 +101,13 @@ export default async function CategoryPage({ params }) {
           </h2>
           <ul className="mt-4 space-y-3">
             {content.benefits.map((benefit, i) => (
-              <li key={i} className="flex gap-3 text-base leading-relaxed text-muted-foreground">
-                <HiOutlineCheckCircle className="mt-1 size-4 shrink-0 text-accent" />
+              <li
+                key={i}
+                className="glossy-card flex gap-3 rounded-xl border border-border/70 bg-card p-4 text-base leading-relaxed text-muted-foreground"
+              >
+                <span className="metallic-emerald mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-white">
+                  <HiOutlineCheckCircle className="size-3.5" />
+                </span>
                 <span>{benefit}</span>
               </li>
             ))}
@@ -128,9 +133,9 @@ export default async function CategoryPage({ params }) {
           <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground">
             Frequently asked questions
           </h2>
-          <div className="mt-4 divide-y divide-border">
+          <div className="mt-4 space-y-3">
             {content.faq.map((item, i) => (
-              <div key={i} className="py-4">
+              <div key={i} className="glossy-card rounded-xl border border-border/70 bg-card p-4">
                 <h3 className="font-medium text-foreground">{item.question}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.answer}</p>
               </div>

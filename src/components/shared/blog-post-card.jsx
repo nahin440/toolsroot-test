@@ -19,7 +19,7 @@ export function BlogPostCard({ post, headingLevel = "h3" }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-subtle transition-[transform,border-color,box-shadow] duration-150 ease-[var(--ease-standard)] hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-card"
+      className="glossy-card glossy-card-hover group flex flex-col overflow-hidden rounded-2xl border border-border/70 bg-card transition-[transform,border-color] duration-150 ease-[var(--ease-standard)] hover:-translate-y-1 hover:border-accent/30"
     >
       {post.image?.thumb && (
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-secondary">
@@ -51,7 +51,9 @@ export function BlogPostCard({ post, headingLevel = "h3" }) {
         <span className="inline-flex w-fit items-center rounded-full bg-accent-tint px-2.5 py-1 text-xs font-medium text-accent">
           {category.shortLabel}
         </span>
-        <Heading className="mt-3 font-semibold text-foreground">{post.title}</Heading>
+        <Heading className="font-display mt-3 text-lg leading-snug font-semibold tracking-tight text-foreground">
+          {post.title}
+        </Heading>
         <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{post.description}</p>
         <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1">

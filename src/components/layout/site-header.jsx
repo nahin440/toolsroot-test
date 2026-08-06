@@ -52,7 +52,11 @@ function CategoryMegaMenu({ categoryKey, onClose, align = "center" }) {
       exit={{ opacity: 0, y: 8 }}
       transition={{ duration: 0.15 }}
       className={cn(
-        "absolute top-full z-40 mt-2 w-[560px] rounded-2xl border border-border bg-popover p-4 shadow-dropdown",
+        // glossy-card (globals.css v4) replaces the flat shadow-dropdown
+        // with a tinted, layered shadow — the mega-menu now reads as the
+        // same coated material as the rest of the redesign rather than a
+        // plain bordered popover.
+        "glossy-card absolute top-full z-40 mt-2 w-[560px] rounded-2xl border border-border/70 bg-popover p-4",
         align === "center" && "left-1/2 -translate-x-1/2",
         align === "left" && "left-0"
       )}
@@ -94,7 +98,7 @@ function MoreCategorySubmenu({ categoryKey, onClose }) {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -6 }}
       transition={{ duration: 0.15 }}
-      className="absolute top-0 left-full z-40 ml-2 w-[280px] rounded-2xl border border-border bg-popover p-2 shadow-dropdown"
+      className="glossy-card absolute top-0 left-full z-40 ml-2 w-[280px] rounded-2xl border border-border/70 bg-popover p-2"
     >
       <div className="max-h-[320px] overflow-y-auto">
         {tools.map((tool) => (
@@ -130,7 +134,7 @@ function MoreMegaMenu({ onClose }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }}
       transition={{ duration: 0.15 }}
-      className="absolute top-full right-0 z-40 mt-2 w-[240px] rounded-2xl border border-border bg-popover p-2 shadow-dropdown"
+      className="glossy-card absolute top-full right-0 z-40 mt-2 w-[240px] rounded-2xl border border-border/70 bg-popover p-2"
       onMouseLeave={() => setActiveSubcategory(null)}
     >
       {MORE_CATEGORY_KEYS.map((key) => {
@@ -168,7 +172,7 @@ export function SiteHeader() {
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-accent/10 bg-background/80 shadow-[0_1px_0_0_rgba(5,150,105,0.06),0_8px_24px_-16px_rgba(5,150,105,0.25)] backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-4 sm:px-6">
         <Link href="/" className="shrink-0">
           <LogoMark />
@@ -245,7 +249,7 @@ export function SiteHeader() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden border-t border-border lg:hidden"
+            className="overflow-hidden border-t border-accent/10 bg-background/95 backdrop-blur-md lg:hidden"
           >
             <div className="max-h-[70vh] space-y-1 overflow-y-auto px-4 py-4">
               {PRIMARY_CATEGORY_KEYS.map((key) => (

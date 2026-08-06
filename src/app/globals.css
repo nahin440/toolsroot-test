@@ -69,8 +69,15 @@
   --success: #059669;
   --success-foreground: #ffffff;
 
-  /* ---- Typography ---- */
-  --font-display: var(--font-geist-sans);
+  /* ---- Typography ----
+     Display serif is Cormorant (self-hosted via next/font/google, see
+     layout.js — --font-cormorant is set on <html>), a warm high-contrast
+     serif used at every "font-display" call site sitewide: hero
+     headlines, section H2s, card titles that opt in. Body/UI text stays
+     on Geist Sans — Cormorant at small sizes/low weights reads as
+     fragile for buttons, form labels, and dense paragraph copy, so the
+     serif is reserved for the sizes it was drawn for (≥20px). */
+  --font-display: var(--font-cormorant), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-body: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
@@ -133,6 +140,29 @@
     radial-gradient(140% 160% at 100% 110%, rgba(4, 120, 87, 0.35) 0%, transparent 55%),
     linear-gradient(160deg, var(--accent-hover) 0%, var(--accent) 50%, var(--accent-active) 100%);
 
+  /* v4: a deliberately louder hero variant. --metallic-emerald-soft
+     above was tuned to stay out of foreground text's way; this redesign
+     pass asks for more visual presence on the two or three large hero
+     surfaces per page (homepage + tool-page hero) specifically, so this
+     widens the highlight spread, raises peak opacity, and adds a third
+     "glint" highlight near the top-right where the floating tool icons
+     sit — the same three-light-source idea as a real brushed-metal
+     product shot (key light, fill light, rim light) rather than one
+     highlight doing all the work. Text contrast is preserved: the
+     brightest stop (0.6) still fades to transparent by 45-58%, so the
+     lower-left two-thirds of the surface (where headline/body copy
+     lives, see hero-section.jsx's text column) stays close to flat
+     --accent for AA contrast against white text. */
+  --metallic-emerald-loud: radial-gradient(
+      135% 170% at 8% -15%,
+      rgba(167, 243, 208, 0.6) 0%,
+      rgba(110, 231, 183, 0.28) 30%,
+      transparent 58%
+    ),
+    radial-gradient(90% 120% at 92% -5%, rgba(255, 255, 255, 0.22) 0%, transparent 45%),
+    radial-gradient(150% 170% at 105% 115%, rgba(4, 120, 87, 0.55) 0%, transparent 52%),
+    linear-gradient(160deg, var(--accent-hover) 0%, var(--accent) 48%, var(--accent-active) 100%);
+
   /* Frosted-glass panel over the metallic surfaces above (approximation
      of "glassy" per web glassmorphism conventions — backdrop-filter +
      layered borders + inner highlight; not an OS-native effect). Used
@@ -163,6 +193,55 @@
     rgba(255, 255, 255, 0.45) 53%,
     transparent 70%
   );
+
+  /* ---- v4: glossy card surface + organic decoration (additive layer) ----
+     The v3 block above covers hero/CTA-scale metallic surfaces. This
+     layer answers the flatter parts of the previous pass — ordinary
+     content cards (tool cards, category cards, blog cards, panels) that
+     were still a plain white box with a hairline border. ".glossy-card"
+     below gives any bg-card surface a believable "coated" finish: a
+     soft emerald-tinted ambient shadow (never pure black — tinted
+     shadows read as belonging to the brand, not a generic Bootstrap
+     card) plus a 1px inner top highlight simulating light grazing a
+     glossy top edge. Still just white/emerald — no new hues. */
+  --glossy-card-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.9) inset, 0 1px 2px rgba(5, 150, 105, 0.04),
+    0 8px 24px -8px rgba(5, 150, 105, 0.16), 0 2px 8px -2px rgba(10, 10, 10, 0.06);
+  --glossy-card-shadow-hover: 0 1px 0 0 rgba(255, 255, 255, 0.95) inset, 0 1px 2px rgba(5, 150, 105, 0.05),
+    0 16px 40px -12px rgba(5, 150, 105, 0.26), 0 4px 12px -2px rgba(10, 10, 10, 0.08);
+  /* A faint diagonal sheen laid over the card surface itself (not a
+     border, not a shadow) — the same "brushed light" idea as the hero's
+     metallic gradient, just turned down to near-nothing so it reads as
+     a coating rather than a colored fill. Sits UNDER content via
+     background-image, so it never affects text contrast. */
+  --glossy-card-sheen: linear-gradient(
+    165deg,
+    rgba(5, 150, 105, 0.05) 0%,
+    rgba(5, 150, 105, 0) 22%,
+    rgba(5, 150, 105, 0) 78%,
+    rgba(5, 150, 105, 0.035) 100%
+  );
+
+  /* Organic decorative blob palette — flat-fill SVG shapes used behind
+     hero/section content (see OrganicBlobs component), the Ditto-style
+     "garden" backdrop. Every value is emerald-family or the existing
+     accent tints already in this file — no new hues introduced, same
+     discipline FileConversionPattern already established. Two extra
+     stops (a warmer yellow-green and a deeper teal) give the blob
+     cluster visual variety while staying inside one hue family, the
+     same way Ditto's own reference uses moss/fuchsia/yellow but this
+     brand's real palette has only shades of one accent to draw from. */
+  --blob-a: #6ee7b7; /* emerald-300 */
+  --blob-b: #34d399; /* emerald-400 */
+  --blob-c: #a7f3d0; /* emerald-200 */
+  --blob-d: #10b981; /* emerald-500 */
+
+  /* Floating product/photo artifact shadow (Steep reference: white
+     cards with a soft, wide, low-opacity shadow floating over a
+     section, distinct from --shadow-card's tight hairline-first
+     recipe). Used for imagery and any "floating over the hero"
+     composition piece. */
+  --shadow-float: 0 1px 1px rgba(5, 150, 105, 0.03), 0 20px 25px -8px rgba(10, 10, 10, 0.12),
+    0 8px 10px -6px rgba(10, 10, 10, 0.08);
 }
 
 .dark {
@@ -234,6 +313,16 @@
     radial-gradient(140% 160% at 100% 110%, rgba(5, 150, 105, 0.4) 0%, transparent 55%),
     linear-gradient(160deg, var(--accent-hover) 0%, var(--accent) 50%, var(--accent-active) 100%);
 
+  --metallic-emerald-loud: radial-gradient(
+      135% 170% at 8% -15%,
+      rgba(209, 250, 229, 0.5) 0%,
+      rgba(167, 243, 208, 0.22) 30%,
+      transparent 58%
+    ),
+    radial-gradient(90% 120% at 92% -5%, rgba(255, 255, 255, 0.14) 0%, transparent 45%),
+    radial-gradient(150% 170% at 105% 115%, rgba(5, 150, 105, 0.6) 0%, transparent 52%),
+    linear-gradient(160deg, var(--accent-hover) 0%, var(--accent) 48%, var(--accent-active) 100%);
+
   --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
   --glass-border: rgba(255, 255, 255, 0.16);
   --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(255, 255, 255, 0.04),
@@ -251,6 +340,31 @@
     rgba(255, 255, 255, 0.22) 53%,
     transparent 70%
   );
+
+  /* Dark-mode v4 tokens: the "coated" top highlight flips from white to
+     a faint lighter-neutral (a true white inset on a near-black card
+     would look like a hairline crack, not a light graze), and the
+     ambient shadow deepens toward black since there's no light surface
+     underneath for an emerald tint to read against. */
+  --glossy-card-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.06) inset, 0 8px 24px -8px rgba(0, 0, 0, 0.5),
+    0 2px 8px -2px rgba(0, 0, 0, 0.4);
+  --glossy-card-shadow-hover: 0 1px 0 0 rgba(255, 255, 255, 0.09) inset, 0 16px 40px -12px rgba(0, 0, 0, 0.6),
+    0 4px 12px -2px rgba(0, 0, 0, 0.5);
+  --glossy-card-sheen: linear-gradient(
+    165deg,
+    rgba(52, 211, 153, 0.07) 0%,
+    rgba(52, 211, 153, 0) 22%,
+    rgba(52, 211, 153, 0) 78%,
+    rgba(52, 211, 153, 0.05) 100%
+  );
+
+  --blob-a: #34d399;
+  --blob-b: #059669;
+  --blob-c: #6ee7b7;
+  --blob-d: #047857;
+
+  --shadow-float: 0 1px 1px rgba(0, 0, 0, 0.2), 0 20px 25px -8px rgba(0, 0, 0, 0.55),
+    0 8px 10px -6px rgba(0, 0, 0, 0.4);
 }
 
 @theme inline {
@@ -296,6 +410,7 @@
   --shadow-dropdown: var(--shadow-dropdown);
   --shadow-toast: var(--shadow-toast);
   --shadow-accent-glow: var(--shadow-accent-glow);
+  --shadow-float: var(--shadow-float);
 
   --animate-fade-up: fade-up var(--duration-page) var(--ease-standard);
   --animate-fade-in: fade-in var(--duration-standard) var(--ease-standard);
@@ -433,6 +548,10 @@
     background-image: var(--metallic-emerald-soft);
     background-size: 200% 200%;
   }
+  .metallic-emerald-loud {
+    background-image: var(--metallic-emerald-loud);
+    background-size: 200% 200%;
+  }
   /* The slow ambient drift — split from the color classes above so a
      component can opt into the metal color without the animation (e.g.
      inside a printed/exported context) and so reduced-motion can turn
@@ -486,5 +605,36 @@
     .shine-sweep[data-shine="active"]::after {
       animation: none !important;
     }
+  }
+
+  /* ---- Glossy card utilities (v4) ----
+     For ordinary content cards (tool cards, category cards, blog cards,
+     panels) that sit on the page's own background rather than floating
+     over a metallic hero. Gives a plain bg-card box a "coated" finish:
+     var(--glossy-card-shadow) is a tinted, layered shadow (soft emerald
+     ambient glow + a bare 1px inset top highlight — never a flat black
+     drop shadow), and the ::before sheen is a near-invisible diagonal
+     gradient sitting between the card's own background-color and its
+     content, so it reads as a coating rather than a colored fill.
+     Layer order note: unlike .glass-panel (frosted, meant to float over
+     a colored surface), .glossy-card keeps an opaque bg-card underneath
+     — it's a finish on a normal card, not a transparency effect. */
+  .glossy-card {
+    position: relative;
+    isolation: isolate;
+    box-shadow: var(--glossy-card-shadow);
+    transition: box-shadow var(--duration-standard) var(--ease-standard);
+  }
+  .glossy-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background-image: var(--glossy-card-sheen);
+    pointer-events: none;
+  }
+  .glossy-card-hover:hover {
+    box-shadow: var(--glossy-card-shadow-hover);
   }
 }

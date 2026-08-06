@@ -4,6 +4,8 @@ import { HiOutlineLockClosed, HiOutlineBolt, HiOutlineGlobeAlt } from "react-ico
 
 import { HeroIconFloat } from "@/components/shared/hero-icon-float";
 import { FileConversionPattern } from "@/components/illustrations/file-conversion-pattern";
+import { FloatingPaths } from "@/components/ui/background-paths";
+import { OrganicBlobs } from "@/components/illustrations/organic-blobs";
 
 export const metadata = {
   title: "About",
@@ -34,7 +36,12 @@ const PRINCIPLES = [
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-[760px] px-4 py-16 sm:px-6">
-      <section className="relative isolate mb-4 -mx-4 overflow-hidden rounded-3xl metallic-emerald-soft metallic-breathe sm:-mx-6 lg:-mx-[190px]">
+      <section className="relative isolate mb-4 -mx-4 overflow-hidden rounded-3xl metallic-emerald-loud metallic-breathe sm:-mx-6 lg:-mx-[190px]">
+        <OrganicBlobs tone="on-accent" />
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <FloatingPaths position={1} colorRgb="255, 255, 255" />
+          <FloatingPaths position={-1} colorRgb="255, 255, 255" />
+        </div>
         <HeroIconFloat>{createElement(PRINCIPLES[0].icon, { className: "size-1/2" })}</HeroIconFloat>
         <div className="relative px-6 py-10 sm:px-10 sm:py-14 lg:max-w-[65%]">
           <h1 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-4xl">
@@ -48,22 +55,25 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-3">
+      <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
         {PRINCIPLES.map((p) => (
-          <div key={p.title} className="flex flex-col items-start gap-3">
-            <div className="flex size-11 items-center justify-center rounded-xl metallic-emerald text-white shadow-accent-glow">
+          <div
+            key={p.title}
+            className="glossy-card glossy-card-hover flex flex-col items-start gap-3 rounded-2xl border border-border/70 bg-card p-6 transition-transform duration-150 ease-[var(--ease-standard)] hover:-translate-y-1"
+          >
+            <div className="metallic-emerald flex size-11 items-center justify-center rounded-xl text-white shadow-accent-glow">
               <p.icon className="size-5" />
             </div>
-            <h3 className="font-semibold text-foreground">{p.title}</h3>
+            <h3 className="font-display text-lg font-semibold text-foreground">{p.title}</h3>
             <p className="text-sm text-muted-foreground">{p.description}</p>
           </div>
         ))}
       </div>
 
-      <div className="relative mt-16 space-y-4 overflow-hidden rounded-3xl border border-border p-6 text-sm leading-relaxed text-muted-foreground sm:p-8">
+      <div className="glossy-card relative mt-16 space-y-4 overflow-hidden rounded-3xl border border-border/70 bg-card p-6 text-sm leading-relaxed text-muted-foreground sm:p-8">
         <FileConversionPattern className="pointer-events-none absolute inset-0 size-full" tone="on-white" />
         <div className="relative">
-          <h2 className="text-xl font-semibold text-foreground">How the tools actually work</h2>
+          <h2 className="font-display text-xl font-semibold text-foreground">How the tools actually work</h2>
           <p>
             Every conversion on this site runs using JavaScript and WebAssembly directly in your
             browser tab. <Link href="/pdf-tools" className="font-medium text-accent hover:underline">PDF operations</Link>{" "}
@@ -90,7 +100,7 @@ export default function AboutPage() {
       </div>
 
       <div className="mt-12 space-y-4 text-sm leading-relaxed text-muted-foreground">
-        <h2 className="text-xl font-semibold text-foreground">You can verify this yourself</h2>
+        <h2 className="font-display text-xl font-semibold text-foreground">You can verify this yourself</h2>
         <p>
           The privacy claim on this page isn&apos;t something you have to take on faith. Open your
           browser&apos;s developer tools to the Network tab before running any tool, then process a
@@ -114,7 +124,7 @@ export default function AboutPage() {
       </div>
 
       <div className="mt-12 space-y-4 text-sm leading-relaxed text-muted-foreground">
-        <h2 className="text-xl font-semibold text-foreground">Two honest limitations</h2>
+        <h2 className="font-display text-xl font-semibold text-foreground">Two honest limitations</h2>
         <p>
           Running everything client-side is a deliberate tradeoff, not a free lunch, and it&apos;s
           worth being upfront about where that tradeoff shows up. Processing speed depends on your
@@ -133,12 +143,13 @@ export default function AboutPage() {
         </p>
       </div>
 
-      <div className="mt-16 flex flex-col items-start gap-4 rounded-3xl border border-border bg-card p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">See it for yourself</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+      <div className="metallic-emerald-loud relative isolate mt-16 flex flex-col items-start gap-4 overflow-hidden rounded-3xl p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+        <OrganicBlobs tone="on-accent" />
+        <div className="relative">
+          <h2 className="font-display text-lg font-semibold text-white">See it for yourself</h2>
+          <p className="mt-1 text-sm text-white/80">
             Browse all 70 tools, or read practical guides on formats and compression in the{" "}
-            <Link href="/blog" className="font-medium text-accent hover:underline">
+            <Link href="/blog" className="font-medium text-white underline underline-offset-2 hover:text-white/90">
               blog
             </Link>
             .
@@ -146,7 +157,7 @@ export default function AboutPage() {
         </div>
         <Link
           href="/"
-          className="inline-flex shrink-0 items-center rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent-active"
+          className="glass-panel relative inline-flex shrink-0 items-center rounded-full px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
         >
           Browse all tools
         </Link>
