@@ -30,13 +30,20 @@ export async function preloadFFmpegEngine(onLoadProgress) {
   await getFFmpeg(undefined, onLoadProgress);
 }
 
+// 256k (mp3/aac/m4a) and -q:a 8 (~256kbps VBR for vorbis) are deliberately
+// above the more common "192k is good enough" default — squarely in
+// transparent territory for virtually all listening conditions, with no
+// real cost since this runs client-side rather than through a server
+// encoding queue. wav/flac are already lossless (no bitrate to raise);
+// amr is a fixed 8kHz/mono narrowband telephony spec with no
+// higher-quality mode to opt into, so both are correctly left as-is.
 const AUDIO_CODEC_FOR_EXT = {
-  mp3: ["-c:a", "libmp3lame", "-b:a", "192k"],
+  mp3: ["-c:a", "libmp3lame", "-b:a", "256k"],
   wav: ["-c:a", "pcm_s16le"],
-  aac: ["-c:a", "aac", "-b:a", "192k"],
-  m4a: ["-c:a", "aac", "-b:a", "192k"],
+  aac: ["-c:a", "aac", "-b:a", "256k"],
+  m4a: ["-c:a", "aac", "-b:a", "256k"],
   flac: ["-c:a", "flac"],
-  ogg: ["-c:a", "libvorbis", "-q:a", "5"],
+  ogg: ["-c:a", "libvorbis", "-q:a", "8"],
   aiff: ["-c:a", "pcm_s16le"],
   amr: ["-c:a", "libopencore_amrnb", "-ar", "8000", "-ac", "1"],
 };
@@ -49,9 +56,18 @@ const AUDIO_CODEC_FOR_EXT = {
 // legally hold as-is), not a guess; keep this conservative (only
 // well-established, broadly-supported combinations) since a rejected
 // copy attempt would surface as a new, different visible error.
+// x264 preset "medium" is x264's own actual built-in default — a real
+// step up in compression efficiency (quality-per-byte at the SAME crf
+// below) over the faster "veryfast" preset this table used previously.
+// A preset only trades encode time for how well the encoder searches for
+// efficient motion/block choices; it doesn't change the crf quality
+// target itself, so this is a genuine quality-at-the-same-target
+// improvement, not a different tradeoff — paid for in extra encode time,
+// which is an easy trade with no server queue/cost pressure since this
+// all runs client-side in the person's own browser tab.
 const VIDEO_CODEC_FOR_EXT = {
   mp4: {
-    videoArgs: ["-c:v", "libx264", "-preset", "veryfast", "-crf", "23"],
+    videoArgs: ["-c:v", "libx264", "-preset", "medium", "-crf", "23"],
     transcodeAudioArgs: ["-c:a", "aac"],
     copyCompatibleAudio: ["aac"],
   },
@@ -66,12 +82,12 @@ const VIDEO_CODEC_FOR_EXT = {
     copyCompatibleAudio: ["mp3"],
   },
   mov: {
-    videoArgs: ["-c:v", "libx264", "-preset", "veryfast", "-crf", "23"],
+    videoArgs: ["-c:v", "libx264", "-preset", "medium", "-crf", "23"],
     transcodeAudioArgs: ["-c:a", "aac"],
     copyCompatibleAudio: ["aac"],
   },
   mkv: {
-    videoArgs: ["-c:v", "libx264", "-preset", "veryfast", "-crf", "23"],
+    videoArgs: ["-c:v", "libx264", "-preset", "medium", "-crf", "23"],
     transcodeAudioArgs: ["-c:a", "aac"],
     copyCompatibleAudio: ["aac"],
   },
@@ -330,12 +346,12 @@ export async function compressVideo(file, level = "medium", onProgress) {
       // mp4/mov/mkv case this tool is built around.
       const sourceAudioCodec = await probeAudioCodec(ffmpeg, inputName);
       const audioArgs =
-        sourceAudioCodec === "aac" ? ["-c:a", "copy"] : ["-c:a", "aac", "-b:a", "128k"];
+        sourceAudioCodec === "aac" ? ["-c:a", "copy"] : ["-c:a", "aac", "-b:a", "256k"];
 
       await ffmpeg.exec([
         "-i", inputName,
         "-c:v", "libx264",
-        "-preset", "veryfast",
+        "-preset", "medium",
         "-crf", String(crf),
         ...audioArgs,
         outputName,
@@ -344,6 +360,20 @@ export async function compressVideo(file, level = "medium", onProgress) {
     },
     onProgress
   );
+}
+
+/**
+ * The same per-container videoArgs already defined in VIDEO_CODEC_FOR_EXT
+ * (used by convertVideo/compressVideo), reused here so resize/crop/
+ * fps-change/watermark get an explicit, tested codec choice instead of
+ * relying on ffmpeg's own implicit, build-dependent default for whatever
+ * container the source file happens to be in. Falls back to an empty
+ * array — today's exact pre-existing behavior — for any extension not in
+ * that table, so a less-common container (e.g. .flv, .wmv) never regresses
+ * to something worse than what it already does.
+ */
+function explicitVideoArgsFor(ext) {
+  return VIDEO_CODEC_FOR_EXT[ext]?.videoArgs || [];
 }
 
 /** Resize video to explicit dimensions (use -1 for either to preserve aspect ratio). */
@@ -356,7 +386,13 @@ export async function resizeVideo(file, width, height, onProgress) {
     file,
     inputName,
     async (ffmpeg) => {
-      await ffmpeg.exec(["-i", inputName, "-vf", `scale=${width}:${height}:flags=lanczos`, "-c:a", "copy", outputName]);
+      await ffmpeg.exec([
+        "-i", inputName,
+        "-vf", `scale=${width}:${height}:flags=lanczos`,
+        ...explicitVideoArgsFor(ext),
+        "-c:a", "copy",
+        outputName,
+      ]);
       return readAndCleanup(ffmpeg, outputName, `video/${ext}`, [inputName, outputName]);
     },
     onProgress
@@ -376,6 +412,7 @@ export async function cropVideo(file, cropBox, onProgress) {
       await ffmpeg.exec([
         "-i", inputName,
         "-vf", `crop=${cropBox.width}:${cropBox.height}:${cropBox.x}:${cropBox.y}`,
+        ...explicitVideoArgsFor(ext),
         "-c:a", "copy",
         outputName,
       ]);
@@ -395,7 +432,13 @@ export async function changeVideoFps(file, targetFps, onProgress) {
     file,
     inputName,
     async (ffmpeg) => {
-      await ffmpeg.exec(["-i", inputName, "-r", String(targetFps), "-c:a", "copy", outputName]);
+      await ffmpeg.exec([
+        "-i", inputName,
+        "-r", String(targetFps),
+        ...explicitVideoArgsFor(ext),
+        "-c:a", "copy",
+        outputName,
+      ]);
       return readAndCleanup(ffmpeg, outputName, `video/${ext}`, [inputName, outputName]);
     },
     onProgress
@@ -415,7 +458,7 @@ export async function rotateVideo(file, degreesVal, onProgress) {
     inputName,
     async (ffmpeg) => {
       const args = filter
-        ? ["-i", inputName, "-vf", `transpose=${filter}`, "-c:a", "copy", outputName]
+        ? ["-i", inputName, "-vf", `transpose=${filter}`, ...explicitVideoArgsFor(ext), "-c:a", "copy", outputName]
         : ["-i", inputName, "-c", "copy", outputName];
       await ffmpeg.exec(args);
       return readAndCleanup(ffmpeg, outputName, `video/${ext}`, [inputName, outputName]);
@@ -450,6 +493,7 @@ export async function watermarkVideo(file, opts, onProgress) {
           "-i", inputName,
           "-i", wmName,
           "-filter_complex", `overlay=${pos}:format=auto,format=yuv420p`,
+          ...explicitVideoArgsFor(ext),
           "-c:a", "copy",
           outputName,
         ]);
@@ -470,6 +514,7 @@ export async function watermarkVideo(file, opts, onProgress) {
       await ffmpeg.exec([
         "-i", inputName,
         "-vf", `drawtext=text='${text}':fontcolor=${fontColor}:fontsize=${fontSize}:${pos}:alpha=${opts.opacity ?? 0.7}`,
+        ...explicitVideoArgsFor(ext),
         "-c:a", "copy",
         outputName,
       ]);
