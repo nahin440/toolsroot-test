@@ -70,15 +70,16 @@
   --success-foreground: #ffffff;
 
   /* ---- Typography ----
-     Display serif is Cormorant (self-hosted via next/font/google, see
-     layout.js — --font-cormorant is set on <html>), a warm high-contrast
-     serif used at every "font-display" call site sitewide: hero
-     headlines, section H2s, card titles that opt in. Body/UI text stays
-     on Geist Sans — Cormorant at small sizes/low weights reads as
-     fragile for buttons, form labels, and dense paragraph copy, so the
-     serif is reserved for the sizes it was drawn for (≥20px). */
+     Cormorant (self-hosted via next/font/local, see layout.js —
+     --font-cormorant is set on <html>) is the sitewide font for both
+     display and body/UI text — hero headlines, section H2s, card
+     titles, paragraph copy, buttons, and form labels all render in it.
+     This is a deliberate choice: a display serif at body sizes reads
+     lighter and less "neutral" than a sans-serif would, which is the
+     tradeoff being made here in exchange for one consistent typographic
+     voice across the whole site rather than a serif/sans split. */
   --font-display: var(--font-cormorant), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-body: var(--font-geist-sans);
+  --font-body: var(--font-cormorant), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: var(--font-geist-mono);
 
   /* ---- Elevation (barely-perceptible, hairline-first, per reference) ---- */

@@ -174,7 +174,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-accent/10 bg-background/80 shadow-[0_1px_0_0_rgba(5,150,105,0.06),0_8px_24px_-16px_rgba(5,150,105,0.25)] backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="shrink-0">
+        <Link href="/" className="shrink-0" aria-label="Tools Root — Home">
           <LogoMark />
         </Link>
 

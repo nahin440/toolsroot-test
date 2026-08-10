@@ -51,13 +51,20 @@ export function HeroSection() {
           on-accent tone: soft white silhouettes rather than the actual
           --blob-* emerald tints, since emerald-on-emerald would vanish
           against this surface (the same reasoning FloatingPaths already
-          applies by recoloring its own strokes to white via colorRgb
-          below). Purely atmospheric — nothing here changes layout,
-          copy, or the preserved path animation itself. */}
+          applies by recoloring its own strokes below). Purely
+          atmospheric — nothing here changes layout or copy. */}
       <OrganicBlobs tone="on-accent" />
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <FloatingPaths position={1} colorRgb="255, 255, 255" />
-        <FloatingPaths position={-1} colorRgb="255, 255, 255" />
+        {/* Homepage-only: reverseX flips the sweep from top-left→bottom-
+            right to top-right→bottom-left (both position values, so the
+            crossing composition mirrors as a whole rather than only one
+            line reversing), and metallic swaps the flat white stroke for
+            a silver/chrome gradient. Both props default to off, so every
+            other page still using FloatingPaths (tool-hero, category-
+            hero, about, contact, blog) renders exactly as before — see
+            background-paths.jsx for the full rationale on each prop. */}
+        <FloatingPaths position={1} colorRgb="255, 255, 255" reverseX metallic />
+        <FloatingPaths position={-1} colorRgb="255, 255, 255" reverseX metallic />
       </div>
       <HeroFloatingIcons />
       <motion.div

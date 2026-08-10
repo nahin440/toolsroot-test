@@ -84,6 +84,7 @@ export function SiteFooter() {
           </div>
 
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+            <Link href="/" className="hover:text-accent">Home</Link>
             <Link href="/about" className="hover:text-accent">About</Link>
             <Link href="/blog" className="hover:text-accent">Blog</Link>
             <Link href="/pricing" className="hover:text-accent">Pricing</Link>

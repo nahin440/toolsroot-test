@@ -43,6 +43,24 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion";
  *    luminance/contrast-ratio calc): emerald-on-white and white-on-emerald
  *    land within ~0.1 of each other at every opacity step in the existing
  *    ramp, so the same opacity formula works unchanged for either color.
+ *  - Two additional opt-in props, both defaulting to off so every existing
+ *    call site (tool-hero, category-hero, about, contact, blog,
+ *    section-flow-lines, organic-blobs) keeps rendering byte-for-byte as
+ *    before:
+ *      - `reverseX`: mirrors every x-coordinate across the viewBox's
+ *        horizontal center (696 - x), turning the sweep from
+ *        top-left→bottom-right into top-right→bottom-left. Only the y
+ *        terms (vertical direction) are left untouched, so the "two
+ *        paths crossing" composition and per-index color/width ramp are
+ *        unaffected — only which corner each sweep starts/ends at flips.
+ *      - `metallic`: swaps the flat-color stroke for a real SVG
+ *        <linearGradient> cycling through a few silver/chrome tones
+ *        (bright highlight → mid grey → cool shadow) instead of one flat
+ *        white value — the same "layered tones simulating light on
+ *        metal" idea --metallic-emerald already uses in globals.css,
+ *        applied to a thin stroke instead of a filled surface. Falls
+ *        back to the existing flat-color path exactly as before when
+ *        false.
  */
 
 // Tailwind emerald-600, this project's --accent (see globals.css). Kept as
@@ -54,39 +72,81 @@ const ACCENT_RGB = "5, 150, 105";
 // well-distributed sequence in [0, 1) — see the class doc comment above.
 const PSEUDO_RANDOM_STEP = 0.6180339887498949;
 
-export function FloatingPaths({ position, colorRgb = ACCENT_RGB }) {
+// Matches the viewBox width below ("0 0 696 316") — used by `reverseX` to
+// mirror x-coordinates across the horizontal center of that exact box.
+const VIEWBOX_WIDTH = 696;
+
+// Silver/chrome tones for the `metallic` gradient: a bright near-white
+// highlight, a light-grey body, a cooler mid-grey, and a deeper shadow
+// tone — cycling through all four along the stroke is what reads as
+// "brushed metal catching light" rather than a flat pale color, the same
+// reasoning --metallic-emerald documents for its own layered highlights.
+const METALLIC_STOPS = ["#f8fafc", "#cbd5e1", "#94a3b8", "#e2e8f0"];
+
+export function FloatingPaths({ position, colorRgb = ACCENT_RGB, reverseX = false, metallic = false }) {
   const shouldReduceMotion = useReducedMotion();
+  const gradientId = `floating-paths-metallic-${position}`;
 
   // Path generation is pure (no Math.random — see PSEUDO_RANDOM_STEP
   // above) but there's no reason to recompute 36 path strings on every
-  // parent re-render; position/colorRgb are the only real inputs.
+  // parent re-render; position/colorRgb/reverseX are the only real inputs.
   const paths = useMemo(
     () =>
-      Array.from({ length: 36 }, (_, i) => ({
-        id: i,
-        d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
-          380 - i * 5 * position
-        } -${189 + i * 6} -${312 - i * 5 * position} ${216 - i * 6} ${
-          152 - i * 5 * position
-        } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
-          684 - i * 5 * position
-        } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
-        color: `rgba(${colorRgb}, ${0.1 + i * 0.03})`,
-        width: 0.5 + i * 0.03,
-        duration: 20 + ((i * PSEUDO_RANDOM_STEP) % 1) * 10,
-      })),
-    [position, colorRgb]
+      Array.from({ length: 36 }, (_, i) => {
+        // Each x computed exactly as the original, untouched formula would
+        // (so reverseX=false is byte-for-byte identical to before this
+        // prop existed), then mirrored across the viewBox's horizontal
+        // center only when reverseX is on. Keeping this as two explicit
+        // steps, rather than folding the mirror into one combined
+        // expression, is deliberate — verified against the original
+        // formula across every path index and both position values.
+        const mirrorX = (x) => (reverseX ? VIEWBOX_WIDTH - x : x);
+        const x1 = mirrorX(-(380 - i * 5 * position));
+        const x2 = mirrorX(-(312 - i * 5 * position));
+        const x3 = mirrorX(152 - i * 5 * position);
+        const x4 = mirrorX(616 - i * 5 * position);
+        const x5 = mirrorX(684 - i * 5 * position);
+        const y1 = -(189 + i * 6);
+        const y2 = 216 - i * 6;
+        const y3 = 343 - i * 6;
+        const y4 = 470 - i * 6;
+        const y5 = 875 - i * 6;
+        return {
+          id: i,
+          d: `M${x1} ${y1}C${x1} ${y1} ${x2} ${y2} ${x3} ${y3}C${x4} ${y4} ${x5} ${y5} ${x5} ${y5}`,
+          color: `rgba(${colorRgb}, ${0.1 + i * 0.03})`,
+          opacity: 0.1 + i * 0.03,
+          width: 0.5 + i * 0.03,
+          duration: 20 + ((i * PSEUDO_RANDOM_STEP) % 1) * 10,
+        };
+      }),
+    [position, colorRgb, reverseX]
   );
 
   return (
     <div className="absolute inset-0 pointer-events-none">
       <svg className="w-full h-full" viewBox="0 0 696 316" fill="none">
         <title>Background Paths</title>
+        {metallic && (
+          <defs>
+            {/* Gradient runs along the sweep's own diagonal (top-right to
+                bottom-left when reverseX is on) rather than a fixed
+                screen axis, so the highlight travels with the line
+                instead of sitting static across every path at once. */}
+            <linearGradient id={gradientId} x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor={METALLIC_STOPS[0]} />
+              <stop offset="35%" stopColor={METALLIC_STOPS[1]} />
+              <stop offset="65%" stopColor={METALLIC_STOPS[2]} />
+              <stop offset="100%" stopColor={METALLIC_STOPS[3]} />
+            </linearGradient>
+          </defs>
+        )}
         {paths.map((path) => (
           <motion.path
             key={path.id}
             d={path.d}
-            stroke={path.color}
+            stroke={metallic ? `url(#${gradientId})` : path.color}
+            strokeOpacity={metallic ? path.opacity : undefined}
             strokeWidth={path.width}
             initial={{ pathLength: 0.3, opacity: 0.6 }}
             // Reduced motion: settle on one static, fully-drawn frame

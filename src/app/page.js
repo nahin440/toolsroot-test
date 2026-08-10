@@ -1,15 +1,17 @@
 import Link from "next/link";
 import Image from "next/image";
+import { createElement } from "react";
 import { HiLockClosed, HiBolt, HiGlobeAlt, HiArrowRight } from "react-icons/hi2";
 
-import { ToolCard } from "@/components/home/tool-card";
+import { ToolCarousel } from "@/components/home/tool-carousel";
+import { CategoryStack } from "@/components/home/category-stack";
 import { HeroSection } from "@/components/home/hero-section";
 import { TrustPoints } from "@/components/home/trust-points";
 import { SectionFlowLines } from "@/components/ui/section-flow-lines";
 import { FileConversionPattern } from "@/components/illustrations/file-conversion-pattern";
 import { CATEGORIES, getToolsByCategory, TOOLS } from "@/lib/registry/tools";
 import { BLOG_POSTS } from "@/lib/registry/blog-content";
-import { BlogPostCard } from "@/components/shared/blog-post-card";
+import { FeaturedGuides } from "@/components/home/featured-guides";
 import { getToolIcon } from "@/lib/registry/tool-icons";
 import { Button } from "@/components/ui/button";
 
@@ -95,6 +97,19 @@ export const metadata = {
 export default function HomePage() {
   const popularTools = POPULAR_SLUGS.map((slug) => TOOLS.find((t) => t.slug === slug)).filter(Boolean);
   const latestGuides = [...BLOG_POSTS].sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)).slice(0, 3);
+  const categoryStackItems = Object.entries(CATEGORIES).map(([key, category]) => {
+    const tools = getToolsByCategory(key);
+    const Icon = getToolIcon(tools[0]?.slug);
+    return {
+      category,
+      tools,
+      // Pre-rendered element, not the bare component reference — see
+      // this same pattern's rationale in trust-points.jsx / hero-icon-
+      // float; CategoryStack is a Client Component and React can't
+      // serialize a function reference across that boundary.
+      iconElement: createElement(Icon, { className: "size-7 sm:size-8" }),
+    };
+  });
 
   return (
     <div>
@@ -132,10 +147,8 @@ export default function HomePage() {
             </h2>
           </div>
         </div>
-        <div className="relative mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {popularTools.map((tool) => (
-            <ToolCard key={tool.slug} tool={tool} />
-          ))}
+        <div className="relative mt-6">
+          <ToolCarousel tools={popularTools} />
         </div>
       </section>
 
@@ -203,31 +216,8 @@ export default function HomePage() {
           <h2 className="font-display mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             Browse by category
           </h2>
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {Object.entries(CATEGORIES).map(([key, cat]) => {
-              const tools = getToolsByCategory(key);
-              const FirstIcon = getToolIcon(tools[0]?.slug);
-              return (
-                <Link
-                  key={key}
-                  href={`/${cat.slug}`}
-                  className="glossy-card glossy-card-hover group flex flex-col gap-4 rounded-2xl border border-border/70 bg-card p-6 transition-[transform,border-color] duration-150 ease-[var(--ease-standard)] hover:-translate-y-1 hover:border-accent/30"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="metallic-emerald flex size-12 items-center justify-center rounded-xl text-white shadow-[0_2px_8px_-2px_rgba(5,150,105,0.4)] transition-[transform,box-shadow] duration-150 ease-[var(--ease-standard)] group-hover:scale-105 group-hover:shadow-accent-glow">
-                      <FirstIcon className="size-6" />
-                    </div>
-                    <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-muted-foreground">
-                      {tools.length} tools
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">{cat.label}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">{cat.description}</p>
-                  </div>
-                </Link>
-              );
-            })}
+          <div className="mt-6">
+            <CategoryStack items={categoryStackItems} />
           </div>
         </div>
       </section>
@@ -267,10 +257,12 @@ export default function HomePage() {
         <TrustPoints points={TRUST_POINTS} />
       </section>
 
-      {/* Latest guides — same header/grid pattern as "Most popular tools"
-          above, surfacing blog content from the homepage so it isn't only
-          reachable via the footer link or direct search. Closes the
-          homepage-doesn't-link-to-blog gap. */}
+      {/* Latest guides — replaced the plain 3-up BlogPostCard grid with an
+          editorial "featured story + supporting stories" layout
+          (FeaturedGuides) so this section reads as considered rather than
+          a repeated card shape. BlogPostCard itself is untouched — it's
+          still what renders on /blog, category pages, and tool-page
+          "Related articles". */}
       <section className="relative isolate overflow-hidden border-y border-border bg-secondary/30 mx-auto max-w-none px-4 py-16 sm:px-6">
         <SectionFlowLines tone="on-light" />
         <div className="relative mx-auto flex max-w-[1280px] items-center justify-between">
@@ -283,10 +275,8 @@ export default function HomePage() {
             <HiArrowRight className="size-3.5" />
           </Link>
         </div>
-        <div className="relative mx-auto mt-6 grid max-w-[1280px] grid-cols-1 gap-4 sm:grid-cols-3">
-          {latestGuides.map((post) => (
-            <BlogPostCard key={post.slug} post={post} />
-          ))}
+        <div className="relative mx-auto mt-6 max-w-[1280px]">
+          <FeaturedGuides posts={latestGuides} />
         </div>
       </section>
 
