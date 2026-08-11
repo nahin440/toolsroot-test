@@ -40,7 +40,7 @@ function StackCard({ category, tools, iconElement, index, total, scrollYProgress
   return (
     <motion.div
       className="sticky flex items-center justify-center"
-      style={{ top: 96, height: PIN_BAND_PX, scale, opacity, y: translateY, zIndex: index }}
+      style={{ top: 10, height: PIN_BAND_PX, scale, opacity, y: translateY, zIndex: index }}
     >
       <Link
         href={`/${category.slug}`}
@@ -85,7 +85,7 @@ function StaticList({ items }) {
           href={`/${category.slug}`}
           className="glossy-card glossy-card-hover group flex items-center gap-6 rounded-2xl border border-border/70 bg-card p-6 transition-[transform,border-color] duration-150 ease-[var(--ease-standard)] hover:-translate-y-1 hover:border-accent/30 sm:p-8"
         >
-          <div className="metallic-emerald flex size-16 flex-shrink-0 items-center justify-center rounded-2xl text-white shadow-accent-glow sm:size-20">
+          <div className="metallic-emerald flex size-16 shrink-0 items-center justify-center rounded-2xl text-white shadow-accent-glow sm:size-20">
             {iconElement}
           </div>
           <div className="min-w-0 flex-1">
@@ -93,7 +93,7 @@ function StaticList({ items }) {
               <h3 className="font-display text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
                 {category.label}
               </h3>
-              <span className="flex-shrink-0 rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-muted-foreground">
+              <span className="shrink-0 rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-muted-foreground">
                 {tools.length} tools
               </span>
             </div>
@@ -126,7 +126,7 @@ export function CategoryStack({ items }) {
     <div
       ref={containerRef}
       className={cn("relative")}
-      style={{ height: `${items.length * PIN_BAND_PX + 200}px` }}
+      style={{ height: `${items.length * PIN_BAND_PX + 20}px` }}
     >
       {items.map((item, index) => (
         <StackCard

@@ -4,7 +4,7 @@ import { createElement } from "react";
 import { HiLockClosed, HiBolt, HiGlobeAlt, HiArrowRight } from "react-icons/hi2";
 
 import { ToolCarousel } from "@/components/home/tool-carousel";
-import { CategoryStack } from "@/components/home/category-stack";
+import { CategoryBento } from "@/components/home/category-bento";
 import { HeroSection } from "@/components/home/hero-section";
 import { TrustPoints } from "@/components/home/trust-points";
 import { SectionFlowLines } from "@/components/ui/section-flow-lines";
@@ -97,19 +97,27 @@ export const metadata = {
 export default function HomePage() {
   const popularTools = POPULAR_SLUGS.map((slug) => TOOLS.find((t) => t.slug === slug)).filter(Boolean);
   const latestGuides = [...BLOG_POSTS].sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)).slice(0, 3);
-  const categoryStackItems = Object.entries(CATEGORIES).map(([key, category]) => {
-    const tools = getToolsByCategory(key);
-    const Icon = getToolIcon(tools[0]?.slug);
-    return {
-      category,
-      tools,
-      // Pre-rendered element, not the bare component reference — see
-      // this same pattern's rationale in trust-points.jsx / hero-icon-
-      // float; CategoryStack is a Client Component and React can't
-      // serialize a function reference across that boundary.
-      iconElement: createElement(Icon, { className: "size-7 sm:size-8" }),
-    };
-  });
+  const categoryBentoItems = Object.entries(CATEGORIES)
+    .map(([key, category]) => {
+      const tools = getToolsByCategory(key);
+      const Icon = getToolIcon(tools[0]?.slug);
+      return {
+        category,
+        tools,
+        // Pre-rendered element, not the bare component reference — see
+        // this same pattern's rationale in trust-points.jsx; CategoryBento
+        // is a Client Component and React can't serialize a function
+        // reference across that boundary. size-full (not a fixed size)
+        // so the icon scales with whichever circle it's placed inside —
+        // CategoryBento uses a bigger circle for the hero cell than for
+        // the 8 regular cells, and a hardcoded size wouldn't adapt.
+        iconElement: createElement(Icon, { className: "size-full" }),
+      };
+    })
+    // Real tool count drives which category gets the hero cell, not
+    // object-key declaration order in CATEGORIES (which is incidental
+    // and would silently break this if that registry ever gets reordered).
+    .sort((a, b) => b.tools.length - a.tools.length);
 
   return (
     <div>
@@ -217,7 +225,7 @@ export default function HomePage() {
             Browse by category
           </h2>
           <div className="mt-6">
-            <CategoryStack items={categoryStackItems} />
+            <CategoryBento items={categoryBentoItems} />
           </div>
         </div>
       </section>
