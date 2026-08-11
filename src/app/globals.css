@@ -27,24 +27,30 @@
 
   /* ---- Base surfaces (light mode, the default and primary theme) ---- */
   --background: #ffffff;
-  --foreground: #0a0a0a;
+  --foreground: #000000;
 
   --card: #ffffff;
-  --card-foreground: #0a0a0a;
+  --card-foreground: #000000;
 
   --popover: #ffffff;
-  --popover-foreground: #0a0a0a;
+  --popover-foreground: #000000;
 
   /* ---- Ink scale: black is the secondary color, used at full and
-     reduced opacity/tint for hierarchy without introducing new hues ---- */
+     reduced opacity/tint for hierarchy without introducing new hues ----
+     --secondary-foreground and --muted-foreground were previously
+     #0a0a0a and #737373 (a deliberately lighter gray, so secondary/
+     caption text read as less important than headings purely through
+     color). Both are now pure black per explicit request: every text
+     color on a white/near-white surface should be black, with no
+     lighter-gray exception for de-emphasized text. */
   --primary: #0a0a0a;
   --primary-foreground: #ffffff;
 
   --secondary: #f5f5f5;
-  --secondary-foreground: #0a0a0a;
+  --secondary-foreground: #000000;
 
   --muted: #f5f5f5;
-  --muted-foreground: #737373;
+  --muted-foreground: #000000;
 
   /* ---- Brand accent: Tailwind emerald-600 #059669 ---- */
   --accent: #059669;
