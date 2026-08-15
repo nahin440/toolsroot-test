@@ -36,7 +36,7 @@ function StackCard({ category, tools, iconElement, index, total, scrollYProgress
     [shrinkStart, shrinkEnd],
     index === total - 1 ? [0, 0] : [0, -14]
   );
-
+// hi
   return (
     <motion.div
       className="sticky flex items-center justify-center"
