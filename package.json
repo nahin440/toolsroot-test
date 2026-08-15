@@ -54,6 +54,7 @@
     "marked": "^18.0.6",
     "motion": "^12.42.2",
     "next": "^15.5.20",
+    "onnxruntime-web": "^1.27.0",
     "pdfjs-dist": "^6.1.200",
     "pptxgenjs": "^4.0.1",
     "react": "^19.2.7",

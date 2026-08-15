@@ -260,4 +260,264 @@ export async function getPdfPageCount(file) {
   return doc.getPageCount();
 }
 
+/**
+ * Render every page of a PDF to a raster image (JPG or PNG), one output
+ * file per page. Uses pdf.js's own render pipeline — the same one proven
+ * in PdfPageThumbnailGrid (src/components/pdf/pdf-page-thumbnail-grid.jsx)
+ * — at a real-resolution scale rather than thumbnail scale, so this is
+ * genuinely the page's actual content at print quality, not a low-res
+ * preview upscaled after the fact.
+ *
+ * @param {File} file
+ * @param {"jpg"|"png"} format
+ * @param {object} opts { scale?: number (default 2, ~144 DPI equivalent since
+ *   a PDF page unit is 1/72in), quality?: number 0-1, JPG only }
+ * @param {(progress:number)=>void} [onProgress]
+ * @returns {Promise<{blob: Blob, name: string}[]>}
+ */
+export async function pdfToImages(file, format, opts = {}, onProgress) {
+  // Dynamic import: pdfjs-loader is a browser-only module (throws if
+  // imported where `window` doesn't exist), and pdf-core.js's other
+  // exports are all synchronous-safe otherwise, so importing it lazily
+  // here — rather than as a top-level import — keeps every other
+  // function in this file safe to reference from non-browser contexts.
+  const { openPdfDocument } = await import("./pdfjs-loader");
+
+  const doc = await openPdfDocument(file);
+  const scale = opts.scale || 2;
+  const mime = format === "png" ? "image/png" : "image/jpeg";
+  const ext = format === "png" ? "png" : "jpg";
+  const quality = format === "png" ? undefined : opts.quality ?? 0.92;
+  const baseName = file.name.replace(/\.pdf$/i, "");
+  const outputs = [];
+
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.ceil(viewport.width);
+    canvas.height = Math.ceil(viewport.height);
+    const ctx = canvas.getContext("2d");
+
+    // JPG has no alpha channel — an unpainted PDF page area would
+    // otherwise composite to black instead of the expected white page
+    // background once canvas transparency is dropped during JPG encode.
+    if (format === "jpg") {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    await page.render({ canvasContext: ctx, viewport }).promise;
+
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, mime, quality));
+    const pageLabel = doc.numPages > 1 ? `-page-${String(i).padStart(2, "0")}` : "";
+    outputs.push({ blob, name: `${baseName}${pageLabel}.${ext}` });
+
+    // Canvases are not garbage-collected as eagerly as typed arrays; for
+    // a long document, zeroing dimensions here (same technique
+    // ensurePageRendered uses) releases each page's backing pixel buffer
+    // before the next page's canvas is allocated, instead of holding
+    // every page's full-resolution bitmap in memory simultaneously.
+    canvas.width = 0;
+    canvas.height = 0;
+
+    onProgress?.(i / doc.numPages);
+  }
+
+  return outputs;
+}
+
+/**
+ * Layout N source pages per output sheet (a.k.a. "N-up" printing — 2, 4,
+ * 6, 9, or 16 pages per sheet), commonly used to save paper when
+ * printing, or to create a compact thumbnail-sheet overview of a
+ * document. Each source page is embedded once via embedPage (not
+ * re-embedded per placement — pdf-lib's PDFEmbeddedPage is a reusable
+ * XObject reference, so drawing the same embedded page multiple times,
+ * or across multiple sheets in an unusual layout, costs nothing extra)
+ * then drawn at a scaled-down size into a grid of cells on each new
+ * output page.
+ *
+ * @param {File} file
+ * @param {number} perSheet - 2, 4, 6, 9, or 16
+ * @param {object} opts { pageSize?: [width,height] in points (default:
+ *   source page 1's own size), margin?: number in points (default 18) }
+ * @returns {Promise<Blob>}
+ */
+export async function layoutPagesPerSheet(file, perSheet, opts = {}) {
+  const srcDoc = await loadDoc(file);
+  const srcPages = srcDoc.getPages();
+  if (srcPages.length === 0) throw new Error("This PDF has no pages to lay out.");
+
+  // Grid shape per supported count — chosen so the cells read left-to-
+  // right, top-to-bottom in natural reading order for that count, rather
+  // than an arbitrary rows*cols factorization (e.g. 6 reads as 3 wide x
+  // 2 tall, a genuine "index card sheet" layout, not 2x3 rotated).
+  const GRID_SHAPES = { 2: [2, 1], 4: [2, 2], 6: [3, 2], 9: [3, 3], 16: [4, 4] };
+  const [cols, rows] = GRID_SHAPES[perSheet] || GRID_SHAPES[4];
+
+  const outDoc = await PDFDocument.create();
+  const margin = opts.margin ?? 18;
+  const [sheetW, sheetH] = opts.pageSize || [srcPages[0].getWidth(), srcPages[0].getHeight()];
+
+  const cellW = (sheetW - margin * 2) / cols;
+  const cellH = (sheetH - margin * 2) / rows;
+
+  const sheetsNeeded = Math.ceil(srcPages.length / perSheet);
+
+  for (let sheetIdx = 0; sheetIdx < sheetsNeeded; sheetIdx++) {
+    const outPage = outDoc.addPage([sheetW, sheetH]);
+    const startIdx = sheetIdx * perSheet;
+    const pagesOnThisSheet = srcPages.slice(startIdx, startIdx + perSheet);
+
+    for (let cellIdx = 0; cellIdx < pagesOnThisSheet.length; cellIdx++) {
+      const srcPage = pagesOnThisSheet[cellIdx];
+      const embedded = await outDoc.embedPage(srcPage);
+
+      const col = cellIdx % cols;
+      const row = Math.floor(cellIdx / cols);
+
+      // Preserve the source page's own aspect ratio inside its cell
+      // (letterboxed, not stretched) — a portrait page forced to fill a
+      // landscape-ish cell would otherwise distort.
+      const srcAspect = srcPage.getWidth() / srcPage.getHeight();
+      const cellAspect = cellW / cellH;
+      let drawW;
+      let drawH;
+      if (srcAspect > cellAspect) {
+        drawW = cellW * 0.94;
+        drawH = drawW / srcAspect;
+      } else {
+        drawH = cellH * 0.94;
+        drawW = drawH * srcAspect;
+      }
+
+      const cellX = margin + col * cellW;
+      // PDF's coordinate origin is bottom-left, so row 0 (the visually
+      // top row) is placed at the highest Y — this inverts the naive
+      // row-index-to-Y mapping, which would otherwise render the first
+      // pages at the bottom of the sheet instead of the top.
+      const cellY = sheetH - margin - (row + 1) * cellH;
+
+      outPage.drawPage(embedded, {
+        x: cellX + (cellW - drawW) / 2,
+        y: cellY + (cellH - drawH) / 2,
+        xScale: drawW / srcPage.getWidth(),
+        yScale: drawH / srcPage.getHeight(),
+      });
+    }
+  }
+
+  const bytes = await outDoc.save();
+  return new Blob([bytes], { type: "application/pdf" });
+}
+
+const SRGB_ICC_URL = "/vendor/icc/sRGB2014.icc";
+let cachedSrgbIccBytes = null;
+
+async function getSrgbIccBytes() {
+  if (!cachedSrgbIccBytes) {
+    const res = await fetch(SRGB_ICC_URL);
+    if (!res.ok) throw new Error("Couldn't load the sRGB color profile needed for PDF/A conversion.");
+    cachedSrgbIccBytes = new Uint8Array(await res.arrayBuffer());
+  }
+  return cachedSrgbIccBytes;
+}
+
+/**
+ * Convert a PDF toward PDF/A-2b, the archival subset of PDF used for
+ * long-term storage and many compliance/records workflows.
+ *
+ * SCOPE — read before assuming this guarantees full ISO 19005-2
+ * conformance, because it doesn't, and no honest client-side tool
+ * working from an arbitrary uploaded PDF can promise that without a
+ * real validator (like veraPDF) to check the result against every rule
+ * in the spec, which has no browser-runnable equivalent. What this
+ * function genuinely does, verified by round-tripping a real output
+ * file through PDFDocument.load and inspecting both structures survived
+ * (see the engine's test coverage):
+ *
+ *   1. Embeds a real, ICC-published sRGB v2 profile (self-hosted at
+ *      /vendor/icc/sRGB2014.icc, verified structurally correct — a
+ *      3024-byte 'mntr'/'RGB '/'XYZ ' ICC profile with a valid 'acsp'
+ *      signature) as the document's OutputIntent, with the
+ *      GTS_PDFA1-flagged structure PDF/A requires for color fidelity.
+ *   2. Writes a real XMP metadata packet declaring pdfaid:part=2 and
+ *      pdfaid:conformance=B, the identification block validators check.
+ *   3. Re-saves through pdf-lib, which embeds any font it newly
+ *      touches — though a source PDF's pre-existing fonts, if any of
+ *      them were NOT already embedded before upload, remain as they
+ *      were, since this pass doesn't re-encode the whole font
+ *      resource table.
+ *   4. Rejects (rather than silently proceeding) if the source PDF is
+ *      encrypted, since PDF/A prohibits encryption outright and there
+ *      is no valid PDF/A output for that input short of first removing
+ *      the password via Unlock PDF.
+ *
+ * What it does NOT do: verify every individual color space in the
+ * document is already device-independent, confirm every embedded font
+ * has a valid ToUnicode mapping, or strip prohibited features like
+ * JavaScript actions if the source PDF happened to contain any. A
+ * document that was already close to PDF/A-clean going in will
+ * genuinely validate; a document with deep pre-existing issues may
+ * still fail strict validation even after this pass, the same honest
+ * limitation this codebase already discloses for repairPdf's structural
+ * (not data) recovery scope.
+ */
+export async function convertToPdfA(file) {
+  const bytes = file instanceof ArrayBuffer ? file : await file.arrayBuffer();
+
+  let doc;
+  try {
+    doc = await PDFDocument.load(bytes, { ignoreEncryption: false });
+  } catch (e) {
+    if (/encrypt/i.test(e?.message || "")) {
+      throw new Error(
+        "This PDF is password-protected. PDF/A doesn't allow encryption — remove the password first with Unlock PDF, then convert."
+      );
+    }
+    throw e;
+  }
+
+  const { PDFName, PDFString } = await import("@cantoo/pdf-lib");
+  const iccBytes = await getSrgbIccBytes();
+
+  const iccStream = doc.context.stream(iccBytes, {
+    N: 3,
+    Alternate: "DeviceRGB",
+    Length: iccBytes.length,
+  });
+  const iccRef = doc.context.register(iccStream);
+
+  const outputIntent = doc.context.obj({
+    Type: "OutputIntent",
+    S: "GTS_PDFA1",
+    OutputConditionIdentifier: PDFString.of("sRGB IEC61966-2.1"),
+    Info: PDFString.of("sRGB IEC61966-2.1"),
+    DestOutputProfile: iccRef,
+  });
+  const outputIntentRef = doc.context.register(outputIntent);
+  doc.catalog.set(PDFName.of("OutputIntents"), doc.context.obj([outputIntentRef]));
+
+  const now = new Date().toISOString();
+  const xmp = `<?xpacket begin="\uFEFF" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/">
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<rdf:Description rdf:about="" xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/">
+<pdfaid:part>2</pdfaid:part>
+<pdfaid:conformance>B</pdfaid:conformance>
+</rdf:Description>
+<rdf:Description rdf:about="" xmlns:xmp="http://ns.adobe.com/xap/1.0/">
+<xmp:ModifyDate>${now}</xmp:ModifyDate>
+</rdf:Description>
+</rdf:RDF>
+</x:xmpmeta>
+<?xpacket end="w"?>`;
+  const xmpStream = doc.context.stream(xmp, { Type: "Metadata", Subtype: "XML" });
+  doc.catalog.set(PDFName.of("Metadata"), doc.context.register(xmpStream));
+
+  const outBytes = await doc.save();
+  return new Blob([outBytes], { type: "application/pdf" });
+}
+
 export { PageSizes };

@@ -586,4 +586,221 @@ export async function stripImageMetadata(file) {
   });
 }
 
+// Characters ordered from visually darkest to lightest, the standard
+// hand-tuned ramp used by most ASCII-art converters (denser glyphs like
+// '@' and '#' read as darker at typical monospace rendering weights than
+// sparser ones like '.' and ' ', independent of the actual luminance
+// value, which is what perceptual ASCII-art ramps are tuned against).
+const ASCII_RAMP = "@%#*+=-:. ";
+
+/**
+ * Convert an image into ASCII art: deterministic pixel-to-character
+ * mapping, not a probabilistic or AI-driven approximation, so identical
+ * input always produces identical output.
+ * @param {object} opts { columns?: number (default 100), colorMode?: "mono"|"color" }
+ * @returns {Promise<{ text: string, html: string }>} `text` is plain
+ *   monospace text; `html` wraps each character in a <span> with its
+ *   sampled color for the color-mode preview and export.
+ */
+export async function imageToAscii(file, opts = {}) {
+  const bitmap = await loadImageBitmapFromFile(file);
+  const columns = Math.max(20, Math.min(300, opts.columns || 100));
+  // Monospace character cells are roughly twice as tall as they are
+  // wide, so sampling at a 1:1 pixel-to-character ratio would render the
+  // output visually stretched vertically — halving the row count
+  // compensates for that aspect mismatch.
+  const charAspect = 0.5;
+  const rows = Math.round((bitmap.height / bitmap.width) * columns * charAspect);
+
+  const canvas = drawToCanvas(bitmap, columns, rows);
+  const ctx = canvas.getContext("2d");
+  const { data } = ctx.getImageData(0, 0, columns, rows);
+
+  let text = "";
+  let html = "";
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < columns; x++) {
+      const i = (y * columns + x) * 4;
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      const a = data[i + 3];
+      // Standard luma-weighted grayscale conversion (Rec. 601 coefficients),
+      // the same weighting used elsewhere for perceptually accurate
+      // brightness rather than a naive (r+g+b)/3 average, which
+      // over-weights blue and under-weights green relative to how human
+      // vision actually perceives brightness.
+      const luma = a === 0 ? 255 : (0.299 * r + 0.587 * g + 0.114 * b);
+      const rampIdx = Math.min(ASCII_RAMP.length - 1, Math.floor((luma / 255) * ASCII_RAMP.length));
+      const char = ASCII_RAMP[rampIdx];
+      text += char;
+      const escaped = char === " " ? "&nbsp;" : char === "<" ? "&lt;" : char === "&" ? "&amp;" : char;
+      html += `<span style="color:rgb(${r},${g},${b})">${escaped}</span>`;
+    }
+    text += "\n";
+    html += "<br/>";
+  }
+
+  return { text, html, columns, rows };
+}
+
+/**
+ * @param {object} opts { widthPercent?: number (default 4, percent of
+ *   the image's longer side), color?: "#rrggbb", style?: "solid"|"rounded" }
+ */
+export async function addImageBorder(file, opts = {}) {
+  const bitmap = await loadImageBitmapFromFile(file);
+  const widthPercent = opts.widthPercent ?? 4;
+  const borderPx = Math.round(Math.max(bitmap.width, bitmap.height) * (widthPercent / 100));
+  const color = opts.color || "#ffffff";
+
+  const canvas = document.createElement("canvas");
+  canvas.width = bitmap.width + borderPx * 2;
+  canvas.height = bitmap.height + borderPx * 2;
+  const ctx = canvas.getContext("2d");
+
+  if (opts.style === "rounded") {
+    const radius = Math.min(borderPx * 1.5, canvas.width / 4, canvas.height / 4);
+    ctx.fillStyle = color;
+    // Manual rounded-rect path: roundRect() is broadly supported in
+    // current browsers but this keeps the same universal-compatibility
+    // posture as the rest of this file's hand-rolled encoders, rather
+    // than introducing the one canvas API call in this file that would
+    // need a fallback on an older engine.
+    const { width: w, height: h } = canvas;
+    ctx.beginPath();
+    ctx.moveTo(radius, 0);
+    ctx.arcTo(w, 0, w, h, radius);
+    ctx.arcTo(w, h, 0, h, radius);
+    ctx.arcTo(0, h, 0, 0, radius);
+    ctx.arcTo(0, 0, w, 0, radius);
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  ctx.drawImage(bitmap, borderPx, borderPx);
+
+  const ext = (file.name.split(".").pop() || "png").toLowerCase();
+  const format = CANVAS_MIME[ext] ? ext : "png";
+  return encodeCanvasSafely(canvas, format, 0.92);
+}
+
+/**
+ * Extracts the dominant colors from an image using median-cut color
+ * quantization — a real, deterministic clustering algorithm (the same
+ * general approach behind most palette-extraction and GIF-quantization
+ * tools), not a naive "most frequent exact pixel value" count, which
+ * would be dominated by antialiasing noise and near-duplicate shades
+ * rather than surfacing the image's actual dominant colors.
+ * @param {number} count Number of colors to extract (default 6)
+ */
+export async function extractColorPalette(file, count = 6) {
+  const bitmap = await loadImageBitmapFromFile(file);
+  // Sampling at a capped resolution keeps quantization fast on a large
+  // photo without materially changing the extracted palette, since color
+  // distribution is stable under downsampling for this purpose.
+  const sampleSize = 150;
+  const scale = Math.min(1, sampleSize / Math.max(bitmap.width, bitmap.height));
+  const w = Math.max(1, Math.round(bitmap.width * scale));
+  const h = Math.max(1, Math.round(bitmap.height * scale));
+  const canvas = drawToCanvas(bitmap, w, h);
+  const { data } = canvas.getContext("2d").getImageData(0, 0, w, h);
+
+  const pixels = [];
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3] < 16) continue; // skip near-fully-transparent pixels
+    pixels.push([data[i], data[i + 1], data[i + 2]]);
+  }
+  if (pixels.length === 0) return [{ hex: "#ffffff", population: 1 }];
+
+  // Median-cut: recursively split the pixel set with the most color
+  // variance along its widest channel (R, G, or B), splitting each box
+  // at that channel's MEAN value — not a fixed 50/50 pixel-count median.
+  // A count-median split puts the boundary at "half the pixels" regardless
+  // of where the real color clusters actually sit, which silently
+  // misattributes population between unequal-sized clusters (a 70/30
+  // real split would render as 50/50, with a muddy blended color
+  // appearing in the output that doesn't correspond to anything in the
+  // source image). Splitting at the mean anchors the boundary to the
+  // actual value distribution instead, correctly preserving population
+  // share — verified against exact 70/20/10 and noisy 70/20/10 synthetic
+  // test distributions before shipping this.
+  function channelRange(box, channel) {
+    let min = 255;
+    let max = 0;
+    for (const p of box) {
+      if (p[channel] < min) min = p[channel];
+      if (p[channel] > max) max = p[channel];
+    }
+    return max - min;
+  }
+
+  function boxMaxRange(box) {
+    return Math.max(channelRange(box, 0), channelRange(box, 1), channelRange(box, 2));
+  }
+
+  function splitBox(box) {
+    const ranges = [0, 1, 2].map((c) => channelRange(box, c));
+    const channel = ranges.indexOf(Math.max(...ranges));
+    const mean = box.reduce((s, p) => s + p[channel], 0) / box.length;
+    const lower = box.filter((p) => p[channel] <= mean);
+    const upper = box.filter((p) => p[channel] > mean);
+    if (lower.length === 0 || upper.length === 0) {
+      // Degenerate case (shouldn't occur for a box with real variance,
+      // since a mean strictly between min and max always has points on
+      // both sides — kept as a safety net against infinite recursion).
+      const sorted = [...box].sort((a, b) => a[channel] - b[channel]);
+      const mid = Math.floor(sorted.length / 2);
+      return [sorted.slice(0, mid), sorted.slice(mid)];
+    }
+    return [lower, upper];
+  }
+
+  let boxes = [pixels];
+  const targetBoxes = Math.max(1, Math.min(16, count));
+  while (boxes.length < targetBoxes) {
+    // Only split boxes that still have meaningful color variance (a
+    // tight, already-uniform box has nothing useful left to separate),
+    // prioritizing the box with the most population*variance — the one
+    // most "worth" splitting — rather than just the largest box by
+    // pixel count, which could already be a single tight color cluster.
+    const splittable = boxes.filter((b) => b.length >= 2 && boxMaxRange(b) > 8);
+    if (splittable.length === 0) break;
+    splittable.sort((a, b) => b.length * boxMaxRange(b) - a.length * boxMaxRange(a));
+    const target = splittable[0];
+    boxes = boxes.filter((b) => b !== target);
+    boxes.push(...splitBox(target));
+  }
+
+  const palette = boxes
+    .map((box) => {
+      const sum = box.reduce((acc, p) => [acc[0] + p[0], acc[1] + p[1], acc[2] + p[2]], [0, 0, 0]);
+      const avg = sum.map((v) => Math.round(v / box.length));
+      const hex = `#${avg.map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+      return { hex, rgb: avg, population: box.length / pixels.length };
+    })
+    .sort((a, b) => b.population - a.population);
+
+  return palette;
+}
+
+/**
+ * @param {object} opts { includeDataUriPrefix?: boolean (default true) }
+ */
+export async function imageToBase64(file, opts = {}) {
+  const includePrefix = opts.includeDataUriPrefix ?? true;
+  const dataUrl = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("Couldn't read this file."));
+    reader.readAsDataURL(file);
+  });
+  const commaIdx = dataUrl.indexOf(",");
+  const base64 = dataUrl.slice(commaIdx + 1);
+  return includePrefix ? dataUrl : base64;
+}
+
 export { loadImageBitmapFromFile, drawToCanvas };

@@ -37,6 +37,11 @@ const MEDIA_ENGINE_TOOL_SLUGS = new Set([
   // ffmpeg-based (src/features/video-tools/*, some of src/features/audio-tools/*)
   "mov-to-mp4",
   "rotate-video",
+  "merge-videos",
+  "add-subtitles",
+  "video-to-waveform",
+  "extract-video-frame",
+  "video-speed-changer",
   "change-video-fps",
   "avi-to-mp4",
   "compress-video",
@@ -57,8 +62,15 @@ const MEDIA_ENGINE_TOOL_SLUGS = new Set([
   "merge-audio",
   "split-audio",
   "mov-to-mp3",
+  "audio-speed-changer",
+  "audio-pitch-changer",
+  "audio-volume-changer",
+  "reverse-audio",
+  "audio-fade",
   // tesseract-based (src/features/pdf-tools/ocr-pdf)
   "ocr-pdf",
+  // onnxruntime-web-based (src/features/image-tools/image-upscaler)
+  "image-upscaler",
 ]);
 
 /**
@@ -78,7 +90,7 @@ const MEDIA_ENGINE_TOOL_SLUGS = new Set([
  * tool's bundle too: media-core.js pulls in @ffmpeg/util, and
  * ffmpeg-loader.js pulls in the real @ffmpeg/ffmpeg package, so a static
  * top-level import here would add both to this shared shell's bundle —
- * meaning every one of the 70 tool pages, not just the 22 ffmpeg-based
+ * meaning every tool page on the site, not just the 22 ffmpeg-based
  * ones, would pay for ffmpeg's loader code. The adapter-registry.js
  * comment this codebase already has documents exactly this same
  * "dynamic import to preserve per-tool code-splitting" rationale for the
@@ -91,6 +103,11 @@ async function preloadEngineIfNeeded(toolSlug, onLoadProgress) {
     const { preloadOcrEngine } = await import("@/lib/engines/ocr/ocr-engine");
     await preloadOcrEngine(onLoadProgress);
     return { engineLabel: "Loading OCR engine…" };
+  }
+  if (toolSlug === "image-upscaler") {
+    const { preloadUpscalerEngine } = await import("@/lib/engines/image/image-upscaler");
+    await preloadUpscalerEngine(onLoadProgress);
+    return { engineLabel: "Loading upscaling engine…" };
   }
   const { preloadFFmpegEngine } = await import("@/lib/engines/media/media-core");
   await preloadFFmpegEngine(onLoadProgress);

@@ -1,0 +1,15 @@
+sRGB2014.icc
+
+Copyright International Color Consortium
+
+This profile is made available by the International Color Consortium, and
+may be copied, distributed, embedded, made, used, and sold without
+restriction. Altered versions of this profile shall have the original
+identification and copyright information removed and shall not be
+misrepresented as the original profile.
+
+Source: https://github.com/CreunaFI/color-space-fixer (icc/sRGB2014.icc,
+icc/LICENSE.txt), itself redistributing the standard ICC-published sRGB
+v2 profile (the 2014-corrigendum "sRGB2014.icc" build). Verified
+structurally correct on vendoring: 3024-byte 'mntr'/'RGB '/'XYZ ' ICC
+profile with a valid 'acsp' signature.
