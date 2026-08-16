@@ -1,7 +1,7 @@
 # Tools Root
 
 A free, privacy-first file conversion and editing platform. Every one of
-its 115+ tools — PDF, image, document, audio, video, and archive — runs
+its 70 tools — PDF, image, document, audio, video, and archive — runs
 entirely in the browser via JavaScript and WebAssembly. No file is ever
 uploaded to a server.
 
@@ -36,7 +36,7 @@ uploaded to a server.
 src/
   app/                         Next.js routes
     [categorySlug]/
-      [toolSlug]/page.js       Universal tool page (all 115+ tools)
+      [toolSlug]/page.js       Universal tool page (all 70 tools)
       page.js                  Category listing page
     about/ pricing/ privacy/ terms/ contact/
   components/

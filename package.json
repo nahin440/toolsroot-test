@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "node scripts/patch-ffmpeg-worker.js"
+    "postinstall": "node scripts/sync-pdfjs-vendor.js"
   },
   "dependencies": {
     "@cantoo/pdf-lib": "^2.7.2",
@@ -55,7 +55,7 @@
     "motion": "^12.42.2",
     "next": "^15.5.20",
     "onnxruntime-web": "^1.27.0",
-    "pdfjs-dist": "^6.1.200",
+    "pdfjs-dist": "6.2.108",
     "pptxgenjs": "^4.0.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

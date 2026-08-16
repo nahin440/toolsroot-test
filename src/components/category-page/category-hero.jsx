@@ -53,8 +53,8 @@ export function CategoryHero({ category, toolCount, representativeSlug }) {
       />
       <OrganicBlobs tone="on-accent" />
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <FloatingPaths position={1} colorRgb="255, 255, 255" />
-        <FloatingPaths position={-1} colorRgb="255, 255, 255" />
+        {/* <FloatingPaths position={1} colorRgb="255, 255, 255" />
+        <FloatingPaths position={-1} colorRgb="255, 255, 255" /> */}
       </div>
       <HeroIconFloat>{createElement(CategoryIcon, { className: "size-1/2" })}</HeroIconFloat>
 
