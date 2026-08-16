@@ -1,8 +1,4 @@
-"use client";
-
 import { createElement } from "react";
-import { motion } from "motion/react";
-import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import {
   HiOutlineDocumentText,
   HiOutlineArrowsRightLeft,
@@ -32,6 +28,17 @@ import {
  * right ~420px of a ~1232px content area, i.e. ~66%-100%. Below `lg` the
  * columns stack (text above, icon area below) so horizontal placement
  * only matters at `lg`+, which is what this band is scoped to.
+ *
+ * No longer a client component. The float loop is a plain CSS animation
+ * (.float-icon, globals.css) driven entirely by inline custom properties
+ * (--float-y, --float-rotate, --float-duration, --float-delay) — each
+ * icon needs its own amplitude/duration/delay, but that's just a CSS
+ * custom property per element, not a reason to reach for Motion. That
+ * drops this whole component (and its former "use client" boundary,
+ * useReducedMotion() call, and nine live motion.div instances) out of
+ * the client bundle and off the hydration path entirely; reduced-motion
+ * support comes for free from the sitewide prefers-reduced-motion rule
+ * in globals.css instead of a per-component branch.
  */
 const FLOATING_ICONS = [
   { icon: HiOutlineDocumentText, top: "6%", left: "74%", size: "size-14 sm:size-20", duration: 6, distance: 18, rotate: 8, delay: 0 },
@@ -46,56 +53,36 @@ const FLOATING_ICONS = [
 ];
 
 export function HeroFloatingIcons() {
-  const shouldReduceMotion = useReducedMotion();
-
   return (
     <div
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 hidden overflow-hidden sm:block"
     >
       {FLOATING_ICONS.map((item, i) => (
-        <motion.div
+        <div
           key={i}
           // Was `glass-panel` (backdrop-filter: blur+saturate). Nine of
-          // these render here, each continuously transform-animated
-          // (y/rotate) AND sitting on top of the hero's metal-breathe
-          // background, which is itself continuously repainting via
-          // `filter`/`background-position` (see .metallic-breathe in
-          // globals.css). backdrop-filter has to resample the actual
-          // pixels beneath an element live — it can't be cached the way
-          // a solid fill can — so a *moving* backdrop-filter element
-          // over a *repainting* background is close to worst-case for
-          // compositor cost: nine of them, every frame, for as long as
-          // the hero is on screen. That's sustained, real work — fine
-          // on a fast dev machine, visibly janky/flickery for ordinary
-          // visitor hardware, which is exactly why this only ever
-          // showed up on the deployed site for real visitors and not in
-          // local testing on one machine, and only on the homepage hero
-          // specifically (the only hero that renders this component).
-          // `glass-panel-static` (globals.css) keeps the same look —
-          // translucent white fill, inner highlight border, soft shadow
-          // — via a plain background/border/box-shadow instead of
-          // backdrop-filter, so there's nothing left to resample; the
-          // visual difference (no live blur of what's directly behind
-          // each icon) is not perceptible against this background.
-          className={`glass-panel-static absolute flex ${item.size} items-center justify-center rounded-3xl text-white`}
-          style={{ top: item.top, left: item.left }}
-          // Reduced motion: hold each icon at a static resting pose
-          // (still visible, still part of the composition) instead of
-          // looping the float/rotate cycle forever.
-          animate={
-            shouldReduceMotion
-              ? { y: 0, rotate: 0 }
-              : { y: [0, -item.distance, 0], rotate: [0, item.rotate, 0] }
-          }
-          transition={
-            shouldReduceMotion
-              ? { duration: 0 }
-              : { duration: item.duration, delay: item.delay, repeat: Infinity, ease: "easeInOut" }
-          }
+          // these render here, and — even before the Motion→CSS move —
+          // sitting on top of the hero's continuously-repainting
+          // metal-breathe background made backdrop-filter close to
+          // worst-case for compositor cost: nine elements resampling
+          // live pixels beneath them, every frame, for as long as the
+          // hero is on screen. `glass-panel-static` keeps the same
+          // look — translucent white fill, inner highlight border, soft
+          // shadow — via a plain background/border/box-shadow instead,
+          // so there's nothing left to resample.
+          className={`glass-panel-static float-icon absolute flex ${item.size} items-center justify-center rounded-3xl text-white`}
+          style={{
+            top: item.top,
+            left: item.left,
+            "--float-y": `-${item.distance}px`,
+            "--float-rotate": `${item.rotate}deg`,
+            "--float-duration": `${item.duration}s`,
+            "--float-delay": `${item.delay}s`,
+          }}
         >
           {createElement(item.icon, { className: "size-1/2" })}
-        </motion.div>
+        </div>
       ))}
     </div>
   );

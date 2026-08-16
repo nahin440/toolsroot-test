@@ -473,9 +473,21 @@
     0%, 100% { background-position: 0% 50%; filter: brightness(0.985) saturate(0.96); }
     50% { background-position: 100% 50%; filter: brightness(1.045) saturate(1.08); }
   }
-  @keyframes shine-sweep {
-    from { background-position: 160% 0; }
-    to { background-position: -60% 0; }
+  @keyframes float-icon {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(var(--float-y, -18px)) rotate(var(--float-rotate, 8deg)); }
+  }
+  @keyframes blob-drift {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% {
+      transform: translate(var(--drift-x, 18px), var(--drift-y, -12px))
+        rotate(var(--drift-rotate, 4deg));
+    }
+  }
+  @keyframes path-draw {
+    0% { stroke-dashoffset: var(--path-length, 1); opacity: 0.3; }
+    50% { stroke-dashoffset: 0; opacity: 0.6; }
+    100% { stroke-dashoffset: calc(var(--path-length, 1) * -1); opacity: 0.3; }
   }
 }
 
@@ -548,6 +560,41 @@
      reduced-motion-safe with no extra branching needed. */
   .hero-fade-up {
     animation: fade-up 0.5s var(--ease-standard, ease-out) both;
+  }
+
+  /* Ambient looping motion — floating icons, drifting blobs, drawing
+     paths — as plain CSS animations instead of Motion's `animate`
+     with `repeat: Infinity`. None of these three needed JS: they're
+     fixed-keyframe loops with no gesture/drag/physics involvement, so
+     driving them through React + the Web Animations API was pure
+     overhead — every frame went through Motion's own rAF scheduler
+     and, more importantly, every one of these components had to ship
+     as "use client" and hydrate before the loop could start at all.
+     A CSS animation starts the moment styles are parsed (same
+     reasoning as .hero-fade-up above) and composites purely on the
+     GPU via transform/opacity, with zero React or JS runtime
+     involvement once started. Each instance sets its own custom
+     properties (--float-y, --drift-x, etc.) inline so one shared
+     keyframe/class pair covers every icon/blob/path instead of
+     generating a bespoke @keyframes block per element. Durations and
+     per-element offsets come from `animation-duration` and
+     `animation-delay` set inline, same reasoning. All three inherit
+     reduced-motion support for free from the global
+     prefers-reduced-motion rule above (which zeroes every
+     animation-duration/iteration-count sitewide) — no per-component
+     shouldReduceMotion branch needed anymore. */
+  .float-icon {
+    animation: float-icon var(--float-duration, 6s) ease-in-out infinite;
+    animation-delay: var(--float-delay, 0s);
+  }
+  .blob-drift {
+    animation: blob-drift var(--drift-duration, 28s) ease-in-out infinite;
+    animation-delay: var(--drift-delay, 0s);
+  }
+  .path-draw {
+    stroke-dasharray: 1;
+    animation: path-draw var(--path-duration, 24s) linear infinite;
+    animation-delay: var(--path-delay, 0s);
   }
 
   .skeleton-shimmer {

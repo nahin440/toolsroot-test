@@ -3,11 +3,23 @@
 import { useMemo, useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { HiMagnifyingGlass } from "react-icons/hi2";
-import { motion, AnimatePresence } from "motion/react";
 
 import { searchTools } from "@/lib/registry/search-tools";
 import { cn } from "@/lib/utils";
 
+// Was Motion's AnimatePresence + motion.div (opacity/y in on
+// mount, same back out on unmount, via JS-driven exit animation —
+// AnimatePresence's whole purpose is keeping a node mounted long enough
+// for its exit transition to play, since React would otherwise remove it
+// instantly). That's real overhead — an extra "use client" dependency
+// tree, mount/unmount lifecycle tracking — for a 150ms fade that a plain
+// CSS transition handles natively: the dropdown now stays mounted
+// (invisible, non-interactive, zero height contribution) whenever
+// there's no query, and toggles opacity/transform/visibility via
+// Tailwind's data-[state] variant instead of being conditionally
+// rendered. `visibility: hidden` (rather than `display: none`) is what
+// makes the transition actually visible on the way out — display can't
+// be transitioned/eased.
 export function ToolSearchBar({ className }) {
   const [query, setQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
@@ -40,50 +52,48 @@ export function ToolSearchBar({ className }) {
         />
       </div>
 
-      <AnimatePresence>
-        {showResults && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
-            transition={{ duration: 0.15 }}
-            className="glossy-card w-full rounded-2xl border border-border/70 bg-popover shadow-2xl"
-            style={{
-              position: "absolute",
-              left: 0,
-              zIndex: 50,
-              top: "calc(100% + 6px)",
-              maxHeight: "min(400px, 60vh)",
-              overflowY: "auto",
-            }}
-          >
-            {results.length ? (
-              <ul className="p-2">
-                {results.map((tool) => (
-                  <li key={tool.slug}>
-                    <Link
-                      href={tool.href}
-                      className="flex flex-col gap-0.5 rounded-xl px-3 py-2.5 transition-colors hover:bg-accent-tint"
-                      onClick={() => setIsFocused(false)}
-                    >
-                      <span className="text-sm font-medium text-foreground">
-                        {tool.name}
-                      </span>
-                      <span className="truncate text-xs text-muted-foreground">
-                        {tool.description}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="p-4 text-sm text-muted-foreground">
-                No tools found for &ldquo;{query}&rdquo;.
-              </p>
-            )}
-          </motion.div>
+      <div
+        data-state={showResults ? "open" : "closed"}
+        className="glossy-card w-full rounded-2xl border border-border/70 bg-popover shadow-2xl opacity-0 -translate-y-2 invisible transition-[opacity,transform,visibility] duration-150 ease-out data-[state=open]:opacity-100 data-[state=open]:translate-y-0 data-[state=open]:visible"
+        style={{
+          position: "absolute",
+          left: 0,
+          zIndex: 50,
+          top: "calc(100% + 6px)",
+          maxHeight: "min(400px, 60vh)",
+          overflowY: "auto",
+        }}
+        // Keeps screen readers from announcing/tabbing into the hidden
+        // result list while it's closed — the old conditional-render
+        // approach got this for free by not existing in the DOM at all;
+        // an always-mounted element needs it stated explicitly.
+        inert={!showResults}
+      >
+        {results.length ? (
+          <ul className="p-2">
+            {results.map((tool) => (
+              <li key={tool.slug}>
+                <Link
+                  href={tool.href}
+                  className="flex flex-col gap-0.5 rounded-xl px-3 py-2.5 transition-colors hover:bg-accent-tint"
+                  onClick={() => setIsFocused(false)}
+                >
+                  <span className="text-sm font-medium text-foreground">
+                    {tool.name}
+                  </span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {tool.description}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="p-4 text-sm text-muted-foreground">
+            No tools found for &ldquo;{query}&rdquo;.
+          </p>
         )}
-      </AnimatePresence>
+      </div>
     </div>
   );
 }

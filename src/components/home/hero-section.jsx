@@ -1,5 +1,3 @@
-"use client";
-
 import { HiOutlineCheckCircle } from "react-icons/hi2";
 
 import { ToolSearchBar } from "@/components/home/tool-search-bar";
@@ -16,22 +14,35 @@ import { OrganicBlobs } from "@/components/illustrations/organic-blobs";
 // blank-hero window is imperceptible. Over a real network — the one
 // thing that actually differs on Vercel vs local prod — hydration lands
 // visibly later than first paint, especially on this page: the hero
-// alone mounts two 18-path FloatingPaths instances plus OrganicBlobs and
-// nine floating icons, all "use client" Motion components competing for
-// the same hydration pass. The net effect was the site's single most
-// important above-the-fold content (H1, subhead, search bar) rendering
-// as blank, then popping in once hydration finally completed — read as
-// "the page flickering" by anyone on a real connection.
-// Fix: drive the entrance with a plain CSS @keyframes animation
+// alone used to mount two 18-path FloatingPaths instances plus
+// OrganicBlobs and nine floating icons, all "use client" Motion
+// components competing for the same hydration pass. The net effect was
+// the site's single most important above-the-fold content (H1, subhead,
+// search bar) rendering as blank, then popping in once hydration
+// finally completed — read as "the page flickering" by anyone on a real
+// connection.
+// Fix (entrance): drive it with a plain CSS @keyframes animation
 // (`.hero-fade-up`, globals.css) instead of a Motion `initial`/`animate`
 // pair. CSS animations run from the moment styles are parsed — no
 // hydration dependency — so the SSR-painted frame already matches the
-// animation's start state and content is guaranteed visible (fully
-// opaque, at rest) within the animation's own short duration regardless
-// of how long React takes to hydrate. `prefers-reduced-motion` in
-// globals.css already zeroes out CSS animation durations sitewide, so
-// this also gets reduced-motion support for free without the
-// shouldReduceMotion branch the old Motion version needed.
+// animation's start state.
+// Fix (this file, further optimization pass): HeroFloatingIcons,
+// FloatingPaths, and OrganicBlobs were the "use client" Motion
+// components referenced above — all three are now plain server
+// components driven by CSS animations (see each file's own comment),
+// which means this component no longer needs "use client" either. The
+// only genuinely-interactive piece of the hero is the search bar
+// itself (real state: query text, focus, click-outside-to-close), so
+// ToolSearchBar stays a client component and everything else — the
+// headline, the metallic background, the decorative blobs/paths/icons —
+// ships as static server-rendered HTML with zero client JS. That's the
+// actual remaining flicker risk closed off: previously "no client JS
+// needed to hydrate before the hero looks right" was true for the text
+// (via the CSS entrance) but not for its decorative children, which
+// still had to hydrate before their loops would start (they'd render
+// once, statically, via Motion's `initial`, then jump to animating).
+// Now nothing in the hero waits on hydration at all — every animation
+// sitewide in this component, ambient or entrance, is plain CSS.
 export function HeroSection() {
   return (
     <section className="relative isolate z-20">

@@ -1,66 +1,45 @@
-"use client";
-
-import { useMemo } from "react";
-import { motion } from "motion/react";
-import { useReducedMotion } from "@/hooks/use-reduced-motion";
-
 /**
  * Ported from a shadcn-style community snippet (originally .tsx, using
  * framer-motion and a generic shadcn Button). Adapted for ToolsRoot:
- *  - "motion/react" instead of "framer-motion" (this project already
- *    depends on `motion`, the current package framer-motion was renamed
- *    to; framer-motion itself isn't installed here).
- *  - This project's own <Button> (src/components/ui/button.jsx), which
- *    already has an "on-accent" variant, rather than the generic shadcn
- *    button the snippet shipped with.
- *  - Colors come from this project's real CSS variables (--accent /
- *    --background, see src/app/globals.css) instead of hardcoded
- *    Tailwind slate/neutral, so the strokes render in ToolsRoot's actual
- *    emerald-600 brand color rather than a generic dark neutral.
+ *  - This project's own CSS variables (--accent / --background, see
+ *    src/app/globals.css) instead of hardcoded Tailwind slate/neutral,
+ *    so the strokes render in ToolsRoot's actual emerald-600 brand color
+ *    rather than a generic dark neutral.
  *  - `path.color` in the original snippet was computed but never actually
  *    used (the path's `stroke` read "currentColor" off the parent <svg>'s
- *    text color class instead), so all 36 paths rendered at one flat
- *    color with only opacity varying by index. That's fixed here: each
- *    path's computed color is applied directly via `stroke`, so the
- *    per-index color ramp the original math implies is now real.
+ *    text color class instead), so all paths rendered at one flat color
+ *    with only opacity varying by index. That's fixed here: each path's
+ *    computed color is applied directly via `stroke`.
  *  - The original snippet called `Math.random()` inline during render to
- *    vary each path's animation duration. Next.js's react-hooks/purity
- *    rule (from eslint-config-next, already enabled in this project via
- *    its standard config) rejects any impure call reachable during
- *    render — including inside useMemo, since the compiler's static
- *    analysis treats a memo factory as still render-reachable — so this
- *    blocked the build outright. The actual design goal was just "the 36
- *    paths shouldn't all pulse in lockstep," not true randomness, so
- *    PSEUDO_RANDOM_STEP below (the golden ratio conjugate, a standard
- *    low-discrepancy-sequence trick) gives each path index a distinct,
- *    well-spread offset with no impure call anywhere — verified to
- *    spread evenly across the full range with no visible clustering.
- *  - FloatingPaths takes a `colorRgb` prop (default: the emerald accent
- *    below) and is exported directly, so it can be reused standalone —
- *    e.g. dropped into the solid-emerald hero in white, alongside
- *    HeroFloatingIcons — without duplicating the path-generation math in
- *    a second file. Contrast was checked both directions (relative
- *    luminance/contrast-ratio calc): emerald-on-white and white-on-emerald
- *    land within ~0.1 of each other at every opacity step in the existing
- *    ramp, so the same opacity formula works unchanged for either color.
- *  - Two additional opt-in props, both defaulting to off so every existing
- *    call site (tool-hero, category-hero, about, contact, blog,
- *    section-flow-lines, organic-blobs) keeps rendering byte-for-byte as
- *    before:
- *      - `reverseX`: mirrors every x-coordinate across the viewBox's
- *        horizontal center (696 - x), turning the sweep from
- *        top-left→bottom-right into top-right→bottom-left. Only the y
- *        terms (vertical direction) are left untouched, so the "two
- *        paths crossing" composition and per-index color/width ramp are
- *        unaffected — only which corner each sweep starts/ends at flips.
- *      - `metallic`: swaps the flat-color stroke for a real SVG
- *        <linearGradient> cycling through a few silver/chrome tones
- *        (bright highlight → mid grey → cool shadow) instead of one flat
- *        white value — the same "layered tones simulating light on
- *        metal" idea --metallic-emerald already uses in globals.css,
- *        applied to a thin stroke instead of a filled surface. Falls
- *        back to the existing flat-color path exactly as before when
- *        false.
+ *    vary each path's animation duration. PSEUDO_RANDOM_STEP below (the
+ *    golden ratio conjugate, a standard low-discrepancy-sequence trick)
+ *    gives each path index a distinct, well-spread offset with no impure
+ *    call anywhere — verified to spread evenly across the full range
+ *    with no visible clustering.
+ *  - `colorRgb` prop (default: the emerald accent below), `reverseX`
+ *    (mirrors every x-coordinate across the viewBox's horizontal center,
+ *    turning the sweep from top-left→bottom-right into
+ *    top-right→bottom-left), and `metallic` (swaps the flat-color stroke
+ *    for a real SVG <linearGradient> cycling through silver/chrome
+ *    tones) — see the per-prop comments below.
+ *
+ * No longer a client component, and no longer Motion-driven. The
+ * previous version used Motion's `pathLength`/`pathOffset` animate
+ * props — which are themselves just a friendlier API over
+ * stroke-dasharray/stroke-dashoffset — to loop a "line drawing itself"
+ * effect on up to 18 SVG paths per instance, across up to 5 mounted
+ * instances sitewide (homepage hero ×2, every tool hero ×2, every
+ * category hero ×2, plus SectionFlowLines). That's a genuinely large
+ * number of live, JS-driven animations competing for the same hydration
+ * pass — see hero-section.jsx's file comment for the flicker this
+ * caused on real network conditions. The same "line drawing and
+ * fading" look is fully achievable with the SVG `pathLength="1"`
+ * attribute (which normalizes stroke-dash units to [0, 1] regardless of
+ * each path's actual geometry, so one shared CSS @keyframes — .path-draw,
+ * globals.css — animates `stroke-dashoffset` from 1 to -1 identically
+ * for every path, no matter its individual curve) plus one custom
+ * property per path for duration/delay. Zero React/Motion involvement
+ * once mounted; the paths are already mid-loop in the SSR'd HTML.
  */
 
 // Tailwind emerald-600, this project's --accent (see globals.css). Kept as
@@ -69,7 +48,7 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion";
 const ACCENT_RGB = "5, 150, 105";
 
 // Golden ratio conjugate: (index * this) % 1 gives a deterministic,
-// well-distributed sequence in [0, 1) — see the class doc comment above.
+// well-distributed sequence in [0, 1) — see the file doc comment above.
 const PSEUDO_RANDOM_STEP = 0.6180339887498949;
 
 // Matches the viewBox width below ("0 0 696 316") — used by `reverseX` to
@@ -83,59 +62,51 @@ const VIEWBOX_WIDTH = 696;
 // reasoning --metallic-emerald documents for its own layered highlights.
 const METALLIC_STOPS = ["#f8fafc", "#cbd5e1", "#94a3b8", "#e2e8f0"];
 
-export function FloatingPaths({ position, colorRgb = ACCENT_RGB, reverseX = false, metallic = false }) {
-  const shouldReduceMotion = useReducedMotion();
-  const gradientId = `floating-paths-metallic-${position}`;
+// Count reduced from the original snippet's 36 to 18 per instance — see
+// the file doc comment for why (hydration + steady-state cost across up
+// to 5 concurrently-mounted instances sitewide).
+const PATH_COUNT = 18;
 
-  // Path generation is pure (no Math.random — see PSEUDO_RANDOM_STEP
-  // above) but there's no reason to recompute path strings on every
-  // parent re-render; position/colorRgb/reverseX are the only real inputs.
-  //
-  // Count reduced from 36 to 18 per instance. This site mounts two
-  // FloatingPaths instances on every hero (homepage, every one of ~70
-  // tool pages, every category page) plus SectionFlowLines (24 more
-  // paths) on several homepage sections — 36/instance meant well over
-  // 200 concurrently-animating SVG <path> elements were live on a single
-  // page load. Beyond raw animation cost, that volume of Motion elements
-  // takes noticeably longer to hydrate on a real network (vs instant on
-  // localhost), which widens the gap between "SSR paint" and "hydrated,
-  // animating" — see the initial/animate note below for why that gap is
-  // what actually reads as a flicker. Halving the count keeps the same
-  // layered-sweep look (verified by re-rendering) while cutting both the
-  // hydration cost and the steady-state animation cost roughly in half.
-  const PATH_COUNT = 18;
-  const paths = useMemo(
-    () =>
-      Array.from({ length: PATH_COUNT }, (_, i) => {
-        // Each x computed exactly as the original, untouched formula would
-        // (so reverseX=false is byte-for-byte identical to before this
-        // prop existed), then mirrored across the viewBox's horizontal
-        // center only when reverseX is on. Keeping this as two explicit
-        // steps, rather than folding the mirror into one combined
-        // expression, is deliberate — verified against the original
-        // formula across every path index and both position values.
-        const mirrorX = (x) => (reverseX ? VIEWBOX_WIDTH - x : x);
-        const x1 = mirrorX(-(380 - i * 5 * position));
-        const x2 = mirrorX(-(312 - i * 5 * position));
-        const x3 = mirrorX(152 - i * 5 * position);
-        const x4 = mirrorX(616 - i * 5 * position);
-        const x5 = mirrorX(684 - i * 5 * position);
-        const y1 = -(189 + i * 6);
-        const y2 = 216 - i * 6;
-        const y3 = 343 - i * 6;
-        const y4 = 470 - i * 6;
-        const y5 = 875 - i * 6;
-        return {
-          id: i,
-          d: `M${x1} ${y1}C${x1} ${y1} ${x2} ${y2} ${x3} ${y3}C${x4} ${y4} ${x5} ${y5} ${x5} ${y5}`,
-          color: `rgba(${colorRgb}, ${0.1 + i * 0.03})`,
-          opacity: 0.1 + i * 0.03,
-          width: 0.5 + i * 0.03,
-          duration: 20 + ((i * PSEUDO_RANDOM_STEP) % 1) * 10,
-        };
-      }),
-    [position, colorRgb, reverseX]
-  );
+function buildPaths(position, colorRgb, reverseX) {
+  return Array.from({ length: PATH_COUNT }, (_, i) => {
+    // Each x computed exactly as the original, untouched formula would
+    // (so reverseX=false is byte-for-byte identical to before this prop
+    // existed), then mirrored across the viewBox's horizontal center only
+    // when reverseX is on. Keeping this as two explicit steps, rather
+    // than folding the mirror into one combined expression, is
+    // deliberate — verified against the original formula across every
+    // path index and both position values.
+    const mirrorX = (x) => (reverseX ? VIEWBOX_WIDTH - x : x);
+    const x1 = mirrorX(-(380 - i * 5 * position));
+    const x2 = mirrorX(-(312 - i * 5 * position));
+    const x3 = mirrorX(152 - i * 5 * position);
+    const x4 = mirrorX(616 - i * 5 * position);
+    const x5 = mirrorX(684 - i * 5 * position);
+    const y1 = -(189 + i * 6);
+    const y2 = 216 - i * 6;
+    const y3 = 343 - i * 6;
+    const y4 = 470 - i * 6;
+    const y5 = 875 - i * 6;
+    return {
+      id: i,
+      d: `M${x1} ${y1}C${x1} ${y1} ${x2} ${y2} ${x3} ${y3}C${x4} ${y4} ${x5} ${y5} ${x5} ${y5}`,
+      color: `rgba(${colorRgb}, ${0.1 + i * 0.03})`,
+      opacity: 0.1 + i * 0.03,
+      width: 0.5 + i * 0.03,
+      duration: 20 + ((i * PSEUDO_RANDOM_STEP) % 1) * 10,
+      // Stagger start points across the loop the same way the old
+      // per-index duration variance did, so all 18 paths don't draw in
+      // lockstep — spread deterministically across the duration itself
+      // via a negative delay (starts the animation partway through its
+      // own cycle) rather than needing a second random-ish input.
+      delay: -((i * PSEUDO_RANDOM_STEP * 1.7) % 1) * (20 + ((i * PSEUDO_RANDOM_STEP) % 1) * 10),
+    };
+  });
+}
+
+export function FloatingPaths({ position, colorRgb = ACCENT_RGB, reverseX = false, metallic = false }) {
+  const gradientId = `floating-paths-metallic-${position}`;
+  const paths = buildPaths(position, colorRgb, reverseX);
 
   return (
     <div className="absolute inset-0 pointer-events-none">
@@ -156,48 +127,24 @@ export function FloatingPaths({ position, colorRgb = ACCENT_RGB, reverseX = fals
           </defs>
         )}
         {paths.map((path) => (
-          <motion.path
+          <path
             key={path.id}
+            className="path-draw"
             d={path.d}
+            // Normalizes stroke-dash units to [0, 1] for this path
+            // regardless of its actual geometric length, so the shared
+            // .path-draw keyframes (stroke-dashoffset 1 → -1) produce the
+            // same "draw in, hold, draw out" motion on every path without
+            // needing each one's real arc length computed.
+            pathLength="1"
             stroke={metallic ? `url(#${gradientId})` : path.color}
             strokeOpacity={metallic ? path.opacity : undefined}
             strokeWidth={path.width}
-            // `initial` is what Motion renders server-side and what's
-            // painted the instant the SSR'd HTML hits the screen — it is
-            // NOT a value hydration then smoothly animates away from; on
-            // mount, Motion's `animate` keyframe loop just starts, which
-            // means whatever gap sits between `initial` and the loop's
-            // own values shows up as a hard snap the moment hydration
-            // completes. Locally that gap is invisible (JS loads in
-            // single-digit milliseconds, so SSR paint and hydration are
-            // effectively simultaneous); over a real network — exactly
-            // what changes on Vercel vs `next start` on localhost — JS
-            // arrives visibly later than the SSR paint, so the snap
-            // becomes a real, visible pop. With up to ~200 of these
-            // paths mounted across a hero + several sections, that pop
-            // reads as the whole page flickering. Fix: `initial` now
-            // matches the loop's own resting frame (pathLength 1,
-            // opacity 0.45, pathOffset 0 — the midpoint the [0.3,0.6,0.3]
-            // keyframe list returns to) so the SSR-painted frame and the
-            // first frame Motion animates from are the same pixels;
-            // hydration then eases smoothly into the loop instead of
-            // jumping to it.
-            initial={{ pathLength: 1, opacity: 0.45, pathOffset: 0 }}
-            // Reduced motion: settle on one static, fully-drawn frame
-            // instead of looping pathLength/opacity/pathOffset forever.
-            // The lines still render (they're real content, not pure
-            // decoration — they establish the brand's animated-line
-            // motif even at rest), they just stop moving.
-            animate={
-              shouldReduceMotion
-                ? { pathLength: 1, opacity: 0.45, pathOffset: 0 }
-                : { pathLength: 1, opacity: [0.3, 0.6, 0.3], pathOffset: [0, 1, 0] }
-            }
-            transition={
-              shouldReduceMotion
-                ? { duration: 0 }
-                : { duration: path.duration, repeat: Number.POSITIVE_INFINITY, ease: "linear", delay: 0 }
-            }
+            style={{
+              "--path-length": 1,
+              "--path-duration": `${path.duration}s`,
+              "--path-delay": `${path.delay}s`,
+            }}
           />
         ))}
       </svg>

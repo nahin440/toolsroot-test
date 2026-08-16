@@ -1,17 +1,10 @@
-"use client";
-
-import { motion } from "motion/react";
-import { useReducedMotion } from "@/hooks/use-reduced-motion";
-
 /**
  * Ditto-referenced "garden" backdrop: loose, overlapping organic blob
  * shapes in flat fills, sitting behind hero/section content as ambient
- * atmosphere. This is the decorative layer the style reference calls
- * "SVG-style organic blobs... create a garden-like atmosphere without
- * illustration" — adapted to this site's actual one-hue brand palette
- * (four tints of emerald, --blob-a through --blob-d in globals.css)
- * rather than Ditto's own multi-hue moss/fuchsia/yellow set, since this
- * app's identity is deliberately single-accent.
+ * atmosphere. Adapted to this site's actual one-hue brand palette (four
+ * tints of emerald, --blob-a through --blob-d in globals.css) rather than
+ * Ditto's own multi-hue moss/fuchsia/yellow set, since this app's identity
+ * is deliberately single-accent.
  *
  * Layering: designed to sit ABOVE FloatingPaths (the preserved path
  * animation) and BELOW real foreground content — i.e. it's a second
@@ -26,13 +19,27 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion";
  *   "on-light" — blobs render in the actual --blob-* emerald tints, for
  *     white/near-white sections (about page panel, category strip).
  *
- * Motion: an extremely slow (26-34s), extremely subtle (±14-22px, a
+ * Motion: an extremely slow (24-32s), extremely subtle (±14-22px, a
  * couple degrees of rotation) drift per blob — the "living, breathing"
- * ambient cue already established by .metallic-breathe, applied to
- * shape position instead of gradient position. Never fast enough to
- * read as "an animation happening," which is what the design brief
- * calls for: atmosphere, not a flourish. Reduced motion holds every
- * blob at its resting transform.
+ * ambient cue already established by .metallic-breathe, applied to shape
+ * position instead of gradient position. Never fast enough to read as
+ * "an animation happening," which is what the design brief calls for:
+ * atmosphere, not a flourish.
+ *
+ * No longer a client component. Four blobs, each drifting on a fixed,
+ * non-interactive loop with no gesture/drag/physics involved — exactly
+ * the kind of animation plain CSS handles natively. `.blob-drift`
+ * (globals.css) is one shared @keyframes animation; each blob sets its
+ * own --drift-x/--drift-y/--drift-rotate/--drift-duration/--drift-delay
+ * inline instead of needing a bespoke keyframe block or a live
+ * motion.svg per shape. This removes OrganicBlobs entirely from the
+ * client bundle at every one of its four call sites (homepage hero, tool
+ * hero, category hero, site footer) and from React's hydration work —
+ * the blobs are simply already there, already drifting, in the SSR
+ * HTML, no JS required. Reduced-motion is handled by the sitewide
+ * prefers-reduced-motion rule in globals.css, same as every other CSS
+ * animation on the site, instead of a per-component shouldReduceMotion
+ * branch.
  */
 
 const BLOB_PATHS = [
@@ -47,7 +54,8 @@ const BLOB_PATHS = [
     opacityLight: 0.35,
     opacityAccent: 0.14,
     duration: 28,
-    distance: 18,
+    distanceX: 18,
+    distanceY: -12.6,
     rotate: 4,
     delay: 0,
   },
@@ -62,7 +70,8 @@ const BLOB_PATHS = [
     opacityLight: 0.28,
     opacityAccent: 0.12,
     duration: 32,
-    distance: 22,
+    distanceX: 22,
+    distanceY: -15.4,
     rotate: -5,
     delay: 1.4,
   },
@@ -77,7 +86,8 @@ const BLOB_PATHS = [
     opacityLight: 0.4,
     opacityAccent: 0.16,
     duration: 24,
-    distance: 14,
+    distanceX: 14,
+    distanceY: -9.8,
     rotate: 6,
     delay: 0.6,
   },
@@ -92,23 +102,23 @@ const BLOB_PATHS = [
     opacityLight: 0.32,
     opacityAccent: 0.13,
     duration: 30,
-    distance: 16,
+    distanceX: 16,
+    distanceY: -11.2,
     rotate: -4,
     delay: 2.1,
   },
 ];
 
 export function OrganicBlobs({ tone = "on-light", className = "" }) {
-  const shouldReduceMotion = useReducedMotion();
-
   return (
     <div
       aria-hidden="true"
       className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
     >
       {BLOB_PATHS.map((blob) => (
-        <motion.svg
+        <svg
           key={blob.id}
+          className="blob-drift"
           viewBox="0 0 400 340"
           width={blob.size}
           height={blob.size}
@@ -117,28 +127,19 @@ export function OrganicBlobs({ tone = "on-light", className = "" }) {
             top: blob.top,
             left: blob.left,
             filter: "blur(1px)",
+            "--drift-x": `${blob.distanceX}px`,
+            "--drift-y": `${blob.distanceY}px`,
+            "--drift-rotate": `${blob.rotate}deg`,
+            "--drift-duration": `${blob.duration}s`,
+            "--drift-delay": `${blob.delay}s`,
           }}
-          animate={
-            shouldReduceMotion
-              ? { x: 0, y: 0, rotate: 0 }
-              : {
-                  x: [0, blob.distance, 0],
-                  y: [0, -blob.distance * 0.7, 0],
-                  rotate: [0, blob.rotate, 0],
-                }
-          }
-          transition={
-            shouldReduceMotion
-              ? { duration: 0 }
-              : { duration: blob.duration, delay: blob.delay, repeat: Infinity, ease: "easeInOut" }
-          }
         >
           <path
             d={blob.d}
             fill={`var(${blob.colorVar})`}
             opacity={tone === "on-accent" ? blob.opacityAccent : blob.opacityLight}
           />
-        </motion.svg>
+        </svg>
       ))}
     </div>
   );
