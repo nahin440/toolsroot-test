@@ -34,7 +34,18 @@ export function CategoryHero({ category, toolCount, representativeSlug }) {
   const CategoryIcon = getToolIcon(representativeSlug);
 
   return (
-    <section className="relative isolate overflow-hidden rounded-3xl metallic-emerald-loud metallic-breathe">
+    <section className="relative isolate overflow-hidden rounded-3xl">
+      {/* Animated background isolated to its own layer — metal-breathe
+          animates `filter`, and animating filter on an element that
+          also parents the real text content forces the browser to
+          repaint that whole subtree every frame, which shows up as the
+          entire section (gradient + text) flickering rather than a
+          smooth breathing glow. Keeping it on this empty absolutely-
+          positioned div means only this decorative layer repaints. */}
+      <div
+        className="pointer-events-none absolute inset-0 rounded-3xl metallic-emerald-loud metallic-breathe"
+        aria-hidden="true"
+      />
       <OrganicBlobs tone="on-accent" />
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <FloatingPaths position={1} colorRgb="255, 255, 255" />

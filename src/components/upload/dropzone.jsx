@@ -158,7 +158,20 @@ export function Dropzone({
           aria-label={label || "Choose files to upload"}
         />
 
-        <AnimatePresence mode="wait">
+        {/* initial={false} on AnimatePresence itself (not the initial
+            prop on its motion.div children) skips animating whatever's
+            present on this component's very first render — i.e. don't
+            fade in the "idle" panel on page load, only on later, real
+            idle<->validating transitions Motion generates itself. Motion's
+            documented mechanism for this exact situation: without it,
+            the panel that's actually visible at first paint (idle,
+            since isValidating starts false) depends on React hydrating
+            before its opacity:0 -> opacity:1 transition can even start,
+            which is fine on localhost (hydration is near-instant) but
+            can read as a visible flicker on a real network deploy — see
+            hero-section.jsx for the fuller version of this same issue on
+            the homepage hero. */}
+        <AnimatePresence mode="wait" initial={false}>
           {isValidating ? (
             <motion.div
               key="validating"

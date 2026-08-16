@@ -217,7 +217,20 @@ export function ToolPageShell({ adapter, toolName, toolSlug }) {
 
   return (
     <div className="space-y-6">
-      <AnimatePresence mode="wait">
+      {/* AnimatePresence's own `initial={false}` (distinct from the
+          `initial` prop on the motion.div children) tells Motion to skip
+          animating whatever is already present on this component's very
+          first render — i.e. don't play the "upload" panel's mount fade
+          when the page first loads, only on later, real mount/unmount
+          transitions Motion generates itself (Reset -> back to "upload",
+          upload -> options, etc.). This is Motion's own documented
+          mechanism for exactly this situation, and it comes with a
+          bonus: the very first paint (which for phase="upload" always
+          includes this panel) never depends on hydration timing at all,
+          so there's nothing to visibly pop in once JS catches up on a
+          slow connection — the same hydration-gap flicker described in
+          hero-section.jsx, here on the dropzone instead of the hero. */}
+      <AnimatePresence mode="wait" initial={false}>
         {phase === "upload" && (
           <motion.div
             key="dropzone"

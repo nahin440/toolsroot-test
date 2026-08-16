@@ -88,11 +88,25 @@ export function FloatingPaths({ position, colorRgb = ACCENT_RGB, reverseX = fals
   const gradientId = `floating-paths-metallic-${position}`;
 
   // Path generation is pure (no Math.random — see PSEUDO_RANDOM_STEP
-  // above) but there's no reason to recompute 36 path strings on every
+  // above) but there's no reason to recompute path strings on every
   // parent re-render; position/colorRgb/reverseX are the only real inputs.
+  //
+  // Count reduced from 36 to 18 per instance. This site mounts two
+  // FloatingPaths instances on every hero (homepage, every one of ~70
+  // tool pages, every category page) plus SectionFlowLines (24 more
+  // paths) on several homepage sections — 36/instance meant well over
+  // 200 concurrently-animating SVG <path> elements were live on a single
+  // page load. Beyond raw animation cost, that volume of Motion elements
+  // takes noticeably longer to hydrate on a real network (vs instant on
+  // localhost), which widens the gap between "SSR paint" and "hydrated,
+  // animating" — see the initial/animate note below for why that gap is
+  // what actually reads as a flicker. Halving the count keeps the same
+  // layered-sweep look (verified by re-rendering) while cutting both the
+  // hydration cost and the steady-state animation cost roughly in half.
+  const PATH_COUNT = 18;
   const paths = useMemo(
     () =>
-      Array.from({ length: 36 }, (_, i) => {
+      Array.from({ length: PATH_COUNT }, (_, i) => {
         // Each x computed exactly as the original, untouched formula would
         // (so reverseX=false is byte-for-byte identical to before this
         // prop existed), then mirrored across the viewBox's horizontal
@@ -148,7 +162,27 @@ export function FloatingPaths({ position, colorRgb = ACCENT_RGB, reverseX = fals
             stroke={metallic ? `url(#${gradientId})` : path.color}
             strokeOpacity={metallic ? path.opacity : undefined}
             strokeWidth={path.width}
-            initial={{ pathLength: 0.3, opacity: 0.6 }}
+            // `initial` is what Motion renders server-side and what's
+            // painted the instant the SSR'd HTML hits the screen — it is
+            // NOT a value hydration then smoothly animates away from; on
+            // mount, Motion's `animate` keyframe loop just starts, which
+            // means whatever gap sits between `initial` and the loop's
+            // own values shows up as a hard snap the moment hydration
+            // completes. Locally that gap is invisible (JS loads in
+            // single-digit milliseconds, so SSR paint and hydration are
+            // effectively simultaneous); over a real network — exactly
+            // what changes on Vercel vs `next start` on localhost — JS
+            // arrives visibly later than the SSR paint, so the snap
+            // becomes a real, visible pop. With up to ~200 of these
+            // paths mounted across a hero + several sections, that pop
+            // reads as the whole page flickering. Fix: `initial` now
+            // matches the loop's own resting frame (pathLength 1,
+            // opacity 0.45, pathOffset 0 — the midpoint the [0.3,0.6,0.3]
+            // keyframe list returns to) so the SSR-painted frame and the
+            // first frame Motion animates from are the same pixels;
+            // hydration then eases smoothly into the loop instead of
+            // jumping to it.
+            initial={{ pathLength: 1, opacity: 0.45, pathOffset: 0 }}
             // Reduced motion: settle on one static, fully-drawn frame
             // instead of looping pathLength/opacity/pathOffset forever.
             // The lines still render (they're real content, not pure
@@ -162,7 +196,7 @@ export function FloatingPaths({ position, colorRgb = ACCENT_RGB, reverseX = fals
             transition={
               shouldReduceMotion
                 ? { duration: 0 }
-                : { duration: path.duration, repeat: Number.POSITIVE_INFINITY, ease: "linear" }
+                : { duration: path.duration, repeat: Number.POSITIVE_INFINITY, ease: "linear", delay: 0 }
             }
           />
         ))}

@@ -36,7 +36,16 @@ const PRINCIPLES = [
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-[760px] px-4 py-16 sm:px-6">
-      <section className="relative isolate mb-4 -mx-4 overflow-hidden rounded-3xl metallic-emerald-loud metallic-breathe sm:-mx-6 lg:-mx-[190px]">
+      <section className="relative isolate mb-4 -mx-4 overflow-hidden rounded-3xl sm:-mx-6 lg:-mx-[190px]">
+        {/* Animated background isolated to its own layer — see
+            hero-section.jsx for why metal-breathe (which animates
+            `filter`) must never sit on the same element as the text
+            content, or the whole section flickers as the browser
+            repaints the entire subtree every animation frame. */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-3xl metallic-emerald-loud metallic-breathe"
+          aria-hidden="true"
+        />
         <OrganicBlobs tone="on-accent" />
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <FloatingPaths position={1} colorRgb="255, 255, 255" />

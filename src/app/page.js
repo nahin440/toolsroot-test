@@ -258,7 +258,16 @@ export default function HomePage() {
           — only the section's own background changed here, so the
           illustration still reads as fine linework texture over the metal
           rather than competing with it. */}
-      <section className="relative isolate overflow-hidden metallic-emerald-soft metallic-breathe">
+      <section className="relative isolate overflow-hidden">
+        {/* Animated background isolated to its own layer — see
+            hero-section.jsx for why metal-breathe (which animates
+            `filter`) must never sit on the same element as the text
+            content, or the whole section flickers as the browser
+            repaints the entire subtree every animation frame. */}
+        <div
+          className="pointer-events-none absolute inset-0 metallic-emerald-soft metallic-breathe"
+          aria-hidden="true"
+        />
         <FileConversionPattern className="pointer-events-none absolute inset-0 size-full" tone="on-accent" />
         <div className="relative mx-auto max-w-[720px] px-4 py-20 text-center sm:px-6">
           <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-4xl">
@@ -600,7 +609,16 @@ export default function HomePage() {
           lighter density than the hero (see section-flow-lines.jsx for
           why: giving every section the hero's full density would be ~432
           animated paths across the page, verified excessive). */}
-      <section className="relative isolate overflow-hidden metallic-emerald-soft metallic-breathe">
+      <section className="relative isolate overflow-hidden">
+        {/* Animated background isolated to its own layer — see
+            hero-section.jsx for why metal-breathe (which animates
+            `filter`) must never sit on the same element as the text
+            content, or the whole section flickers as the browser
+            repaints the entire subtree every animation frame. */}
+        <div
+          className="pointer-events-none absolute inset-0 metallic-emerald-soft metallic-breathe"
+          aria-hidden="true"
+        />
         <SectionFlowLines tone="on-accent" />
         <div className="relative mx-auto max-w-[1280px] px-4 py-16 text-center sm:px-6">
           <h2 className="text-3xl font-semibold tracking-tight text-white">Ready to get started?</h2>

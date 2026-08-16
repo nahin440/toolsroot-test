@@ -145,7 +145,15 @@ function AnimatedPathGroup({ paths, shouldReduceMotion, isInView }) {
       d={path.d}
       stroke={path.color}
       strokeWidth={path.width}
-      initial={{ pathLength: 0.3, opacity: 0.6 }}
+      // Matches FloatingPaths' fix in background-paths.jsx: `initial` is
+      // the actual SSR-painted frame, not a value hydration eases away
+      // from, so it needs to equal the loop's own resting state (here,
+      // the !isInView / reduced-motion end-state) or hydration snaps
+      // visibly into the loop the instant JS finishes loading — which on
+      // a real network (Vercel) lands well after first paint, unlike
+      // localhost where the gap is imperceptible. See that file's longer
+      // comment for the full explanation.
+      initial={{ pathLength: 1, opacity: 0.4, pathOffset: 0 }}
       // See FloatingPaths in background-paths.jsx for why this branches:
       // Motion's animate prop isn't touched by the CSS
       // prefers-reduced-motion rule in globals.css, so infinite-repeat
@@ -183,9 +191,16 @@ function AnimatedPathGroup({ paths, shouldReduceMotion, isInView }) {
  */
 export function SectionFlowLines({
   tone,
-  diagonalCount = 10,
-  horizontalCount = 8,
-  verticalCount = 6,
+  // Counts halved from the original 10/8/6 (24/section). This component
+  // mounts on six homepage sections and again in every tool-page hero,
+  // stacking with FloatingPaths' own paths — see the hydration-snap note
+  // above and background-paths.jsx's PATH_COUNT comment for why the
+  // total live-animation count across a page matters for more than just
+  // steady-state cost. 12/section keeps the layered multi-direction look
+  // (verified by re-rendering) at half the hydration/animation cost.
+  diagonalCount = 5,
+  horizontalCount = 4,
+  verticalCount = 3,
 }) {
   const shouldReduceMotion = useReducedMotion();
   const colorRgb = tone === "on-accent" ? WHITE_RGB : ACCENT_RGB;

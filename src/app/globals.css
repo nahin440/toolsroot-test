@@ -527,6 +527,29 @@
 }
 
 @layer utilities {
+  /* Hero above-the-fold entrance (headline, subhead, badge, search bar).
+     Deliberately a plain CSS animation rather than Motion's initial/
+     animate props: CSS animations start the instant styles are parsed,
+     with no dependency on React hydrating first, so content is
+     guaranteed to reach its fully-visible resting frame on its own
+     within `animation-duration` regardless of how long JS takes to
+     arrive and hydrate. That matters specifically because this is the
+     site's primary above-the-fold content, sitting alongside several
+     heavy "use client" decorative components (FloatingPaths,
+     OrganicBlobs, HeroFloatingIcons) on the same hero — see
+     hero-section.jsx's file-level comment for the full explanation of
+     why a hydration-gated entrance here was producing a visible
+     flicker/blank-hero flash on real network conditions (Vercel) despite
+     looking fine on localhost. `both` keeps the element at its `from`
+     state before the (staggered, per-element) delay elapses and holds
+     the `to` state after — no post-animation flash back to the
+     unanimated default. prefers-reduced-motion already zeroes animation
+     durations sitewide (see the media query above), so this is
+     reduced-motion-safe with no extra branching needed. */
+  .hero-fade-up {
+    animation: fade-up 0.5s var(--ease-standard, ease-out) both;
+  }
+
   .skeleton-shimmer {
     background: linear-gradient(
       100deg,
