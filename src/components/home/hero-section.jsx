@@ -47,17 +47,34 @@ export function HeroSection() {
   return (
     <section className="relative isolate z-20">
       {/* Animated metallic background lives on its own layer, separate
-          from the text content below. metal-breathe animates `filter`,
-          and animating filter on an element that also parents the real
-          text/foreground content forces the browser to repaint that
-          whole subtree every frame — on many GPU/driver combos this
-          shows up as the entire section (gradient + text) flickering
-          in and out rather than a smooth breathing glow. Isolating the
-          gradient+filter animation to this empty absolutely-positioned
-          div means only this decorative layer repaints; the text above
-          it never does. */}
+          from the text content below. metal-breathe only animates
+          `background-position` (see globals.css) — it used to also
+          animate `filter` with `will-change: filter` set on this same
+          layer, which is what actually caused this section to flicker:
+          animating `filter` on a `will-change`-promoted layer is a known
+          trigger for the browser/GPU to intermittently drop and
+          re-rasterize the whole layer (paints blank, then repaints)
+          instead of blending it smoothly — much more likely to show up
+          on real deployed/GPU conditions (e.g. Vercel) than on one warm
+          local dev GPU, which is exactly the "fine on localhost, flickers
+          once deployed" split this was reported with. Both `filter` and
+          `will-change` are gone now; the old brightness/saturate pulse is
+          reproduced by .metallic-breathe-glow, a separate opacity-only
+          overlay layered on top (opacity is composite-only and never
+          triggers this failure mode). Keeping the background on its own
+          empty absolutely-positioned div, separate from the text content,
+          is still good practice so only this decorative layer ever
+          repaints — but it's no longer load-bearing for the flicker fix
+          the way it used to be. */}
       <div
         className="pointer-events-none absolute inset-0 metallic-emerald-loud metallic-breathe"
+        aria-hidden="true"
+      />
+      {/* Opacity-only brightness pulse, layered on top of the div above
+          instead of inside it — see .metallic-breathe-glow in globals.css
+          for why this replaced a `filter` animation on the layer itself. */}
+      <div
+        className="pointer-events-none absolute inset-0 metallic-breathe-glow"
         aria-hidden="true"
       />
       {/* Decorative background layer only — overflow-hidden lives here

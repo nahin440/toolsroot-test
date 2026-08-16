@@ -98,14 +98,20 @@ export default async function BlogPostPage({ params }) {
 
       <article className="mt-6 max-w-3xl">
         <section className="relative isolate mb-6 -mx-4 overflow-hidden rounded-3xl sm:-mx-6">
-          {/* Animated background isolated to its own layer — metal-breathe
-              animates `filter`, and animating filter on an element that
-              also parents the real text/image content forces the browser
-              to repaint that whole subtree every frame, which shows up
-              as the entire section flickering rather than a smooth
-              breathing glow. */}
+          {/* Animated background isolated to its own layer. metal-breathe
+              only animates `background-position` (see globals.css) — cheap
+              and composite-safe — but keeping it on its own empty div,
+              separate from the real text/image content, still means only
+              this decorative layer ever repaints. */}
           <div
             className="pointer-events-none absolute inset-0 rounded-3xl metallic-emerald-loud metallic-breathe"
+            aria-hidden="true"
+          />
+          {/* Opacity-only brightness pulse, layered on top of the div above
+              instead of inside it — see .metallic-breathe-glow in globals.css
+              for why this replaced a `filter` animation on the layer itself. */}
+          <div
+            className="pointer-events-none absolute inset-0 rounded-3xl metallic-breathe-glow"
             aria-hidden="true"
           />
           {post.image?.hero && (

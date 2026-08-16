@@ -438,6 +438,7 @@
      than "look, an animation." Reduced-motion turns this off entirely
      (see the prefers-reduced-motion block below). */
   --animate-metal-breathe: metal-breathe 10s ease-in-out infinite;
+  --animate-metal-breathe-glow: metal-breathe-glow 10s ease-in-out infinite;
   --animate-shine-sweep: shine-sweep 1.1s var(--ease-standard);
 
   @keyframes fade-up {
@@ -470,8 +471,16 @@
     to { height: 0; }
   }
   @keyframes metal-breathe {
-    0%, 100% { background-position: 0% 50%; filter: brightness(0.985) saturate(0.96); }
-    50% { background-position: 100% 50%; filter: brightness(1.045) saturate(1.08); }
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  /* Brightness/saturate "breathing" pulled off `filter` (see .metallic-breathe
+     below) and reimplemented as an opacity-only overlay pulse, so the whole
+     effect stays on composite-only properties (opacity, background-position)
+     with nothing that forces a repaint. */
+  @keyframes metal-breathe-glow {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 0.07; }
   }
   @keyframes float-icon {
     0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -638,29 +647,36 @@
      inside a printed/exported context) and so reduced-motion can turn
      off only the animation half, not the color. */
   .metallic-breathe {
+    /* `filter` used to animate here too (brightness/saturate), paired with
+       `will-change: filter, background-position` to push this layer onto
+       its own GPU compositor layer. That combination is the actual root
+       cause of the "hero flickers on Vercel, fine on localhost" bug:
+       animating `filter` on a `will-change`-promoted layer is a known
+       trigger for Chrome/GPU drivers to intermittently drop and
+       re-rasterize the whole layer — it flashes blank, then repaints —
+       rather than blend it smoothly. That's far more likely to surface
+       under real GPU/driver/compositor conditions (an actual deployed
+       site, a real visitor's machine) than on one warm, idle dev GPU
+       running `next start` locally, which is exactly the fine-locally,
+       broken-on-Vercel split this was reported with. Now this class only
+       animates `background-position`, which is cheap and composite-safe
+       on its own — no `will-change` needed, nothing here to repaint. The
+       brightness/saturate "breathing" moved to .metallic-breathe-glow, a
+       separate opacity-only overlay (see below), since opacity is also
+       composite-only and never triggers this failure mode. */
     animation: var(--animate-metal-breathe);
-    /* Promotes this layer to its own compositor layer up front, instead
-       of the browser deciding mid-animation. Without this, `filter` and
-       `background-position` (both repaint-triggering, not composite-only
-       like transform/opacity) can force the browser to repaint this
-       element's paint region on every one of the animation's frames,
-       and — worse — every .glass-panel element stacked on top of it
-       (hero-floating-icons.jsx renders nine of them, each with its own
-       backdrop-filter) has to resample that repainting region live each
-       frame too, since backdrop-filter reads the actual pixels beneath
-       it rather than a cached layer. That combination (one continuously
-       repainting layer + several backdrop-filter elements reading
-       through it) is real, sustained compositor cost — fine on a
-       powerful dev machine, visibly janky/flickery on typical real
-       hardware, which is why this was only ever reported on the
-       homepage hero specifically (the only hero that also renders
-       HeroFloatingIcons on top of this same background) and only
-       showed up for real visitors, not local testing on one machine.
-       will-change asks the browser to isolate this element onto its own
-       GPU layer ahead of time so its repaints stay contained to that
-       layer instead of forcing repaints/resamples of what's stacked
-       above it. */
-    will-change: filter, background-position;
+  }
+  /* A plain, static, low-opacity white wash meant to sit directly on top
+     of .metallic-breathe, faded in and out via opacity to reproduce the
+     old filter-driven "brighter/more saturated at the midpoint" pulse —
+     without ever animating `filter`. Kept intentionally subtle (a flat
+     white overlay, not a copy of the metallic gradient) since opacity-
+     fading a plain color reads the same as the old brightness pulse at
+     this magnitude, for a fraction of the paint cost. */
+  .metallic-breathe-glow {
+    background-color: white;
+    opacity: 0;
+    animation: var(--animate-metal-breathe-glow);
   }
 
   .glass-panel {
@@ -720,6 +736,10 @@
   @media (prefers-reduced-motion: reduce) {
     .metallic-breathe {
       animation: none !important;
+    }
+    .metallic-breathe-glow {
+      animation: none !important;
+      opacity: 0 !important;
     }
     .shine-sweep[data-shine="active"]::after {
       animation: none !important;

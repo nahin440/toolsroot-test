@@ -260,12 +260,20 @@ export default function HomePage() {
           rather than competing with it. */}
       <section className="relative isolate overflow-hidden">
         {/* Animated background isolated to its own layer — see
-            hero-section.jsx for why metal-breathe (which animates
-            `filter`) must never sit on the same element as the text
-            content, or the whole section flickers as the browser
+            hero-section.jsx for why metal-breathe (background-position
+            only, no `filter`) must never sit on the same element as the
+            text content, or the whole section flickers as the browser
             repaints the entire subtree every animation frame. */}
         <div
           className="pointer-events-none absolute inset-0 metallic-emerald-soft metallic-breathe"
+          aria-hidden="true"
+        />
+        {/* Opacity-only brightness pulse, layered on top of the div above
+            instead of inside it — see .metallic-breathe-glow in
+            globals.css for why this replaced a `filter` animation on the
+            layer itself. */}
+        <div
+          className="pointer-events-none absolute inset-0 metallic-breathe-glow"
           aria-hidden="true"
         />
         <FileConversionPattern className="pointer-events-none absolute inset-0 size-full" tone="on-accent" />
@@ -611,12 +619,20 @@ export default function HomePage() {
           animated paths across the page, verified excessive). */}
       <section className="relative isolate overflow-hidden">
         {/* Animated background isolated to its own layer — see
-            hero-section.jsx for why metal-breathe (which animates
-            `filter`) must never sit on the same element as the text
-            content, or the whole section flickers as the browser
+            hero-section.jsx for why metal-breathe (background-position
+            only, no `filter`) must never sit on the same element as the
+            text content, or the whole section flickers as the browser
             repaints the entire subtree every animation frame. */}
         <div
           className="pointer-events-none absolute inset-0 metallic-emerald-soft metallic-breathe"
+          aria-hidden="true"
+        />
+        {/* Opacity-only brightness pulse, layered on top of the div above
+            instead of inside it — see .metallic-breathe-glow in
+            globals.css for why this replaced a `filter` animation on the
+            layer itself. */}
+        <div
+          className="pointer-events-none absolute inset-0 metallic-breathe-glow"
           aria-hidden="true"
         />
         <SectionFlowLines tone="on-accent" />

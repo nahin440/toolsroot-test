@@ -43,12 +43,19 @@ export default function BlogIndexPage() {
 
       <section className="relative isolate mb-6 overflow-hidden rounded-3xl">
         {/* Animated background isolated to its own layer — see
-            hero-section.jsx for why metal-breathe (which animates
-            `filter`) must never sit on the same element as the text
-            content, or the whole section flickers as the browser
+            hero-section.jsx for why metal-breathe (background-position
+            only, no `filter`) must never sit on the same element as the
+            text content, or the whole section flickers as the browser
             repaints the entire subtree every animation frame. */}
         <div
           className="pointer-events-none absolute inset-0 rounded-3xl metallic-emerald-loud metallic-breathe"
+          aria-hidden="true"
+        />
+        {/* Opacity-only brightness pulse, layered on top of the div above
+            instead of inside it — see .metallic-breathe-glow in globals.css
+            for why this replaced a `filter` animation on the layer itself. */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-3xl metallic-breathe-glow"
           aria-hidden="true"
         />
         <OrganicBlobs tone="on-accent" />
