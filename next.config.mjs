@@ -48,8 +48,31 @@ const nextConfig = {
 
   async headers() {
     return [
+      // Cross-origin isolation (COOP + COEP) is only needed on the
+      // individual tool pages — they're the sole consumers of
+      // SharedArrayBuffer, via ffmpeg.wasm/onnxruntime-web/tesseract.js
+      // (see src/lib/engines/media/ffmpeg-loader.js, media-core.js,
+      // image-upscaler.js, all reached through
+      // src/components/tool-page/tool-page-shell.jsx). The category
+      // listing pages (/pdf-tools, one path segment) and every other
+      // route (/, /about, /blog, /admin, etc.) never touch that code
+      // path. Scoping the source to the two-segment tool route
+      // (":categorySlug/:toolSlug", matching the
+      // src/app/[categorySlug]/[toolSlug] folder) instead of the
+      // previous sitewide "/:path*" means those other documents no
+      // longer declare themselves cross-origin-isolated for no reason
+      // — which is what was putting every no-cors cross-origin embed on
+      // them (e.g. the gtag.js analytics script, loaded without a
+      // `crossorigin` attribute and without Google guaranteeing a
+      // Cross-Origin-Resource-Policy response header) under CORP
+      // scrutiny and surfacing as the "Specify a Cross-Origin Resource
+      // Policy" DevTools Issue on pages that had no actual need for
+      // isolation. Same-origin resources (this site's own /vendor/*
+      // engine files, /_next/*, etc.) were never affected by CORP
+      // either way — CORP only ever gates cross-origin/cross-site
+      // no-cors loads — so nothing here changes how those load.
       {
-        source: "/:path*",
+        source: "/:categorySlug/:toolSlug",
         headers: [
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
           { key: "Cross-Origin-Embedder-Policy", value: "credentialless" },
