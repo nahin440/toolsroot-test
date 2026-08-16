@@ -47,7 +47,7 @@ export function ToolSearchBar({ className }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
-          placeholder="Search 70 tools: merge PDF, compress image, convert video…"
+          placeholder="Search 115+ tools: merge PDF, compress image, convert video…"
           className="h-14 w-full rounded-full border border-border bg-card pl-12 pr-4 text-base text-foreground shadow-card outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40"
         />
       </div>

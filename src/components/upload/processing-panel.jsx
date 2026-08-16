@@ -41,7 +41,7 @@ export function ProcessingPanel({
   // rather than stage/overallProgress — those two continue to mean
   // exactly what they meant before this prop existed (the adapter's own
   // processing stage/percentage), so a tool that never sets
-  // isLoadingEngine (47 of the 70 tools; see MEDIA_ENGINE_TOOL_SLUGS in
+  // isLoadingEngine (47 of the 115+ tools; see MEDIA_ENGINE_TOOL_SLUGS in
   // tool-page-shell.jsx) renders identically to before this change.
   const displayStage = isLoadingEngine ? engineLabel || "Loading engine…" : stage;
   const displayProgress = isLoadingEngine ? engineLoadProgress : overallProgress;

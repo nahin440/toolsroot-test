@@ -164,7 +164,7 @@ export default function AboutPage() {
         <div className="relative">
           <h2 className="font-display text-lg font-semibold text-white">See it for yourself</h2>
           <p className="mt-1 text-sm text-white/80">
-            Browse all 70 tools, or read practical guides on formats and compression in the{" "}
+            Browse all 115+ tools, or read practical guides on formats and compression in the{" "}
             <Link href="/blog" className="font-medium text-white underline underline-offset-2 hover:text-white/90">
               blog
             </Link>

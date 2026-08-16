@@ -34,7 +34,7 @@ export default function PrivacyPage() {
           <h2>No account, ever</h2>
           <p>
             Tools Root does not have user accounts, sign-up, or a login of any kind. Every one of
-            the 70 tools on this site is free and available to use without providing an email
+            the 115+ tools on this site is free and available to use without providing an email
             address, a password, or any other personal identifier. There is no paid plan, no
             billing, and no payment information collected anywhere on the site.
           </p>

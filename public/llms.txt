@@ -1,6 +1,6 @@
 # Tools Root
 
-> Tools Root is a free, browser-based file conversion and editing site: merge, split, compress, and convert PDFs, images, documents, audio, and video. Every one of the 70 tools processes files entirely client-side (JavaScript and WebAssembly running in the visitor's own browser tab) — there is no upload step, no server-side file processing, and no account requirement. The site is organized into 9 tool categories and a blog of practical guides on file formats and compression.
+> Tools Root is a free, browser-based file conversion and editing site: merge, split, compress, and convert PDFs, images, documents, audio, and video. Every one of the 115+ tools processes files entirely client-side (JavaScript and WebAssembly running in the visitor's own browser tab) — there is no upload step, no server-side file processing, and no account requirement. The site is organized into 9 tool categories and a blog of practical guides on file formats and compression.
 
 Tools Root has no separate documentation site — the category and tool pages linked below are the regular, human-readable HTML pages of the site itself (there are no `.md` twin versions of these URLs). Each tool page includes the tool itself, a short explanation of what it does, and often a small FAQ.
 

@@ -47,7 +47,7 @@ const TRUST_POINTS = [
 export const metadata = {
   title: "Tools Root: Free Online File Converter, PDF Editor & Image Compressor",
   description:
-    "Free online file converter and PDF editor with 70 tools: merge PDF, compress PDF, convert PDF to Word, convert JPG to PNG or WEBP, compress images, convert MP4 and MP3, and more. Private, no signup, no install, no watermark.",
+    "Free online file converter and PDF editor with 115+ tools: merge PDF, compress PDF, convert PDF to Word, convert JPG to PNG or WEBP, compress images, convert MP4 and MP3, and more. Private, no signup, no install, no watermark.",
   keywords: [
     "free online file converter",
     "pdf converter online free",
@@ -366,7 +366,7 @@ export default function HomePage() {
             </p>
             <p>
               What sets this file converter apart from most free online conversion websites is
-              where the actual conversion happens. Every one of the 70 tools listed on this site,
+              where the actual conversion happens. Every one of the 115+ tools listed on this site,
               PDF tools, image tools, an image format converter, document converters, audio tools,
               an audio format converter, video tools, a video format converter, and archive tools,
               runs entirely inside your own browser tab using JavaScript and WebAssembly. Your PDF,

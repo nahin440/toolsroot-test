@@ -2,8 +2,8 @@ import { HiOutlineCheckCircle } from "react-icons/hi2";
 
 import { ToolSearchBar } from "@/components/home/tool-search-bar";
 import { HeroFloatingIcons } from "@/components/home/hero-floating-icons";
-import { FloatingPaths } from "@/components/ui/background-paths";
-import { OrganicBlobs } from "@/components/illustrations/organic-blobs";
+// import { FloatingPaths } from "@/components/ui/background-paths";
+// import { OrganicBlobs } from "@/components/illustrations/organic-blobs";
 
 // This entrance was previously JS/Motion-driven: `initial="hidden"` on
 // the wrapping motion.div meant Motion server-rendered the real headline,
@@ -67,7 +67,7 @@ export function HeroSection() {
           repaints — but it's no longer load-bearing for the flicker fix
           the way it used to be. */}
       <div
-        className="pointer-events-none absolute inset-0 metallic-emerald-loud metallic-breathe"
+        className=" metallic-emerald-loud pointer-events-none absolute inset-0  metallic-breathe"
         aria-hidden="true"
       />
       {/* Opacity-only brightness pulse, layered on top of the div above
@@ -84,8 +84,8 @@ export function HeroSection() {
           edge without getting cut off or visually detached from its
           input (see ToolSearchBar). */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <OrganicBlobs tone="on-accent" />
-        <FloatingPaths
+        {/* <OrganicBlobs tone="on-accent" /> */}
+        {/* <FloatingPaths
           position={1}
           colorRgb="255, 255, 255"
           reverseX
@@ -96,17 +96,17 @@ export function HeroSection() {
           colorRgb="255, 255, 255"
           reverseX
           metallic
-        />
+        /> */}
       </div>
       <HeroFloatingIcons />
-      <div className="relative mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-16 lg:py-28">
+      <div className="relative mx-auto grid grid-cols-1 max-w-7xl  items-center gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-16 lg:py-28">
         <div className="text-center lg:text-left">
           <span
             className="hero-fade-up glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium text-white"
             style={{ animationDelay: "0.05s" }}
           >
             <HiOutlineCheckCircle className="size-3.5" />
-            70 tools, entirely free
+            115+ tools, entirely free
           </span>
           <h1
             className="hero-fade-up font-display mx-auto mt-6 max-w-2xl text-4xl font-semibold tracking-tight text-balance text-white sm:text-6xl lg:mx-0"

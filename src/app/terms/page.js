@@ -60,7 +60,7 @@ export default function TermsPage() {
           <h2>No cost, no account</h2>
           <p>
             Tools Root is free to use. There is no paid plan, no subscription, and no account or
-            sign-up required for any of the 70 tools on this site.
+            sign-up required for any of the 115+ tools on this site.
           </p>
         </section>
 
