@@ -56,12 +56,29 @@ export function HeroFloatingIcons() {
       {FLOATING_ICONS.map((item, i) => (
         <motion.div
           key={i}
-          // glass-panel (globals.css) replaces the old flat bg-white/10 +
-          // backdrop-blur-sm with the full frosted-glass recipe: layered
-          // gradient fill, 1px inner-highlight border, inset shadow — the
-          // "glassy" surface the redesign asked for, reused everywhere a
-          // small chip floats over the metallic hero.
-          className={`glass-panel absolute flex ${item.size} items-center justify-center rounded-3xl text-white`}
+          // Was `glass-panel` (backdrop-filter: blur+saturate). Nine of
+          // these render here, each continuously transform-animated
+          // (y/rotate) AND sitting on top of the hero's metal-breathe
+          // background, which is itself continuously repainting via
+          // `filter`/`background-position` (see .metallic-breathe in
+          // globals.css). backdrop-filter has to resample the actual
+          // pixels beneath an element live — it can't be cached the way
+          // a solid fill can — so a *moving* backdrop-filter element
+          // over a *repainting* background is close to worst-case for
+          // compositor cost: nine of them, every frame, for as long as
+          // the hero is on screen. That's sustained, real work — fine
+          // on a fast dev machine, visibly janky/flickery for ordinary
+          // visitor hardware, which is exactly why this only ever
+          // showed up on the deployed site for real visitors and not in
+          // local testing on one machine, and only on the homepage hero
+          // specifically (the only hero that renders this component).
+          // `glass-panel-static` (globals.css) keeps the same look —
+          // translucent white fill, inner highlight border, soft shadow
+          // — via a plain background/border/box-shadow instead of
+          // backdrop-filter, so there's nothing left to resample; the
+          // visual difference (no live blur of what's directly behind
+          // each icon) is not perceptible against this background.
+          className={`glass-panel-static absolute flex ${item.size} items-center justify-center rounded-3xl text-white`}
           style={{ top: item.top, left: item.left }}
           // Reduced motion: hold each icon at a static resting pose
           // (still visible, still part of the composition) instead of

@@ -592,6 +592,28 @@
      off only the animation half, not the color. */
   .metallic-breathe {
     animation: var(--animate-metal-breathe);
+    /* Promotes this layer to its own compositor layer up front, instead
+       of the browser deciding mid-animation. Without this, `filter` and
+       `background-position` (both repaint-triggering, not composite-only
+       like transform/opacity) can force the browser to repaint this
+       element's paint region on every one of the animation's frames,
+       and — worse — every .glass-panel element stacked on top of it
+       (hero-floating-icons.jsx renders nine of them, each with its own
+       backdrop-filter) has to resample that repainting region live each
+       frame too, since backdrop-filter reads the actual pixels beneath
+       it rather than a cached layer. That combination (one continuously
+       repainting layer + several backdrop-filter elements reading
+       through it) is real, sustained compositor cost — fine on a
+       powerful dev machine, visibly janky/flickery on typical real
+       hardware, which is why this was only ever reported on the
+       homepage hero specifically (the only hero that also renders
+       HeroFloatingIcons on top of this same background) and only
+       showed up for real visitors, not local testing on one machine.
+       will-change asks the browser to isolate this element onto its own
+       GPU layer ahead of time so its repaints stay contained to that
+       layer instead of forcing repaints/resamples of what's stacked
+       above it. */
+    will-change: filter, background-position;
   }
 
   .glass-panel {
@@ -600,6 +622,22 @@
     box-shadow: var(--glass-shadow);
     backdrop-filter: blur(16px) saturate(160%);
     -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
+  /* Same visual recipe as .glass-panel minus backdrop-filter — for
+     elements that are continuously transform-animated over an already-
+     repainting background (currently: hero-floating-icons.jsx's nine
+     floating chips over the hero's .metallic-breathe layer). A moving
+     backdrop-filter element can't cache its blurred/saturated sample —
+     it has to re-read the pixels beneath it every frame, at its new
+     position, and that cost compounds badly when what's beneath it is
+     also repainting every frame. Dropping backdrop-filter for just this
+     case removes that live-resample cost entirely; the background-image
+     gradient + border + shadow still read as a frosted glass chip, just
+     without the live blur-through of whatever's directly behind it. */
+  .glass-panel-static {
+    background-image: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
   }
   .glass-panel-on-light {
     background-image: var(--glass-bg-on-light);
