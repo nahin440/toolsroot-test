@@ -3,6 +3,11 @@
 // (a /blog section with real content that funnels into tool pages) from the SEO plan.
 
 import { NEW_BLOG_POSTS } from "./new-blog-content";
+import { TUTORIAL_POSTS_1 } from "./blog-tutorials-1";
+import { TUTORIAL_POSTS_2 } from "./blog-tutorials-2";
+import { PROBLEM_POSTS } from "./blog-problems";
+import { PRODUCTIVITY_POSTS } from "./blog-productivity";
+import { BEGINNER_POSTS } from "./blog-beginner";
 
 const EXISTING_POSTS = [
   {
@@ -477,7 +482,15 @@ const EXISTING_POSTS = [
   },
 ];
 
-export const BLOG_POSTS = [...EXISTING_POSTS, ...NEW_BLOG_POSTS];
+export const BLOG_POSTS = [
+  ...EXISTING_POSTS,
+  ...NEW_BLOG_POSTS,
+  ...TUTORIAL_POSTS_1,
+  ...TUTORIAL_POSTS_2,
+  ...PROBLEM_POSTS,
+  ...PRODUCTIVITY_POSTS,
+  ...BEGINNER_POSTS,
+];
 
 
 

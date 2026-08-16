@@ -76,16 +76,20 @@
   --success-foreground: #ffffff;
 
   /* ---- Typography ----
-     Cormorant (self-hosted via next/font/local, see layout.js —
-     --font-cormorant is set on <html>) is the sitewide font for both
-     display and body/UI text — hero headlines, section H2s, card
-     titles, paragraph copy, buttons, and form labels all render in it.
-     This is a deliberate choice: a display serif at body sizes reads
-     lighter and less "neutral" than a sans-serif would, which is the
+     Roboto Slab (self-hosted at build time via next/font/google in
+     layout.js — see that file's comment for why) is the sitewide font
+     for both display and body/UI text — hero headlines, section H2s,
+     card titles, paragraph copy, buttons, and form labels all render in
+     it. This is a deliberate choice: a slab serif at body sizes reads
+     sturdier and less "neutral" than a sans-serif would, which is the
      tradeoff being made here in exchange for one consistent typographic
-     voice across the whole site rather than a serif/sans split. */
-  --font-display: var(--font-cormorant), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-body: var(--font-cormorant), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+     voice across the whole site rather than a serif/sans split.
+     var(--font-roboto-slab) is the CSS variable next/font generates on
+     <html> (via the `variable` option); the ui-serif/Georgia/etc. chain
+     after it is the fallback stack for the brief pre-hydration instant
+     and for any environment where the font variable somehow isn't set. */
+  --font-display: var(--font-roboto-slab), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-body: var(--font-roboto-slab), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: var(--font-geist-mono);
 
   /* ---- Elevation (barely-perceptible, hairline-first, per reference) ---- */

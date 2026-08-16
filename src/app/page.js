@@ -140,7 +140,7 @@ export default function HomePage() {
 
       {/* Popular tools. SectionFlowLines emerald tone (this section has no
           bg-accent, so it needs the light-background variant, opposite of
-          the hero/CTA's white lines). Heading now Cormorant (font-display,
+          the hero/CTA's white lines). Heading now Roboto Slab (font-display,
           picks up the sitewide serif automatically) for the same
           editorial-serif treatment as every other section heading. */}
       <section className="relative isolate z-10 overflow-hidden mx-auto max-w-[1280px] px-4 py-16 sm:px-6">
@@ -183,6 +183,19 @@ export default function HomePage() {
                 fill
                 sizes="(max-width: 640px) 78vw, 380px"
                 className="object-cover"
+                // This is the larger of the two photography-band images and
+                // sits inside the homepage's first viewport on most common
+                // screen sizes (right below the hero, which has no image of
+                // its own — just gradient/SVG/text) — making it the likely
+                // Largest Contentful Paint element. Without `priority`,
+                // next/image defaults every image to loading="lazy", which
+                // on some browsers means the request doesn't even start
+                // until layout confirms the image is near-viewport, adding
+                // avoidable delay to LCP for content that's actually visible
+                // on load. `priority` switches this one to eager-loaded and
+                // preloaded, which is exactly what next/image's own docs
+                // recommend for a page's LCP candidate.
+                priority
               />
             </div>
             <div className="absolute right-0 bottom-0 h-[160px] w-[62%] overflow-hidden rounded-2xl bg-secondary shadow-float ring-4 ring-background sm:h-[190px]">
@@ -192,6 +205,13 @@ export default function HomePage() {
                 fill
                 sizes="(max-width: 640px) 62vw, 300px"
                 className="object-cover"
+                // Smaller, secondary image in the same pair — left on the
+                // default lazy behavior deliberately, so the one real
+                // priority signal on this page points unambiguously at the
+                // actual LCP candidate above rather than being split
+                // between two images (next/image and Chrome's own LCP
+                // heuristics both work better with a single clear signal
+                // per page than several competing `priority` images).
               />
             </div>
           </div>

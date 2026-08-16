@@ -47,24 +47,39 @@ export function ToolSearchBar({ className }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.15 }}
-            className="glossy-card absolute top-full left-0 z-30 mt-2 w-full rounded-2xl border border-border/70 bg-popover"
+            className="glossy-card w-full rounded-2xl border border-border/70 bg-popover shadow-2xl"
+            style={{
+              position: "absolute",
+              left: 0,
+              zIndex: 50,
+              top: "calc(100% + 6px)",
+              maxHeight: "min(400px, 60vh)",
+              overflowY: "auto",
+            }}
           >
             {results.length ? (
-              <ul className="max-h-80 overflow-y-auto p-2">
+              <ul className="p-2">
                 {results.map((tool) => (
                   <li key={tool.slug}>
                     <Link
                       href={tool.href}
                       className="flex flex-col gap-0.5 rounded-xl px-3 py-2.5 transition-colors hover:bg-accent-tint"
+                      onClick={() => setIsFocused(false)}
                     >
-                      <span className="text-sm font-medium text-foreground">{tool.name}</span>
-                      <span className="truncate text-xs text-muted-foreground">{tool.description}</span>
+                      <span className="text-sm font-medium text-foreground">
+                        {tool.name}
+                      </span>
+                      <span className="truncate text-xs text-muted-foreground">
+                        {tool.description}
+                      </span>
                     </Link>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="p-4 text-sm text-muted-foreground">No tools found for &ldquo;{query}&rdquo;.</p>
+              <p className="p-4 text-sm text-muted-foreground">
+                No tools found for &ldquo;{query}&rdquo;.
+              </p>
             )}
           </motion.div>
         )}

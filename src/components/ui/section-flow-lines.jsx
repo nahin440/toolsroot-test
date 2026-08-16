@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
-import { motion } from "motion/react";
+import { useMemo, useRef } from "react";
+import { motion, useInView } from "motion/react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 /**
@@ -133,7 +133,12 @@ function verticalPaths(count, position, colorRgb) {
   });
 }
 
-function AnimatedPathGroup({ paths, shouldReduceMotion }) {
+function AnimatedPathGroup({ paths, shouldReduceMotion, isInView }) {
+  // isInView gates the infinite-repeat animation itself (not just an
+  // entrance), so a section's 24 looping paths only actually run while
+  // that section is on screen — see the export-level comment below for
+  // why this matters on a page that stacks six of these instances.
+  const animateInfinite = shouldReduceMotion || !isInView;
   return paths.map((path) => (
     <motion.path
       key={path.id}
@@ -144,14 +149,18 @@ function AnimatedPathGroup({ paths, shouldReduceMotion }) {
       // See FloatingPaths in background-paths.jsx for why this branches:
       // Motion's animate prop isn't touched by the CSS
       // prefers-reduced-motion rule in globals.css, so infinite-repeat
-      // animate calls need to check the JS-level flag themselves.
+      // animate calls need to check the JS-level flag themselves. The
+      // !isInView branch reuses the same static end-state as reduced
+      // motion (rather than, say, opacity 0) — a section that's about
+      // to scroll into view should show its lines already "settled"
+      // rather than popping from invisible to animating.
       animate={
-        shouldReduceMotion
+        animateInfinite
           ? { pathLength: 1, opacity: 0.4, pathOffset: 0 }
           : { pathLength: 1, opacity: [0.3, 0.6, 0.3], pathOffset: [0, 1, 0] }
       }
       transition={
-        shouldReduceMotion
+        animateInfinite
           ? { duration: 0 }
           : { duration: path.duration, repeat: Number.POSITIVE_INFINITY, ease: "linear" }
       }
@@ -181,6 +190,31 @@ export function SectionFlowLines({
   const shouldReduceMotion = useReducedMotion();
   const colorRgb = tone === "on-accent" ? WHITE_RGB : ACCENT_RGB;
 
+  // The homepage alone mounts six of these (see page.js), each running
+  // 24 infinite-repeat SVG paths — 144 paths total, on top of the hero's
+  // own 72. None of that is free: every mounted path is a live rAF-driven
+  // animation even while its section sits far off-screen (e.g. this
+  // component in the CTA band at the very bottom, animating from the
+  // moment the homepage loads even if the visitor never scrolls past the
+  // hero). useInView gives a live boolean that flips both directions as
+  // the section crosses the viewport, so AnimatedPathGroup can freeze
+  // each group's paths on a static frame while off-screen and resume
+  // the loop once scrolled back into view — cutting the steady-state
+  // animation cost roughly in proportion to how much of the page is
+  // actually visible at once, with no visual difference for a visitor
+  // who's actively scrolled a section into view.
+  // margin: "200px" starts the animation a little before the section
+  // fully enters the viewport (rather than the exact edge), so lines are
+  // already moving by the time a normal scroll brings them fully into
+  // view instead of visibly kicking off mid-scroll. once: false is the
+  // one deliberate difference from this codebase's other whileInView
+  // usages (trust-points.jsx, category-bento.jsx, featured-guides.jsx):
+  // those animate a one-shot reveal and should stay finished once
+  // played; this is ambient background motion that should genuinely
+  // pause and resume every time, not just on first entry.
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false, margin: "200px" });
+
   // Same rationale as FloatingPaths' useMemo: generation is pure, so
   // only recompute when an actual input (counts, tone, direction)
   // changes rather than on every parent re-render.
@@ -190,14 +224,15 @@ export function SectionFlowLines({
 
   return (
     <div
+      ref={ref}
       className="pointer-events-none absolute inset-0 overflow-hidden"
       aria-hidden="true"
     >
       <svg className="w-full h-full" viewBox="0 0 696 316" fill="none" preserveAspectRatio="none">
         <title>Section flow lines</title>
-        <AnimatedPathGroup paths={diagonal} shouldReduceMotion={shouldReduceMotion} />
-        <AnimatedPathGroup paths={horizontal} shouldReduceMotion={shouldReduceMotion} />
-        <AnimatedPathGroup paths={vertical} shouldReduceMotion={shouldReduceMotion} />
+        <AnimatedPathGroup paths={diagonal} shouldReduceMotion={shouldReduceMotion} isInView={isInView} />
+        <AnimatedPathGroup paths={horizontal} shouldReduceMotion={shouldReduceMotion} isInView={isInView} />
+        <AnimatedPathGroup paths={vertical} shouldReduceMotion={shouldReduceMotion} isInView={isInView} />
       </svg>
     </div>
   );
